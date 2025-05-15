@@ -2,7 +2,7 @@
 import { useRef } from 'react';
 import Layout from '@/components/Layout';
 import { Editor } from '@tinymce/tinymce-react';
-import { useRouter } from 'next/navigation'; // Note: Use 'next/navigation' in Next.js 13+
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import img1 from '@/images/food1.webp';
 

@@ -1,101 +1,57 @@
 'use client';
 import Layout from "@/components/Layout";
-import { useState } from "react";
+import { useState,useEffect, use } from "react";
+import axios from "axios";
 
 export default function UserManagement() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [users, setUsers] = useState([
-   
-      {
-        id: 1,
-        name: "สมชาย โดด",
-        email: "somchai@example.com",
-        status: "ถูกระงับ",
-        reason: "โพสต์เนื้อหาไม่เหมาะสม",
-      },
-      {
-        id: 2,
-        name: "สมหญิง จักร",
-        email: "somying@example.com",
-        status: "ปกติ",
-        reason: "-",
-      },
-      {
-        id: 3,
-        name: "นายแดง ใจดี",
-        email: "daeng@example.com",
-        status: "ปกติ",
-        reason: "-",
-      },
-      {
-        id: 4,
-        name: "นางสาวสวย สุขใจ",
-        email: "souy@example.com",
-        status: "ถูกระงับ",
-        reason: "ละเมิดกฎการใช้บริการ",
-      },
-      {
-        id: 5,
-        name: "นายกล้า กล้าหาญ",
-        email: "kla@example.com",
-        status: "ปกติ",
-        reason: "-",
-      },
-      {
-        id: 6,
-        name: "นางสาวน้ำผึ้ง หวานใจ",
-        email: "nampheung@example.com",
-        status: "ถูกระงับ",
-        reason: "โพสต์เนื้อหาไม่เหมาะสม",
-      },
-      {
-        id: 7,
-        name: "นายสมาน สามัคคี",
-        email: "saman@example.com",
-        status: "ปกติ",
-        reason: "-",
-      },
-      {
-        id: 8,
-        name: "นางสาวดาว ดวงดี",
-        email: "dao@example.com",
-        status: "ถูกระงับ",
-        reason: "ละเมิดกฎการใช้บริการ",
-      },
-      {
-        id: 9,
-        name: "นายสุข สบายใจ",
-        email: "suk@example.com",
-        status: "ปกติ",
-        reason: "-",
-      },
-      {
-        id: 10,
-        name: "นางสาวเพชร ใจดี",
-        email: "petch@example.com",
-        status: "ถูกระงับ",
-        reason: "โพสต์เนื้อหาไม่เหมาะสม",
-      },
-    
-    // เพิ่มข้อมูลผู้ใช้งานอื่นๆ ตามต้องการ
-  ]);
-
+  const [statusFilter, setStatusFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5;
+  const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newStatus, setNewStatus] = useState("");
   const [reason, setReason] = useState("");
 
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("/api/user/get_user");
+       
+      if (response.status === 200) {
+       
+        setUsers(response.data);
+      } else {
+        console.error("Failed to fetch users");
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleStatusFilter = (e) => {
+    setStatusFilter(e.target.value);
+  };
+
+  const filteredUsers = users
+    .filter((user) =>
+      user.username.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter((user) =>
+      statusFilter ? user.account_status.toLowerCase() === statusFilter.toLowerCase() : true
+    );
 
   const openModal = (user) => {
     setSelectedUser(user);
-    setNewStatus(user.status);
+    setNewStatus(user.account_status);
     setReason(user.reason);
     setIsModalOpen(true);
   };
@@ -118,6 +74,13 @@ export default function UserManagement() {
     closeModal();
   };
 
+  // Pagination logic
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <Layout>
       <div className="p-6 bg-gray-100 min-h-screen">
@@ -125,23 +88,25 @@ export default function UserManagement() {
           การจัดการสิทธิ์ผู้ใช้งาน
         </h1>
 
-        
-          <div className="mb-6 flex items-center space-x-4">
-            <input
-              type="text"
-              placeholder="ค้นหาผู้ใช้งาน"
-              value={searchQuery}
-              onChange={handleSearch}
-              className="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">  ถูกระงับ</button>
-            
-            <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
-              ปกติ
-            </button>
-          </div>
+        <div className="mb-6 flex items-center space-x-4">
+          <input
+            type="text"
+            placeholder="ค้นหาผู้ใช้งาน"
+            value={searchQuery}
+            onChange={handleSearch}
+            className="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <select
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={handleStatusFilter}
+          >
+            <option value="">ทั้งหมด</option>
+            <option value="ปกติ">ปกติ</option>
+            <option value="ถูกระงับ">ถูกระงับ</option>
+          </select>
+        </div>
 
-          {/* ตารางผู้ใช้งาน */}
+        {/* ตารางผู้ใช้งาน */}
         <div className="bg-white shadow-sm rounded-lg overflow-hidden">
           <table className="w-full text-left">
             <thead className="bg-gray-50">
@@ -164,14 +129,14 @@ export default function UserManagement() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredUsers.map((user) => (
+              {currentUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-800">{user.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{user.username}</td>
                   <td className="px-6 py-4 text-sm text-gray-600">
                     {user.email}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {user.status}
+                    {user.account_status}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
                     {user.reason}
@@ -188,6 +153,24 @@ export default function UserManagement() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex justify-center mt-6">
+          <nav>
+            <ul className="flex space-x-2">
+              {Array.from({ length: Math.ceil(filteredUsers.length / usersPerPage) }, (_, index) => (
+                <li key={index}>
+                  <button
+                    onClick={() => paginate(index + 1)}
+                    className={`px-4 py-2 border rounded-lg ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}
+                  >
+                    {index + 1}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </div>
 
