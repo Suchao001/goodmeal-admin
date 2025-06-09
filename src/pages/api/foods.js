@@ -1,0 +1,211 @@
+import db from '@/lib/db';
+import fs from 'fs';
+import path from 'path';
+
+// Helper function to delete image file
+const deleteImageFile = (imagePath) => {
+  if (!imagePath) return;
+  
+  try {
+    // Convert relative path to absolute path
+    let fullPath;
+    if (imagePath.startsWith('/foods/')) {
+      fullPath = path.join(process.cwd(), 'public', imagePath);
+    } else if (imagePath.startsWith('/')) {
+      fullPath = path.join(process.cwd(), 'public', imagePath);
+    } else {
+      fullPath = path.join(process.cwd(), 'public', 'foods', imagePath);
+    }
+    
+    // Check if file exists and delete it
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+      console.log('Deleted image file:', fullPath);
+    }
+  } catch (error) {
+    console.error('Error deleting image file:', error);
+  }
+};
+
+export default async function handler(req, res) {
+  if (req.method === 'GET') {
+    try {
+      // Get all foods with their categories
+      const foods = await db('foods')
+        .leftJoin('food_category_map', 'foods.id', 'food_category_map.food_id')
+        .leftJoin('food_category', 'food_category_map.category_id', 'food_category.id')
+        .select(
+          'foods.id',
+          'foods.name',
+          'foods.cal as calories',
+          'foods.carb as carbohydrates',
+          'foods.fat',
+          'foods.protein',
+          'foods.img as image',
+          'foods.ingredient as ingredients',
+          'food_category.id as category_id',
+          'food_category.name as category_name'
+        );
+
+      // Group foods by id and collect categories
+      const foodsMap = {};
+      foods.forEach(food => {
+        if (!foodsMap[food.id]) {
+          foodsMap[food.id] = {
+            id: food.id,
+            name: food.name,
+            calories: parseFloat(food.calories) || 0,
+            carbohydrates: parseFloat(food.carbohydrates) || 0,
+            fat: parseFloat(food.fat) || 0,
+            protein: parseFloat(food.protein) || 0,
+            image: food.image,
+            ingredients: food.ingredients,
+            categories: []
+          };
+        }
+        
+        if (food.category_id && food.category_name) {
+          foodsMap[food.id].categories.push({
+            id: food.category_id,
+            name: food.category_name
+          });
+        }
+      });
+
+      const result = Object.values(foodsMap);
+      res.status(200).json(result);
+    } catch (error) {
+      console.error('Error fetching foods:', error);
+      res.status(500).json({ error: 'Failed to fetch foods' });
+    }
+  } else if (req.method === 'POST') {
+    try {
+      const { name, calories, carbohydrates, fat, protein, image, ingredients, categories } = req.body;
+
+      // Insert the food
+      const [foodId] = await db('foods').insert({
+        name,
+        cal: calories,
+        carb: carbohydrates,
+        fat,
+        protein,
+        img: image,
+        ingredient: ingredients
+      });
+
+      // Insert category mappings if categories are provided
+      if (categories && categories.length > 0) {
+        const categoryMappings = categories.map(categoryId => ({
+          food_id: foodId,
+          category_id: categoryId
+        }));
+        await db('food_category_map').insert(categoryMappings);
+      }
+
+      res.status(201).json({ id: foodId, message: 'Food created successfully' });
+    } catch (error) {
+      console.error('Error creating food:', error);
+      res.status(500).json({ error: 'Failed to create food' });
+    }
+  } else if (req.method === 'PUT') {
+    try {
+      const { id, name, calories, carbohydrates, fat, protein, image, ingredients, categories } = req.body;
+
+      if (!id) {
+        return res.status(400).json({ error: 'Food ID is required' });
+      }
+
+      // Get current food data to check for old image
+      const currentFood = await db('foods')
+        .where('id', id)
+        .select('img')
+        .first();
+
+      if (!currentFood) {
+        return res.status(404).json({ error: 'Food not found' });
+      }
+
+      // If image is being changed, delete the old image
+      if (currentFood.img && image && currentFood.img !== image) {
+        deleteImageFile(currentFood.img);
+      }
+
+      // Update the food
+      const updated = await db('foods')
+        .where('id', id)
+        .update({
+          name,
+          cal: calories,
+          carb: carbohydrates,
+          fat,
+          protein,
+          img: image,
+          ingredient: ingredients
+        });
+
+      if (updated === 0) {
+        return res.status(404).json({ error: 'Food not found' });
+      }
+
+      // Update category mappings if categories are provided
+      if (categories && Array.isArray(categories)) {
+        // Remove existing mappings
+        await db('food_category_map').where('food_id', id).del();
+        
+        // Insert new mappings
+        if (categories.length > 0) {
+          const categoryMappings = categories.map(categoryId => ({
+            food_id: id,
+            category_id: categoryId
+          }));
+          await db('food_category_map').insert(categoryMappings);
+        }
+      }
+
+      res.status(200).json({ id, message: 'Food updated successfully' });
+    } catch (error) {
+      console.error('Error updating food:', error);
+      res.status(500).json({ error: 'Failed to update food' });
+    }
+  } else if (req.method === 'DELETE') {
+    try {
+      const { id } = req.body;
+
+      if (!id) {
+        return res.status(400).json({ error: 'Food ID is required' });
+      }
+
+      // Get the food data to get the image path before deletion
+      const food = await db('foods')
+        .where('id', id)
+        .select('img')
+        .first();
+
+      if (!food) {
+        return res.status(404).json({ error: 'Food not found' });
+      }
+
+      // Delete category mappings first
+      await db('food_category_map').where('food_id', id).del();
+      
+      // Delete the food
+      const deleted = await db('foods').where('id', id).del();
+
+      if (deleted === 0) {
+        return res.status(404).json({ error: 'Food not found' });
+      }
+
+      // Delete the associated image file
+      if (food.img) {
+        deleteImageFile(food.img);
+      }
+
+      res.status(200).json({ message: 'Food deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting food:', error);
+      res.status(500).json({ error: 'Failed to delete food' });
+    }
+  } else {
+    res.status(405).json({ error: 'Method not allowed' });
+  }
+}

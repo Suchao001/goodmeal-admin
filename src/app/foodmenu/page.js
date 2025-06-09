@@ -1,445 +1,229 @@
 'use client';
 import Layout from "@/components/Layout";
-import { useState } from 'react';
-import  imageUrl  from '../../images/imgplaceholder.jpg';
-import Image from "next/image";
-
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import FoodTable from '@/components/food/FoodTable';
+import AddFoodModal from '@/components/food/AddFoodModal';
+import EditFoodModal from '@/components/food/EditFoodModal';
+import FoodCategoryModal from '@/components/food/FoodCategoryModal';
+import FoodFilters from '@/components/food/FoodFilters';
 
 export default function MenuManagement() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [selectedCategories, setSelectedCategories] = useState([]);
-const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [foods, setFoods] = useState([]);
+    const [filteredFoods, setFilteredFoods] = useState([]);
+    const [selectedFood, setSelectedFood] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('');
+    const [calorieFilter, setCalorieFilter] = useState('');
+    const router = useRouter();
 
-const categories = [
-  "อาหารไทย",
-  "อาหารตะวันตก",
-  "อาหารญี่ปุ่น",
-  "อาหารจีน",
-  "อาหารเกาหลี",
-  "อาหารมังสวิรัติ",
-  "อาหารคลีน",
-  "อาหารเพื่อสุขภาพ",
-  "อาหารจานเดียว",
-  "อาหารว่างและของหวาน",
-  "อาหารทะเล",
-  "อาหารฟิวชัน",
-  "อาหารฮาลาล",
-  "อาหารสำหรับเด็ก",
-  "อาหารพื้นเมืองหรืออาหารท้องถิ่น",
-  "อาหารแคลอรี่ต่ำ",
-  "อาหารคีโต",
-  "อาหารวีแกน",
-  "อาหารออร์แกนิก",
-  "อาหารฟาสต์ฟู้ด",
-  "อาหารแช่แข็งหรืออาหารพร้อมทาน",
-  "อาหารสำหรับผู้ป่วยหรืออาหารทางการแพทย์",
-  "อาหารนานาชาติ",
-  "อาหารพื้นบ้านไทย",
-  "อาหารเสริมหรืออาหารเสริมพลังงาน",
-];
-const toggleCategoryDropdown = () => {
-    setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
-  };
-  
-  const handleCategorySelect = (category) => {
-    if (selectedCategories.includes(category)) {
-      setSelectedCategories(selectedCategories.filter((cat) => cat !== category));
-    } else {
-      setSelectedCategories([...selectedCategories, category]);
-    }
-  };
+    useEffect(() => {
+        fetchCategories();
+        fetchFoods();
+    }, []);
 
-const openAddModal = () => {
-  setIsAddModalOpen(true);
-};
+    useEffect(() => {
+        filterFoods();
+    }, [foods, searchTerm, categoryFilter, calorieFilter]);
 
-const closeAddModal = () => {
-  setIsAddModalOpen(false);
-};
+    const fetchCategories = async () => {
+        try {
+            const res = await fetch('/api/foodcategories');
+            if (res.ok) {
+                const data = await res.json();
+                setCategories(data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch categories', err);
+        }
+    };
 
-const handleAddDish = () => {
-  // เพิ่มเมนูอาหารใหม่ (ตัวอย่างเท่านั้น)
-  const newDish = {
-    id: dishes.length + 1,
-    name: "เมนูใหม่",
-    ingredients: "ส่วนผสมใหม่",
-    calories: 0,
-    carbohydrates: 0,
-    protein: 0,
-    fat: 0,
-    image: imageUrl,
-  };
-  setDishes([...dishes, newDish]);
-  closeAddModal();
-};
-  const [dishes, setDishes] = useState([
-    {
-      id: 1,
-      name: 'ผัดไทย',
-      ingredients: 'เส้นจันท์, ไข่, กุ้ง, ถั่วงอก',
-      calories: 400,
-      carbohydrates: 50,
-      protein: 15,
-      fat: 10,
-      image: imageUrl,
-    },
-    {
-      id: 2,
-      name: 'ต้มยำกุ้ง',
-      ingredients: 'กุ้ง, ข่า, ตะไคร้, ใบมะกรูด',
-      calories: 300,
-      carbohydrates: 20,
-      protein: 25,
-      fat: 8,
-      image:imageUrl,
-    },
-  ]);
+    const fetchFoods = async () => {
+        try {
+            const res = await fetch('/api/foods');
+            if (res.ok) {
+                const data = await res.json();
+                setFoods(data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch foods', err);
+        }
+    };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDish, setSelectedDish] = useState(null);
+    const filterFoods = () => {
+        let filtered = [...foods];
 
-  const openModal = (dish) => {
-    setSelectedDish(dish);
-    setIsModalOpen(true);
-  };
+        // Search filter
+        if (searchTerm) {
+            filtered = filtered.filter(food =>
+                food.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                food.ingredients?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedDish(null);
-  };
+        // Category filter
+        if (categoryFilter) {
+            filtered = filtered.filter(food =>
+                food.categories?.some(cat => cat.name === categoryFilter)
+            );
+        }
 
-  const handleSave = () => {
-    setDishes((prevDishes) =>
-      prevDishes.map((dish) =>
-        dish.id === selectedDish.id ? { ...selectedDish } : dish
-      )
-    );
-    closeModal();
-  };
+        // Calorie filter
+        if (calorieFilter) {
+            filtered = filtered.filter(food => {
+                const calories = food.calories || 0;
+                switch (calorieFilter) {
+                    case 'low': return calories < 300;
+                    case 'medium': return calories >= 300 && calories <= 500;
+                    case 'high': return calories > 500;
+                    default: return true;
+                }
+            });
+        }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setSelectedDish({ ...selectedDish, [name]: value });
-  };
+        setFilteredFoods(filtered);
+    };
 
-  return (
-    <Layout>
-    <div className="p-6 bg-gray-100 min-h-screen">
-        <div className="flex justify-between">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">การจัดการเมนูอาหาร</h1>
-      <button onClick={openAddModal} className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200">
-    + เพิ่มเมนูอาหารใหม่
-  </button>
-  </div>
-      <div className="my-3 flex gap-4">
-      <input
-    type="text"
-    placeholder="ค้นหาเมนูอาหาร..."
-    className="w-full h-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"  />
-    <div className="my-3 flex justify-between items-center">
-  
-  <div className="flex space-x-4">
-    <select className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-      {categories.map((category) => (
-        <option key={category} value={category}>
-            {category}
-        </option>
-        ))}
-    </select>
-    <select className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <option value="">แคลอรี่</option>
-      <option value="low">น้อยกว่า 300 kcal</option>
-      <option value="medium">300-500 kcal</option>
-      <option value="high">มากกว่า 500 kcal</option>
-    </select>
-  </div>
-  
-</div>
-      </div>
+    const handleAddFood = async (foodData) => {
+        try {
+            const res = await fetch('/api/foods', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(foodData),
+            });
 
-      <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">ลำดับ</th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">อาหาร</th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">รูปภาพ</th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">แคลอรี่</th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">จัดการ</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {dishes.map((dish, index) => (
-              <tr key={dish.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-800">{index + 1}</td>
-                <td className="px-6 py-4 text-sm text-gray-800">{dish.name}</td>
-                <td className="px-6 py-4 text-sm">
-                  <Image src={dish.image} alt={dish.name} className="w-16 h-16 rounded-lg" />
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-800">{dish.calories}</td>
-                <td className="px-6 py-4 text-sm ">
-                  <button
-                    onClick={() => openModal(dish)}
-                    className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200"
-                  >
-                    แก้ไข
-                  </button>
-                  <button
-                    
-                    className="px-4 py-2 mx-1 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
-                  >
-                    ลบ
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            if (res.ok) {
+                await fetchFoods(); // Refresh the foods list
+            } else {
+                console.error('Failed to add food');
+            }
+        } catch (error) {
+            console.error('Error adding food:', error);
+        }
+    };
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-            <h2 className="text-lg font-bold mb-4">แก้ไขเมนูอาหาร</h2>
+    const handleEditFood = (food) => {
+        setSelectedFood(food);
+        setIsEditModalOpen(true);
+    };
 
-            <div className="mb-4">
-              <label className="block text-sm mb-2">ชื่ออาหาร</label>
-              <input
-                type="text"
-                name="name"
-                value={selectedDish.name}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
+    const handleSaveFood = async (updatedFood) => {
+        // Refresh the foods list from the database to get the most current data
+        await fetchFoods();
+    };
 
-            <div className="mb-4">
-              <label className="block text-sm mb-2">ส่วนผสม</label>
-              <textarea
-                name="ingredients"
-                value={selectedDish.ingredients}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-                rows="3"
-              ></textarea>
-            </div>
+    const handleDeleteFood = async (food) => {
+        if (confirm(`คุณต้องการลบเมนู "${food.name}" หรือไม่?`)) {
+            try {
+                const res = await fetch('/api/foods', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: food.id }),
+                });
 
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="block text-sm mb-2">แคลอรี่</label>
-                <input
-                  type="number"
-                  name="calories"
-                  value={selectedDish.calories}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-2">คาร์โบไฮเดรต</label>
-                <input
-                  type="number"
-                  name="carbohydrates"
-                  value={selectedDish.carbohydrates}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-2">โปรตีน</label>
-                <input
-                  type="number"
-                  name="protein"
-                  value={selectedDish.protein}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-2">ไขมัน</label>
-                <input
-                  type="number"
-                  name="fat"
-                  value={selectedDish.fat}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-            </div>
+                if (res.ok) {
+                    setFoods(foods.filter(f => f.id !== food.id));
+                } else {
+                    console.error('Failed to delete food');
+                }
+            } catch (error) {
+                console.error('Error deleting food:', error);
+            }
+        }
+    };
 
-            <div className="mb-4">
-                <label className="block text-sm mb-2">Image</label>
-                <Image
-                    src={imageUrl}
-                    alt="Image"
-                    className="w-16 h-16 rounded-lg"
-                />
-                <input
-                    type="file"
-                    accept="image/*" // รับเฉพาะไฟล์รูปภาพ
-                    onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                        setImageUrl(reader.result);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                    }}
-                    className="block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-blue-50 file:text-blue-700
-                    hover:file:bg-blue-100"
-                />
+    const handleAddCategory = async (categoryName) => {
+        try {
+            const res = await fetch('/api/foodcategories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: categoryName }),
+            });
+
+            if (res.ok) {
+                const newCategory = await res.json();
+                setCategories([...categories, { id: newCategory.id, name: newCategory.name }]);
+            } else {
+                const error = await res.json();
+                alert(error.error || 'เกิดข้อผิดพลาดในการเพิ่มประเภทอาหาร');
+            }
+        } catch (error) {
+            console.error('Error adding category:', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        }
+    };
+
+    return (
+        <Layout>
+            <div className="p-6 bg-gray-100 min-h-screen">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold text-gray-800">การจัดการเมนูอาหาร</h1>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => router.push('/foodcategories')}
+                            className="px-4 py-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200"
+                        >
+                            จัดการประเภทอาหาร
+                        </button>
+                        <button 
+                            onClick={() => setIsCategoryModalOpen(true)} 
+                            className="px-4 py-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200"
+                        >
+                            + เพิ่มประเภทอาหาร
+                        </button>
+                        <button 
+                            onClick={() => setIsAddModalOpen(true)} 
+                            className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200"
+                        >
+                            + เพิ่มเมนูอาหารใหม่
+                        </button>
+                    </div>
                 </div>
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={closeModal}
-                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
-              >
-                ยกเลิก
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                บันทึก
-              </button>
+
+                <FoodFilters
+                    categories={categories}
+                    onSearch={setSearchTerm}
+                    onCategoryFilter={setCategoryFilter}
+                    onCalorieFilter={setCalorieFilter}
+                />
+
+                <FoodTable
+                    foods={filteredFoods}
+                    onEdit={handleEditFood}
+                    onDelete={handleDeleteFood}
+                />
+
+                <AddFoodModal
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    categories={categories}
+                    onAddFood={handleAddFood}
+                />
+
+                <EditFoodModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    food={selectedFood}
+                    onSave={handleSaveFood}
+                    categories={categories}
+                />
+
+                <FoodCategoryModal
+                    isOpen={isCategoryModalOpen}
+                    onClose={() => setIsCategoryModalOpen(false)}
+                    onAddCategory={handleAddCategory}
+                />
             </div>
-          </div>
-        </div>
-      )}
-    </div>
-    {isAddModalOpen && (
-  <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-      <h2 className="text-lg font-bold mb-4">เพิ่มเมนูอาหารใหม่</h2>
-
-      {/* ชื่ออาหาร */}
-      <div className="mb-4">
-        <label className="block text-sm mb-2">ชื่ออาหาร</label>
-        <input
-          type="text"
-          name="name"
-          className="w-full p-2 border border-gray-300 rounded-lg"
-        />
-      </div>
-
-      {/* ส่วนผสม */}
-      <div className="mb-4">
-        <label className="block text-sm mb-2">ส่วนผสม</label>
-        <textarea
-          name="ingredients"
-          className="w-full p-2 border border-gray-300 rounded-lg"
-          rows="3"
-        ></textarea>
-      </div>
-
-      {/* ประเภทอาหาร */}
-      <div className="mb-4">
-        <label className="block text-sm mb-2">ประเภทอาหาร</label>
-        <div className="relative">
-          <button
-            onClick={toggleCategoryDropdown}
-            className="w-full p-2 border border-gray-300 rounded-lg text-left flex justify-between items-center"
-          >
-            <span>
-              {selectedCategories.length > 0
-                ? selectedCategories.join(", ")
-                : "เลือกประเภทอาหาร"}
-            </span>
-            <span className="text-gray-500">+</span>
-          </button>
-          {isCategoryDropdownOpen && (
-            <div className="absolute mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
-            {categories.map((category) => (
-              <div
-                key={category}
-                onClick={() => handleCategorySelect(category)}
-                className={`p-2 hover:bg-gray-100 cursor-pointer ${
-                  selectedCategories.includes(category) ? "bg-blue-50 text-blue-600" : ""
-                }`}
-              >
-                {category}
-              </div>
-            ))}
-          </div>
-          )}
-        </div>
-      </div>
-
-      {/* แคลอรี่และสารอาหาร */}
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="block text-sm mb-2">แคลอรี่</label>
-          <input
-            type="number"
-            name="calories"
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-        <div>
-          <label className="block text-sm mb-2">คาร์โบไฮเดรต</label>
-          <input
-            type="number"
-            name="carbohydrates"
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-        <div>
-          <label className="block text-sm mb-2">โปรตีน</label>
-          <input
-            type="number"
-            name="protein"
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-        <div>
-          <label className="block text-sm mb-2">ไขมัน</label>
-          <input
-            type="number"
-            name="fat"
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-      </div>
-
-      {/* รูปภาพ */}
-      <div className="mb-4">
-        <label className="block text-sm mb-2">รูปภาพ</label>
-        <input
-          type="file"
-          accept="image/*"
-          className="block w-full text-sm text-gray-500
-          file:mr-4 file:py-2 file:px-4
-          file:rounded-full file:border-0
-          file:text-sm file:font-semibold
-          file:bg-blue-50 file:text-blue-700
-          hover:file:bg-blue-100"
-        />
-      </div>
-
-      {/* ปุ่มยกเลิกและบันทึก */}
-      <div className="flex justify-end space-x-2">
-        <button
-          onClick={closeAddModal}
-          className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
-        >
-          ยกเลิก
-        </button>
-        <button
-          onClick={handleAddDish}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          บันทึก
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-    </Layout>
-  );
+        </Layout>
+    );
 }

@@ -124,7 +124,7 @@ export default function UserManagement() {
                   เหตุผลการระงับ
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  การจัดการ
+                  การจัดการuser
                 </th>
               </tr>
             </thead>

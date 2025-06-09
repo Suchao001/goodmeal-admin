@@ -56,11 +56,16 @@ export default function Sidebar({ isSidebarOpen }) {
             จัดการผู้ใช้งาน
           </div>
         </Link>
-        
-        <Link href="/foodmenu">
+          <Link href="/foodmenu">
           <div className={`flex items-center px-6 py-3 rounded-lg ${isActive('/foodmenu') ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
             <Icon icon="fluent:food-16-filled" className="mr-3" />
             จัดการเมนูอาหาร
+          </div>
+        </Link>
+        <Link href="/foodcategories">
+          <div className={`flex items-center px-6 py-3 rounded-lg ${isActive('/foodcategories') ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
+            <Icon icon="material-symbols:category" className="mr-3" />
+            จัดการประเภทอาหาร
           </div>
         </Link>
         <Link href="/mealplan">

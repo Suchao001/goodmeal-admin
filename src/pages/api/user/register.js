@@ -5,7 +5,7 @@
    
 //     try {
 //         const password = '';
-//         const name = 'suchao';
+//         const name = '';
 //         const salt = await bcrypt.genSalt(10);
 //         const hashedPassword = await bcrypt.hash(password, salt);
 //         const currentDate = new Date();

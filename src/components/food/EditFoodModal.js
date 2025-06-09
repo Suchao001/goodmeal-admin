@@ -1,0 +1,312 @@
+'use client';
+import { useState, useEffect } from 'react';
+import Image from "next/image";
+import imageUrl from '../../images/imgplaceholder.jpg';
+
+export default function EditFoodModal({ isOpen, onClose, food, onSave, categories }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    ingredients: '',
+    calories: 0,
+    carbohydrates: 0,
+    protein: 0,
+    fat: 0
+  });
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (food) {
+      setFormData({
+        name: food.name || '',
+        ingredients: food.ingredients || '',
+        calories: food.calories || 0,
+        carbohydrates: food.carbohydrates || 0,
+        protein: food.protein || 0,
+        fat: food.fat || 0
+      });
+      
+      // Set current categories
+      const currentCategories = food.categories?.map(cat => cat.name) || [];
+      setSelectedCategories(currentCategories);
+      
+      // Set current image
+      setCurrentImage(food.image);
+    }
+  }, [food]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const toggleCategoryDropdown = () => {
+    setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
+  };
+
+  const handleCategorySelect = (category) => {
+    if (selectedCategories.includes(category)) {
+      setSelectedCategories(selectedCategories.filter((cat) => cat !== category));
+    } else {
+      setSelectedCategories([...selectedCategories, category]);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setCurrentImage(previewUrl);
+    }
+  };
+
+  const handleSave = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
+    try {
+      let imageUrl = currentImage;
+      
+      // Handle image upload if new file is selected
+      if (imageFile) {
+        setIsUploading(true);
+        try {
+          const uploadFormData = new FormData();
+          uploadFormData.append('image', imageFile);
+          
+          const uploadRes = await fetch('/api/upload-image', {
+            method: 'POST',
+            body: uploadFormData,
+          });
+          
+          if (uploadRes.ok) {
+            const uploadResult = await uploadRes.json();
+            imageUrl = uploadResult.imageUrl;
+          } else {
+            alert('Failed to upload image');
+            return;
+          }
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          alert('Error uploading image');
+          return;
+        } finally {
+          setIsUploading(false);
+        }
+      }
+
+      // Prepare category IDs
+      const categoryIds = selectedCategories.map(catName => {
+        const category = categories?.find(cat => cat.name === catName);
+        return category ? category.id : null;
+      }).filter(id => id !== null);
+
+      const updateData = {
+        id: food.id,
+        ...formData,
+        image: imageUrl,
+        categories: categoryIds
+      };
+
+      const res = await fetch('/api/foods', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      if (res.ok) {
+        // Update the food with new categories
+        const updatedFood = {
+          ...food,
+          ...formData,
+          image: imageUrl,
+          categories: selectedCategories.map(catName => {
+            const category = categories?.find(cat => cat.name === catName);
+            return category ? { id: category.id, name: category.name } : null;
+          }).filter(cat => cat !== null)
+        };
+        onSave(updatedFood);
+        onClose();
+      } else {
+        const error = await res.json();
+        alert(error.error || 'Failed to update food');
+      }
+    } catch (error) {
+      console.error('Error updating food:', error);
+      alert('Error updating food');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isOpen || !food) return null;
+
+  return (
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-lg font-bold mb-4">แก้ไขเมนูอาหาร</h2>
+
+        <div className="mb-4">
+          <label className="block text-sm mb-2">ชื่ออาหาร</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm mb-2">ส่วนผสม</label>
+          <textarea
+            name="ingredients"
+            value={formData.ingredients}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-lg"
+            rows="3"
+          ></textarea>
+        </div>
+
+        {/* Category selection */}
+        <div className="mb-4">
+          <label className="block text-sm mb-2">ประเภทอาหาร</label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={toggleCategoryDropdown}
+              className="w-full p-2 border border-gray-300 rounded-lg text-left flex justify-between items-center"
+            >
+              <span>
+                {selectedCategories.length > 0
+                  ? selectedCategories.join(", ")
+                  : "เลือกประเภทอาหาร"}
+              </span>
+              <span className="text-gray-500">+</span>
+            </button>
+            {isCategoryDropdownOpen && (
+              <div className="absolute mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
+                {categories?.map((category) => (
+                  <div
+                    key={category.id}
+                    onClick={() => handleCategorySelect(category.name)}
+                    className={`p-2 hover:bg-gray-100 cursor-pointer ${
+                      selectedCategories.includes(category.name) ? "bg-blue-50 text-blue-600" : ""
+                    }`}
+                  >
+                    {category.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-4 gap-4 mb-4">
+          <div>
+            <label className="block text-sm mb-2">แคลอรี่</label>
+            <input
+              type="number"
+              name="calories"
+              value={formData.calories}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-2">คาร์โบไฮเดรต</label>
+            <input
+              type="number"
+              name="carbohydrates"
+              value={formData.carbohydrates}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-2">โปรตีน</label>
+            <input
+              type="number"
+              name="protein"
+              value={formData.protein}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-2">ไขมัน</label>
+            <input
+              type="number"
+              name="fat"
+              value={formData.fat}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm mb-2">รูปภาพ</label>
+          {currentImage && (
+            <div className="mb-2">
+              <img
+                src={currentImage.startsWith('/') ? currentImage : imageUrl}
+                alt="Food image"
+                className="w-20 h-20 rounded-lg object-cover"
+              />
+            </div>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="block w-full text-sm text-gray-500
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-full file:border-0
+            file:text-sm file:font-semibold
+            file:bg-blue-50 file:text-blue-700
+            hover:file:bg-blue-100"
+          />
+        </div>
+
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            ยกเลิก
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={isSubmitting}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+          >
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {isUploading ? 'กำลังอัปโหลดรูปภาพ...' : 'กำลังบันทึก...'}
+              </>
+            ) : (
+              'บันทึก'
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
