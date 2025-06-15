@@ -1,123 +1,51 @@
 'use client';
-import { useRef } from 'react';
 import Layout from '@/components/Layout';
-import { Editor } from '@tinymce/tinymce-react';
+import { ArticleForm } from '@/components/article';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import img1 from '@/images/food1.webp';
 
 export default function AddArticle() {
-  const editorRef = useRef(null);
-  const router = useRouter();
+  const router = useRouter();  const handleSubmit = async (article) => {
+    try {
+      // Process tags - convert from comma-separated string to array
+      const tags = article.tag ? article.tag.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+      
+      const articleData = {
+        title: article.title,
+        image: article.image, // Image URL from upload
+        date: article.date,
+        status: article.status,
+        content: article.content,
+        excerpt: article.excerpt,
+        tags: tags
+      };
 
-  const saveArticle = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const article = {
-      title: formData.get("title"),
-      date: formData.get("date"),
-      status: formData.get("status"),
-      content: editorRef.current ? editorRef.current.getContent() : "",
-    };
-    // Save the article (e.g., send to API or update state)
-    console.log(article);
-    router.push('/article');
+      const res = await fetch('/api/articles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(articleData),
+      });
+
+      if (res.ok) {
+        router.push('/article');
+      } else {
+        const error = await res.json();
+        alert(error.error || 'เกิดข้อผิดพลาดในการเพิ่มบทความ');
+      }
+    } catch (error) {
+      console.error('Error saving article:', error);
+      alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+    }
   };
 
   return (
     <Layout>
       <div className="p-6 bg-gray-100 min-h-screen">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">เพิ่มบทความใหม่</h1>
-        <form onSubmit={saveArticle}>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">หัวข้อเรื่อง</label>
-              <input
-                type="text"
-                name="title"
-                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
-            <div>
-                          <label className="block text-sm font-medium mb-2">รูปภาพ</label>
-                          <Image
-                            src={img1}
-                            alt="Article image"
-                            width={200}
-                            height={150}
-                            className="rounded-lg"
-                          />
-                          <input
-                            type="file"
-                            name="image"
-                            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            
-                            </input>
-                        </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">วันที่</label>
-              <input
-                type="date"
-                name="date"
-                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">สถานะ</label>
-              <select
-                name="status"
-                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              >
-                <option value="published">เผยแพร่</option>
-                <option value="pending">รอตรวจสอบ</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">เนื้อหา</label>
-              <Editor
-                apiKey="9b6mmzjlczkbkeiiaqzo13km2nx3zt382p2onniczet1y12u"
-                onInit={(_, editor) => (editorRef.current = editor)}
-                init={{
-                  plugins: [
-                    'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-                    'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste',
-                    'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect',
-                    'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf',
-                  ],
-                  toolbar:
-                    'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                  tinycomments_mode: 'embedded',
-                  tinycomments_author: 'Author name',
-                  mergetags_list: [
-                    { value: 'First.Name', title: 'First Name' },
-                    { value: 'Email', title: 'Email' },
-                  ],
-                  ai_request: (_, respondWith) =>
-                    respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-                }}
-                initialValue="Welcome to TinyMCE!"
-              />
-            </div>
-          </div>
-          <div className="mt-6 flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={() => router.push('/article')}
-              className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200"
-            >
-              ยกเลิก
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200"
-            >
-              เพิ่ม
-            </button>
-          </div>
-        </form>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <ArticleForm mode="add" onSubmit={handleSubmit} />
+        </div>
       </div>
     </Layout>
   );

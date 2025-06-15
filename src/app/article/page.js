@@ -1,95 +1,81 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import Link from 'next/link';
-import { Icon } from '@iconify/react';
-import Image from 'next/image';
-import img1 from '@/images/food1.webp';
-import img2 from '@/images/food2.webp';
-import img3 from '@/images/food3.webp';
+import { ArticleTable } from '@/components/article';
 
 export default function EatingArticles() {
-  const [articles, setArticles] = useState([
-    {
-      id: 1,
-      title: "10 อาหารเพื่อสุขภาพที่ดีที่สุด",
-      date: "2023-10-01",
-      status: "เผยแพร่",
-      image: img1,
-    },
-    {
-      id: 2,
-      title: "วิธีลดน้ำหนักอย่างมีประสิทธิภาพ",
-      date: "2023-10-05",
-      status: "รอตรวจสอบ",
-      image: img2,
-    },
-    {
-      id: 3,
-      title: "ประโยชน์ของผักและผลไม้",
-      date: "2023-10-10",
-      status: "เผยแพร่",
-      image: img3,
-    },
-  ]);
+  const [articles, setArticles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const deleteArticle = (id) => {
-    const updatedArticles = articles.filter((article) => article.id !== id);
-    setArticles(updatedArticles);
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      const res = await fetch('/api/articles');
+      if (res.ok) {
+        const data = await res.json();
+        setArticles(data);
+      } else {
+        console.error('Failed to fetch articles');
+      }
+    } catch (err) {
+      console.error('Error fetching articles:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  return (
-    <Layout>
-      <div className="p-6 bg-gray-100 min-h-screen">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">บทความเกี่ยวกับการกิน</h1>
+  const deleteArticle = async (id, title) => {
+    if (confirm(`คุณต้องการลบบทความ "${title}" หรือไม่?`)) {
+      try {
+        const res = await fetch('/api/articles', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }),
+        });
 
-        <div className="my-3">
+        if (res.ok) {
+          setArticles(articles.filter(article => article.id !== id));
+        } else {
+          const error = await res.json();
+          alert(error.error || 'เกิดข้อผิดพลาดในการลบบทความ');
+        }
+      } catch (error) {
+        console.error('Error deleting article:', error);
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+      }
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="p-6 bg-gray-100 min-h-screen">
+          <div className="flex justify-center items-center h-64">
+            <div className="text-lg">กำลังโหลด...</div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>      <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">บทความเกี่ยวกับการกิน</h1>
           <Link href="/article/add">
             <button className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200">
-              + เพิ่มบทความ
+              + เพิ่มบทความใหม่
             </button>
           </Link>
         </div>
 
-        {/* ตารางแสดงบทความ */}
-        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">หัวข้อ</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">รูปภาพ</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">วันที่</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">สถานะ</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">การจัดการ</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {articles.map((article) => (
-                <tr key={article.id}>
-                  <td className="px-6 py-4 text-sm text-gray-800">{article.title}</td>
-                  <td className="px-6 py-4">
-                    <Image src={article.image} width={80} height={80} alt={article.title} />
-                     </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{article.date}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{article.status}</td>
-                  <td className="px-6 py-4 text-sm">
-                    <Link href={`/article/edit/${article.id}`}>
-                      <button className="px-2 py-1 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200">
-                        แก้ไข
-                      </button>
-                    </Link>
-                    <button
-                      onClick={() => deleteArticle(article.id)}
-                      className="ml-2 px-2 py-1 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
-                    >
-                      ลบ
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ArticleTable articles={articles} onDelete={deleteArticle} />
       </div>
     </Layout>
   );

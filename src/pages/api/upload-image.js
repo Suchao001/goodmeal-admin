@@ -66,7 +66,6 @@ export default async function handler(req, res) {
         fileExtension = mimeToExt[file.mimetype] || '.jpg';
       }
       
-      // Fallback to .jpg if still no extension
       if (!fileExtension) {
         fileExtension = '.jpg';
       }

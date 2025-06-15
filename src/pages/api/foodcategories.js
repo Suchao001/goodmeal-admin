@@ -11,7 +11,6 @@ export default async function handler(req, res) {
   } else if (req.method === 'POST') {
     try {
       const { name } = req.body;
-      
       if (!name) {
         return res.status(400).json({ error: 'Category name is required' });
       }
