@@ -1,8 +1,9 @@
 'use client';
 import Layout from '@/components/Layout';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
+import { useSearchParams } from 'next/navigation';
 
 function Card({ children, className }) {
   return <div className={`card ${className}`}>{children}</div>;
@@ -39,41 +40,148 @@ function Search({ className }) {
 }
 
 export default function MealPlanner() {
-  const [days, setDays] = useState([
-    {
-      id: 1,
-      meals: [
-        { time: '07:00', type: 'Breakfast', name: 'Oatmeal with Fruits', calories: 320 },
-        { time: '12:30', type: 'Lunch', name: 'Grilled Chicken Salad', calories: 450 },
-        { time: '18:30', type: 'Dinner', name: 'Salmon with Rice', calories: 580 },
-      ],
-    },
-    {
-      id: 2,
-      meals: [
-        { time: '08:00', type: 'Breakfast', name: 'Yogurt with Granola', calories: 280 },
-        { time: '13:00', type: 'Lunch', name: 'Vegetable Stir Fry', calories: 380 },
-      ],
-    },
-  ]);
+  const searchParams = useSearchParams();
+  const planId = searchParams.get('plan_id');
+  
+  const [planInfo, setPlanInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [days, setDays] = useState([]);
 
   const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
   const [editingMeal, setEditingMeal] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCustomType, setIsCustomType] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [isCustomType, setIsCustomType] = useState(false);  const [searchTerm, setSearchTerm] = useState('');
   const [filteredFoods, setFilteredFoods] = useState([]);
+  const [allFoods, setAllFoods] = useState([]);
+  // Fetch foods from API
+  useEffect(() => {
+    const fetchFoods = async () => {
+      try {
+        const response = await fetch('/api/foods');
+        if (response.ok) {
+          const foods = await response.json();
+          setAllFoods(foods);
+        }
+      } catch (error) {
+        console.error('Error fetching foods:', error);
+      }
+    };
+    fetchFoods();
+  }, []);
+  // Fetch meal plan data
+  useEffect(() => {
+    const fetchMealPlan = async () => {
+      if (!planId) {
+        // If no planId, show default template
+        const emptyDays = [];
+        for (let i = 1; i <= 7; i++) {
+          emptyDays.push({ id: i, meals: [] });
+        }
+        setDays(emptyDays);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/meal-plan-details/${planId}`);
+        if (response.ok) {
+          const planData = await response.json();
+          setPlanInfo({
+            plan_id: planData.plan_id,
+            plan_name: planData.plan_name,
+            duration: planData.duration,
+            description: planData.description,
+            image: planData.image
+          });
+          
+          if (planData.days && planData.days.length > 0) {
+            setDays(planData.days);
+          } else {
+            // Initialize with empty days if no data
+            const emptyDays = [];
+            const duration = planData.duration || 7;
+            for (let i = 1; i <= duration; i++) {
+              emptyDays.push({ id: i, meals: [] });
+            }
+            setDays(emptyDays);
+          }
+        } else {
+          console.error('Failed to fetch meal plan data');
+          // Initialize with default data if fetch fails
+          const emptyDays = [];
+          for (let i = 1; i <= 7; i++) {
+            emptyDays.push({ id: i, meals: [] });
+          }
+          setDays(emptyDays);
+        }
+      } catch (error) {
+        console.error('Error fetching meal plan:', error);
+        // Initialize with default data if error occurs
+        const emptyDays = [];
+        for (let i = 1; i <= 7; i++) {
+          emptyDays.push({ id: i, meals: [] });
+        }
+        setDays(emptyDays);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMealPlan();
+  }, [planId]);
+
+  // Filter foods based on search term
+  useEffect(() => {
+    if (searchTerm.trim() && allFoods.length > 0) {
+      const filtered = allFoods.filter(food =>
+        food.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredFoods(filtered.slice(0, 10)); // Limit to 10 results
+    } else {
+      setFilteredFoods([]);
+    }
+  }, [searchTerm, allFoods]);
 
   const deleteDay = (dayId) => {
     const updatedDays = days.filter((day) => day.id !== dayId);
     setDays(updatedDays);
   };
-
   const addDay = () => {
     const newDay = { id: days.length + 1, meals: [] };
     setDays([...days, newDay]);
   };
+  const saveMealPlan = async () => {
+    if (!planId) {
+      alert('กรุณาไปยังหน้าแผนอาหารและเลือกแผนที่ต้องการแก้ไข');
+      return;
+    }
 
+    setIsSaving(true);
+    try {
+      const response = await fetch(`/api/meal-plan-details/${planId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          days: days
+        }),
+      });
+
+      if (response.ok) {
+        alert('บันทึกแผนอาหารเรียบร้อยแล้ว');
+      } else {
+        const error = await response.json();
+        alert(error.error || 'เกิดข้อผิดพลาดในการบันทึก');
+      }
+    } catch (error) {
+      console.error('Error saving meal plan:', error);
+      alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+    } finally {
+      setIsSaving(false);
+    }
+  };
   const addMeal = (dayId) => {
     const updatedDays = days.map((day) =>
       day.id === dayId
@@ -81,7 +189,16 @@ export default function MealPlanner() {
             ...day,
             meals: [
               ...day.meals,
-              { time: '', type: '', name: 'New Meal', calories: 0 },
+              { 
+                time: '', 
+                type: '', 
+                name: 'New Meal', 
+                calories: 0, 
+                carb: 0, 
+                protein: 0, 
+                fat: 0, 
+                food_id: null 
+              },
             ],
           }
         : day
@@ -110,11 +227,34 @@ export default function MealPlanner() {
   const closeEditModal = () => {
     setIsModalOpen(false);
     setEditingMeal(null);
+  };  const handleMealTypeSelect = (type) => {
+    const defaultTimes = {
+      'Breakfast': '07:00',
+      'Lunch': '12:00',
+      'Dinner': '18:00',
+      'Snack': '15:00'
+    };
+    
+    setEditingMeal({ 
+      ...editingMeal, 
+      type,
+      time: editingMeal.time || defaultTimes[type] || ''
+    });
+    setIsCustomType(false);
   };
 
   const handleFoodSelect = (food) => {
-    setEditingMeal({ ...editingMeal, name: food.name, calories: food.calories });
+    setEditingMeal({ 
+      ...editingMeal, 
+      name: food.name, 
+      calories: food.calories,
+      carb: food.carbohydrates || 0,
+      protein: food.protein || 0,
+      fat: food.fat || 0,
+      food_id: food.id
+    });
     setSearchTerm('');
+    setFilteredFoods([]);
   };
 
   const onSave = (meal) => {
@@ -135,25 +275,53 @@ export default function MealPlanner() {
   const onClose = () => {
     closeEditModal();
   };
-
   return (
     <Layout>
       <div className="p-2 bg-gray-100 min-h-screen">
         <div className="flex items-center mb-4">
-        <Link href="/mealplan" legacyBehavior>
-  <a className="flex items-center text-blue-500 hover:text-blue-700">
-    <Icon icon="mdi:arrow-left" className="h-5 w-5 mr-2" />
-    กลับไปที่แผนอาหาร
-  </a>
-</Link>
+          <Link href="/mealplan" legacyBehavior>
+            <a className="flex items-center text-blue-500 hover:text-blue-700">
+              <Icon icon="mdi:arrow-left" className="h-5 w-5 mr-2" />
+              กลับไปที่แผนอาหาร
+            </a>
+          </Link>
         </div>
-        <h1 className="text-2xl font-bold mb-4">จัดการแผนอาหาร</h1>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">แผนการกินเพื่อสุขภาพ 14 วัน</h2>
-          <button className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200">
-            บันทึกแผนอาหาร
-          </button>
-        </div>
+        
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="text-lg">กำลังโหลดข้อมูล...</div>
+          </div>
+        ) : (
+          <>            <h1 className="text-2xl font-bold mb-4">จัดการแผนอาหาร</h1>
+            {!planId && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <Icon icon="mdi:alert" className="h-5 w-5 text-yellow-400" />
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-yellow-800">
+                      กรุณาเลือกแผนอาหารที่ต้องการแก้ไข
+                    </h3>
+                    <p className="mt-1 text-sm text-yellow-700">
+                      กลับไปที่หน้าจัดการแผนอาหารและกดปุ่ม "จัดการแผนอาหาร" จากแผนที่ต้องการแก้ไข
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">
+                {planInfo ? `${planInfo.plan_name} (${planInfo.duration || 'ไม่ระบุ'} วัน)` : !planId ? 'ตัวอย่างแผนอาหาร 7 วัน' : 'แผนอาหาร'}
+              </h2>
+              <button 
+                onClick={saveMealPlan}
+                disabled={isSaving || !planId}
+                className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSaving ? 'กำลังบันทึก...' : 'บันทึกแผนอาหาร'}
+              </button>
+            </div>
         <div className="meal-planner-container flex flex-wrap gap-4">
           {days.map((day) => (
             <div key={day.id} className="day-card bg-white shadow rounded-lg p-4 relative flex flex-col space-y-4" style={{ flex: '1 1 20%', maxWidth: '25%' }}>
@@ -182,12 +350,14 @@ export default function MealPlanner() {
                   className="p-2 border rounded mb-2 hover:bg-gray-50 cursor-pointer"
                   onClick={() => openEditModal(day.id, index)}
                 >
-                  <div className="flex justify-between items-center">
-                    <div>
+                  <div className="flex justify-between items-center">                    <div>
                       <p className="text-sm font-medium">{meal.type}</p>
                       <p className="text-sm text-gray-600">{meal.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs text-gray-500">
                         {meal.time} - {meal.calories} แคลอรี่
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        โปรตีน: {meal.protein || 0}g | คาร์บ: {meal.carb || 0}g | ไฟ: {meal.fat || 0}g
                       </p>
                     </div>
                     <button
@@ -226,18 +396,14 @@ export default function MealPlanner() {
               <h2 className="text-2xl font-bold mb-6">แก้ไขมื้ออาหาร</h2>
               
               <div className="mb-6">
-                <label className="block text-sm font-medium mb-2">ประเภทมื้ออาหาร</label>
-                <div className="grid grid-cols-2 gap-2 mb-2">
+                <label className="block text-sm font-medium mb-2">ประเภทมื้ออาหาร</label>                <div className="grid grid-cols-2 gap-2 mb-2">
                   {mealTypes.map((type) => (
                     <Button
                       key={type}
                       type="button"
                       variant={editingMeal.type === type ? "default" : "outline"}
                       className="w-full"
-                      onClick={() => {
-                        setEditingMeal({ ...editingMeal, type });
-                        setIsCustomType(false);
-                      }}
+                      onClick={() => handleMealTypeSelect(type)}
                     >
                       {type}
                     </Button>
@@ -271,23 +437,43 @@ export default function MealPlanner() {
                     className="w-full pl-10 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
-                {searchTerm && (
-                  <div className="mt-2 border rounded-lg max-h-40 overflow-y-auto">
+                  {searchTerm && filteredFoods.length > 0 && (
+                  <div className="mt-2 border rounded-lg max-h-40 overflow-y-auto bg-white shadow-lg">
                     {filteredFoods.map((food) => (
                       <button
-                        key={food.name}
+                        key={food.id}
                         onClick={() => handleFoodSelect(food)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                        className="w-full text-left px-4 py-3 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b border-gray-100 last:border-b-0"
                       >
-                        <div className="flex justify-between items-center">
-                          <span>{food.name}</span>
-                          <span className="text-sm text-gray-500">{food.calories} แคลอรี่</span>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <span className="font-medium text-gray-900">{food.name}</span>
+                            <div className="text-xs text-gray-500 mt-1">
+                              โปรตีน: {food.protein || 0}g | คาร์บ: {food.carbohydrates || 0}g | ไฟ: {food.fat || 0}g
+                            </div>
+                          </div>
+                          <span className="text-sm text-blue-600 font-medium ml-4">{food.calories} แคลอรี่</span>
                         </div>
                       </button>
                     ))}
                   </div>
                 )}
+
+                {searchTerm && filteredFoods.length === 0 && allFoods.length > 0 && (
+                  <div className="mt-2 border rounded-lg bg-gray-50 p-4 text-center text-gray-500">
+                    ไม่พบอาหารที่ค้นหา
+                  </div>                )}
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium mb-2">ชื่ออาหาร</label>
+                <input
+                  type="text"
+                  value={editingMeal.name || ''}
+                  onChange={(e) => setEditingMeal({ ...editingMeal, name: e.target.value })}
+                  placeholder="ป้อนชื่ออาหาร..."
+                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
               </div>
 
               <div className="mb-6">
@@ -298,17 +484,51 @@ export default function MealPlanner() {
                   onChange={(e) => setEditingMeal({ ...editingMeal, time: e.target.value })}
                   className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
-              </div>
-
-              <div className="mb-6">
+              </div>              <div className="mb-6">
                 <label className="block text-sm font-medium mb-2">แคลอรี่</label>
                 <input
                   type="number"
-                  value={editingMeal.calories}
+                  value={editingMeal.calories || ''}
                   onChange={(e) => setEditingMeal({ ...editingMeal, calories: parseInt(e.target.value) || 0 })}
                   className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="ป้อนแคลอรี่..."
                 />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">โปรตีน (g)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={editingMeal.protein || ''}
+                    onChange={(e) => setEditingMeal({ ...editingMeal, protein: parseFloat(e.target.value) || 0 })}
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">คาร์บ (g)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={editingMeal.carb || ''}
+                    onChange={(e) => setEditingMeal({ ...editingMeal, carb: parseFloat(e.target.value) || 0 })}
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">ไฟ (g)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={editingMeal.fat || ''}
+                    onChange={(e) => setEditingMeal({ ...editingMeal, fat: parseFloat(e.target.value) || 0 })}
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end space-x-4">
@@ -323,9 +543,10 @@ export default function MealPlanner() {
                 >
                   บันทึก
                 </Button>
-              </div>
-            </Card>
+              </div>            </Card>
           </div>
+        )}
+            </>
         )}
       </div>
     </Layout>

@@ -51,7 +51,7 @@ export default function MealPlanTable({ mealPlans, onEdit, onDelete }) {
                 </div>
               </div>
               <div className="flex space-x-4">
-                <Link href={`/mealplan-Add`}>
+                <Link href={`/mealplan-Add?plan_id=${plan.plan_id}`}>
                   <button className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200">
                     จัดการแผนอาหาร
                   </button>
