@@ -40,8 +40,7 @@ export default function MealPlanManagement() {
   };
 
   const addOrUpdatePlan = async (plan) => {
-    try {
-      if (editingPlan) {
+    try {      if (editingPlan) {
         // Update existing plan
         const res = await fetch('/api/meal-plans', {
           method: 'PUT',
@@ -52,7 +51,8 @@ export default function MealPlanManagement() {
             plan_id: editingPlan.plan_id,
             plan_name: plan.plan_name,
             duration: plan.duration,
-            description: plan.description
+            description: plan.description,
+            image: plan.image
           }),
         });
 
@@ -62,8 +62,7 @@ export default function MealPlanManagement() {
           const error = await res.json();
           alert(error.error || 'เกิดข้อผิดพลาดในการแก้ไขแผนอาหาร');
         }
-      } else {
-        // Add new plan
+      } else {        // Add new plan
         const res = await fetch('/api/meal-plans', {
           method: 'POST',
           headers: {
@@ -72,7 +71,8 @@ export default function MealPlanManagement() {
           body: JSON.stringify({
             plan_name: plan.plan_name,
             duration: plan.duration,
-            description: plan.description
+            description: plan.description,
+            image: plan.image
           }),
         });
 

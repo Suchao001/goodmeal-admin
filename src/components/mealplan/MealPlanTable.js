@@ -24,13 +24,21 @@ export default function MealPlanTable({ mealPlans, onEdit, onDelete }) {
           className="bg-white rounded-lg shadow border border-gray-200 p-6"
         >
           <div className="flex items-start gap-6">
-            <Image 
-              src={food1} 
-              alt={plan.plan_name} 
-              width={200}
-              height={150}
-              className="rounded-lg object-cover flex-shrink-0" 
-            />
+            {plan.image ? (
+              <img 
+                src={plan.image} 
+                alt={plan.plan_name} 
+                className="w-[200px] h-[150px] rounded-lg object-cover flex-shrink-0" 
+              />
+            ) : (
+              <Image 
+                src={food1} 
+                alt={plan.plan_name} 
+                width={200}
+                height={150}
+                className="rounded-lg object-cover flex-shrink-0" 
+              />
+            )}
             <div className="flex-1">
               <h2 className="text-xl font-bold text-gray-800 mb-2">{plan.plan_name}</h2>
               <p className="text-gray-600 mb-4">{plan.description || 'ไม่มีคำอธิบาย'}</p>
