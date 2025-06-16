@@ -9,16 +9,16 @@ export default async function handler(req, res) {
 
   try {
     const result = await handleImageUpload(req, {
-      uploadDir: 'blog',
-      width: 800,
-      height: 600,
-      quality: 90,
+      uploadDir: 'mealplan',
+      width: 600,
+      height: 400,
+      quality: 85,
       fit: 'cover'
     });
 
     sendResponse(res, 200, result);
   } catch (error) {
-    console.error('Blog image upload error:', error);
+    console.error('Meal plan image upload error:', error);
     sendResponse(res, error.status || 500, { error: error.error || 'Failed to upload image' });
   }
 }

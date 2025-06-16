@@ -1,31 +1,5 @@
 import db from '@/lib/db';
-import fs from 'fs';
-import path from 'path';
-
-// Helper function to delete image file
-const deleteImageFile = (imagePath) => {
-  if (!imagePath) return;
-  
-  try {
-    // Convert relative path to absolute path
-    let fullPath;
-    if (imagePath.startsWith('/foods/')) {
-      fullPath = path.join(process.cwd(), 'public', imagePath);
-    } else if (imagePath.startsWith('/')) {
-      fullPath = path.join(process.cwd(), 'public', imagePath);
-    } else {
-      fullPath = path.join(process.cwd(), 'public', 'foods', imagePath);
-    }
-    
-    // Check if file exists and delete it
-    if (fs.existsSync(fullPath)) {
-      fs.unlinkSync(fullPath);
-      console.log('Deleted image file:', fullPath);
-    }
-  } catch (error) {
-    console.error('Error deleting image file:', error);
-  }
-};
+import { deleteImageFile } from '@/lib/imageUpload';
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {

@@ -98,7 +98,7 @@ export default function ArticleForm({
           <label className="block text-sm font-medium mb-2">รูปภาพ</label>
           <div className="mb-3">
             <Image
-              src={currentImage || img1}
+              src={currentImage && (currentImage.startsWith('/blog/') || currentImage.startsWith('blob:')) ? currentImage : img1}
               alt="Article image"
               width={300}
               height={200}

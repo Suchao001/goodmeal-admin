@@ -62,7 +62,7 @@ export default function ArticleTable({ articles, onDelete }) {
               </td>
               <td className="px-6 py-4">
                 <Image 
-                  src={article.image || img1} 
+                  src={article.image && article.image.startsWith('/blog/') ? article.image : img1} 
                   width={80} 
                   height={60} 
                   alt={article.title}
