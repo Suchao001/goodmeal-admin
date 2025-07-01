@@ -1,5 +1,6 @@
 'use client';
 import Layout from '@/components/Layout';
+import Pagination from '@/components/Pagination';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
@@ -54,6 +55,10 @@ export default function MealPlanner() {
   const [isCustomType, setIsCustomType] = useState(false);  const [searchTerm, setSearchTerm] = useState('');
   const [filteredFoods, setFilteredFoods] = useState([]);
   const [allFoods, setAllFoods] = useState([]);
+  
+  // Pagination for food search
+  const [currentFoodPage, setCurrentFoodPage] = useState(1);
+  const foodsPerPage = 5;
   // Fetch foods from API
   useEffect(() => {
     const fetchFoods = async () => {
@@ -137,9 +142,11 @@ export default function MealPlanner() {
       const filtered = allFoods.filter(food =>
         food.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      setFilteredFoods(filtered.slice(0, 10)); // Limit to 10 results
+      setFilteredFoods(filtered);
+      setCurrentFoodPage(1); // Reset to first page when search changes
     } else {
       setFilteredFoods([]);
+      setCurrentFoodPage(1);
     }
   }, [searchTerm, allFoods]);
 
@@ -438,24 +445,42 @@ export default function MealPlanner() {
                   />
                 </div>
                   {searchTerm && filteredFoods.length > 0 && (
-                  <div className="mt-2 border rounded-lg max-h-40 overflow-y-auto bg-white shadow-lg">
-                    {filteredFoods.map((food) => (
-                      <button
-                        key={food.id}
-                        onClick={() => handleFoodSelect(food)}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b border-gray-100 last:border-b-0"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <span className="font-medium text-gray-900">{food.name}</span>
-                            <div className="text-xs text-gray-500 mt-1">
-                              โปรตีน: {food.protein || 0}g | คาร์บ: {food.carbohydrates || 0}g | ไฟ: {food.fat || 0}g
+                  <div className="mt-2 border rounded-lg bg-white shadow-lg">
+                    <div className="max-h-60 overflow-y-auto">
+                      {filteredFoods
+                        .slice((currentFoodPage - 1) * foodsPerPage, currentFoodPage * foodsPerPage)
+                        .map((food) => (
+                        <button
+                          key={food.id}
+                          onClick={() => handleFoodSelect(food)}
+                          className="w-full text-left px-4 py-3 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b border-gray-100 last:border-b-0"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <span className="font-medium text-gray-900">{food.name}</span>
+                              <div className="text-xs text-gray-500 mt-1">
+                                โปรตีน: {food.protein || 0}g | คาร์บ: {food.carbohydrates || 0}g | ไฟ: {food.fat || 0}g
+                              </div>
                             </div>
+                            <span className="text-sm text-blue-600 font-medium ml-4">{food.calories} แคลอรี่</span>
                           </div>
-                          <span className="text-sm text-blue-600 font-medium ml-4">{food.calories} แคลอรี่</span>
-                        </div>
-                      </button>
-                    ))}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {/* Pagination for food search */}
+                    {Math.ceil(filteredFoods.length / foodsPerPage) > 1 && (
+                      <div className="px-4 py-3 border-t border-gray-100 bg-gray-50">
+                        <Pagination
+                          currentPage={currentFoodPage}
+                          totalPages={Math.ceil(filteredFoods.length / foodsPerPage)}
+                          onPageChange={setCurrentFoodPage}
+                          totalItems={filteredFoods.length}
+                          itemsPerPage={foodsPerPage}
+                          compact={true}
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
 

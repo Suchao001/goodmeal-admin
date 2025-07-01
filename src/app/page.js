@@ -1,6 +1,8 @@
 // pages/dashboard.js
 'use client';
 import Layout from "../components/Layout";
+import Link from "next/link";
+import { Icon } from '@iconify/react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
@@ -36,6 +38,39 @@ export default function Dashboard() {
 
   return (
     <Layout>
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Link href="/articles" target="_blank" className="block">
+          <div className="p-6 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
+            <div className="flex items-center mb-3">
+              <Icon icon="mdi:newspaper" className="h-8 w-8 text-blue-600 mr-3" />
+              <h3 className="text-lg font-semibold text-blue-800">ดูบทความสาธารณะ</h3>
+            </div>
+            <p className="text-blue-600">ดูบทความทั้งหมดในมุมมองของผู้อ่าน</p>
+          </div>
+        </Link>
+        
+        <Link href="/article/add" className="block">
+          <div className="p-6 bg-green-50 border-2 border-green-200 rounded-lg hover:bg-green-100 transition-colors">
+            <div className="flex items-center mb-3">
+              <Icon icon="mdi:plus-circle" className="h-8 w-8 text-green-600 mr-3" />
+              <h3 className="text-lg font-semibold text-green-800">เขียนบทความใหม่</h3>
+            </div>
+            <p className="text-green-600">สร้างบทความใหม่สำหรับเว็บไซต์</p>
+          </div>
+        </Link>
+        
+        <Link href="/article" className="block">
+          <div className="p-6 bg-purple-50 border-2 border-purple-200 rounded-lg hover:bg-purple-100 transition-colors">
+            <div className="flex items-center mb-3">
+              <Icon icon="mdi:cog" className="h-8 w-8 text-purple-600 mr-3" />
+              <h3 className="text-lg font-semibold text-purple-800">จัดการบทความ</h3>
+            </div>
+            <p className="text-purple-600">แก้ไข ลบ หรือจัดการบทความ</p>
+          </div>
+        </Link>
+      </div>
+
       {/* เนื้อหาของ Dashboard */}
       <h1 className="text-2xl font-bold text-gray-800 mb-6">แดชบอร์ด</h1>
       <div className="grid grid-cols-4 gap-6 mb-6">

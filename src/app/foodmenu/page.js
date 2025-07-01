@@ -19,6 +19,11 @@ export default function MenuManagement() {
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
     const [calorieFilter, setCalorieFilter] = useState('');
+    
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
+    
     const router = useRouter();
 
     useEffect(() => {
@@ -29,6 +34,11 @@ export default function MenuManagement() {
     useEffect(() => {
         filterFoods();
     }, [foods, searchTerm, categoryFilter, calorieFilter]);
+
+    // Reset to first page when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, categoryFilter, calorieFilter]);
 
     const fetchCategories = async () => {
         try {
@@ -86,6 +96,17 @@ export default function MenuManagement() {
         }
 
         setFilteredFoods(filtered);
+    };
+
+    // Pagination calculations
+    const totalItems = filteredFoods.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentPageFoods = filteredFoods.slice(startIndex, endIndex);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
     };
 
     const handleAddFood = async (foodData) => {
@@ -198,9 +219,14 @@ export default function MenuManagement() {
                 />
 
                 <FoodTable
-                    foods={filteredFoods}
+                    foods={currentPageFoods}
                     onEdit={handleEditFood}
                     onDelete={handleDeleteFood}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={totalItems}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={handlePageChange}
                 />
 
                 <AddFoodModal
