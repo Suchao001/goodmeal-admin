@@ -67,8 +67,8 @@ export default function ArticlePublicView() {
           <Icon icon="mdi:alert-circle" className="h-16 w-16 text-red-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-800 mb-2">เกิดข้อผิดพลาด</h1>
           <p className="text-gray-600 mb-4">{error}</p>
-          <Link href="/" className="text-blue-500 hover:text-blue-700 underline">
-            กลับหน้าหลัก
+          <Link href="/articles" className="text-blue-500 hover:text-blue-700 underline">
+            กลับไปหน้าบทความ
           </Link>
         </div>
       </div>
@@ -107,9 +107,9 @@ export default function ArticlePublicView() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800">
+          <Link href="/articles" className="inline-flex items-center text-blue-600 hover:text-blue-800">
             <Icon icon="mdi:arrow-left" className="h-5 w-5 mr-2" />
-            กลับหน้าหลัก
+            กลับไปหน้าบทความ
           </Link>
         </div>
       </header>
@@ -144,14 +144,10 @@ export default function ArticlePublicView() {
                   <span>{formatDate(article.date)}</span>
                 </div>
                 
-                {article.status && (
+                {article.status && article.status === 'published' && (
                   <div className="flex items-center">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      article.status === 'published' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {article.status === 'published' ? 'เผยแพร่แล้ว' : 'ร่าง'}
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      เผยแพร่แล้ว
                     </span>
                   </div>
                 )}

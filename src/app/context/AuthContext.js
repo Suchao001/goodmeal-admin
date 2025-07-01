@@ -10,9 +10,21 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const nowLocation = typeof window !== 'undefined' ? window.location.pathname : '';
   const isLoginPage = nowLocation === '/login' || nowLocation === '/register';
+  
+  // Check if current route is public (doesn't need authentication)
+  const isPublicRoute = nowLocation.startsWith('/articles') || 
+                       nowLocation.startsWith('/article/') ||
+                       nowLocation === '/' ||
+                       isLoginPage;
+  
   const router = useRouter();
 
   const checkAuth = async () => {
+    // Skip auth check for public routes
+    if (isPublicRoute) {
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await axios.get('/api/auth/me');
@@ -23,9 +35,8 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
       }
     } catch (error) {
-      if (!isLoginPage) {
+      if (!isLoginPage && !isPublicRoute) {
         router.push('/login');
-
       }
       setUser(null);
     } finally {
