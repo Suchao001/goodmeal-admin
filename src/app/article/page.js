@@ -65,14 +65,22 @@ export default function EatingArticles() {
   }
 
   return (
-    <Layout>      <div className="p-6 bg-gray-100 min-h-screen">
+    <Layout>
+      <div className="p-6 bg-gray-100 min-h-screen">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">บทความเกี่ยวกับการกิน</h1>
-          <Link href="/article/add">
-            <button className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200">
-              + เพิ่มบทความใหม่
-            </button>
-          </Link>
+          <h1 className="text-2xl font-bold text-gray-800">จัดการบทความ</h1>
+          <div className="flex gap-2">
+            <Link href="/articles" target="_blank">
+              <button className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200">
+                ดูหน้าสาธารณะ
+              </button>
+            </Link>
+            <Link href="/article/add">
+              <button className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200">
+                + เพิ่มบทความใหม่
+              </button>
+            </Link>
+          </div>
         </div>
 
         <ArticleTable articles={articles} onDelete={deleteArticle} />

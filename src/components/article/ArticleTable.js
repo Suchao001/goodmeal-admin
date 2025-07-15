@@ -95,7 +95,7 @@ export default function ArticleTable({ articles, onDelete }) {
               </td>
               <td className="px-6 py-4 text-sm">
                 <div className="flex gap-2">
-                  <Link href={`/article/${article.id}/view`} target="_blank">
+                  <Link href={`/article/${article.id}/preview`} target="_blank">
                     <button className="px-3 py-1 bg-green-100 text-green-600 rounded-lg hover:bg-green-200">
                       ดู
                     </button>
