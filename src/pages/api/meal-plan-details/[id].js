@@ -33,11 +33,13 @@ export default async function handler(req, res) {
           'meal_plan_detail.carb',
           'meal_plan_detail.fat',
           'meal_plan_detail.food_id',
+          'meal_plan_detail.img',
           'foods.name as food_name',
           'foods.cal as food_calories',
           'foods.protein as food_protein',
           'foods.carb as food_carb',
-          'foods.fat as food_fat'
+          'foods.fat as food_fat',
+          'foods.img as food_img'
         )
         .where('meal_plan_detail.plan_id', id)
         .orderBy(['meal_plan_detail.day_number', 'meal_plan_detail.meal_time']);
@@ -62,7 +64,8 @@ export default async function handler(req, res) {
           protein: detail.protein || detail.food_protein || 0,
           carb: detail.carb || detail.food_carb || 0,
           fat: detail.fat || detail.food_fat || 0,
-          food_id: detail.food_id
+          food_id: detail.food_id,
+          img: detail.img || detail.food_img
         });
       });
 
@@ -111,7 +114,8 @@ export default async function handler(req, res) {
                 protein: meal.protein || 0,
                 carb: meal.carb || 0,
                 fat: meal.fat || 0,
-                food_id: meal.food_id || null
+                food_id: meal.food_id || null,
+                img: meal.img || null
               });
             });
           }

@@ -204,7 +204,8 @@ export default function MealPlanner() {
                 carb: 0, 
                 protein: 0, 
                 fat: 0, 
-                food_id: null 
+                food_id: null,
+                img: null
               },
             ],
           }
@@ -258,7 +259,8 @@ export default function MealPlanner() {
       carb: food.carbohydrates || 0,
       protein: food.protein || 0,
       fat: food.fat || 0,
-      food_id: food.id
+      food_id: food.id,
+      img: food.img || null
     });
     setSearchTerm('');
     setFilteredFoods([]);
@@ -456,10 +458,19 @@ export default function MealPlanner() {
                           className="w-full text-left px-4 py-3 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b border-gray-100 last:border-b-0"
                         >
                           <div className="flex justify-between items-start">
-                            <div className="flex-1">
-                              <span className="font-medium text-gray-900">{food.name}</span>
-                              <div className="text-xs text-gray-500 mt-1">
-                                โปรตีน: {food.protein || 0}g | คาร์บ: {food.carbohydrates || 0}g | ไฟ: {food.fat || 0}g
+                            <div className="flex items-start flex-1">
+                              {food.img && (
+                                <img
+                                  src={food.img}
+                                  alt={food.name}
+                                  className="w-12 h-12 object-cover rounded mr-3 flex-shrink-0"
+                                />
+                              )}
+                              <div className="flex-1">
+                                <span className="font-medium text-gray-900">{food.name}</span>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  โปรตีน: {food.protein || 0}g | คาร์บ: {food.carbohydrates || 0}g | ไฟ: {food.fat || 0}g
+                                </div>
                               </div>
                             </div>
                             <span className="text-sm text-blue-600 font-medium ml-4">{food.calories} แคลอรี่</span>
@@ -555,6 +566,10 @@ export default function MealPlanner() {
                   />
                 </div>
               </div>
+
+              {/* Hidden fields for food_id and img */}
+              <input type="hidden" value={editingMeal.food_id || ''} />
+              <input type="hidden" value={editingMeal.img || ''} />
 
               <div className="flex justify-end space-x-4">
                 <Button

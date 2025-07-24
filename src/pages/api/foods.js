@@ -15,7 +15,7 @@ export default async function handler(req, res) {
           'foods.carb as carbohydrates',
           'foods.fat',
           'foods.protein',
-          'foods.img as image',
+          'foods.img',
           'foods.ingredient as ingredients',
           'food_category.id as category_id',
           'food_category.name as category_name'
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
             carbohydrates: parseFloat(food.carbohydrates) || 0,
             fat: parseFloat(food.fat) || 0,
             protein: parseFloat(food.protein) || 0,
-            image: food.image,
+            img: food.img,
             ingredients: food.ingredients,
             categories: []
           };
