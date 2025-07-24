@@ -37,8 +37,8 @@ export default function FoodTable({
                 </div>
               </td>
               <td className="px-6 py-4 text-sm">
-                {food.image ? (
-                  <img src={food.image} alt={food.name} className="w-16 h-16 rounded-lg object-cover" />
+                {food.img ? (
+                  <img src={food.img} alt={food.name} className="w-16 h-16 rounded-lg object-cover" />
                 ) : (
                   <Image src={imageUrl} alt={food.name} className="w-16 h-16 rounded-lg object-cover" />
                 )}

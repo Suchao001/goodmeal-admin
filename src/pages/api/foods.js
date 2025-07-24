@@ -19,7 +19,8 @@ export default async function handler(req, res) {
           'foods.ingredient as ingredients',
           'food_category.id as category_id',
           'food_category.name as category_name'
-        );
+        )
+        .orderBy('foods.id', 'desc');
 
       // Group foods by id and collect categories
       const foodsMap = {};
@@ -47,6 +48,9 @@ export default async function handler(req, res) {
       });
 
       const result = Object.values(foodsMap);
+      // Sort by id descending to maintain the order after Object.values()
+      result.sort((a, b) => b.id - a.id);
+      
       res.status(200).json(result);
     } catch (error) {
       console.error('Error fetching foods:', error);

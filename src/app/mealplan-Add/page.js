@@ -267,12 +267,18 @@ export default function MealPlanner() {
   };
 
   const onSave = (meal) => {
+    // Convert meal type to lowercase before saving
+    const mealToSave = {
+      ...meal,
+      type: meal.type ? meal.type.toLowerCase() : meal.type
+    };
+    
     const updatedDays = days.map((day) =>
       day.id === meal.dayId
         ? {
             ...day,
             meals: day.meals.map((m, index) =>
-              index === meal.mealIndex ? meal : m
+              index === meal.mealIndex ? mealToSave : m
             ),
           }
         : day
@@ -292,7 +298,7 @@ export default function MealPlanner() {
             <a className="flex items-center text-blue-500 hover:text-blue-700">
               <Icon icon="mdi:arrow-left" className="h-5 w-5 mr-2" />
               กลับไปที่แผนอาหาร
-            </a>
+          </a>
           </Link>
         </div>
         

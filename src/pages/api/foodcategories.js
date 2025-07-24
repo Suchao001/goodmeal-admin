@@ -3,7 +3,9 @@ import db from '@/lib/db';
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      const categories = await db('food_category').select('id', 'name');
+      const categories = await db('food_category')
+        .select('id', 'name')
+        .orderBy('id', 'desc');
       res.status(200).json(categories);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch categories' });
