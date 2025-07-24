@@ -2,12 +2,17 @@
 import { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import { MealPlanTable, MealPlanModal } from "../../components/mealplan";
+import Pagination from "../../components/Pagination";
 
 export default function MealPlanManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
   const [mealPlans, setMealPlans] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
 
   useEffect(() => {
     fetchMealPlans();
@@ -114,6 +119,17 @@ export default function MealPlanManagement() {
     }
   };
 
+  // Pagination calculations
+  const totalItems = mealPlans.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPagePlans = mealPlans.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   if (isLoading) {
     return (
       <Layout>
@@ -140,10 +156,22 @@ export default function MealPlanManagement() {
         </div>
 
         <MealPlanTable 
-          mealPlans={mealPlans}
+          mealPlans={currentPagePlans}
           onEdit={openModal}
           onDelete={deletePlan}
         />
+
+        {totalPages > 1 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+            />
+          </div>
+        )}
 
         <MealPlanModal
           isOpen={isModalOpen}
