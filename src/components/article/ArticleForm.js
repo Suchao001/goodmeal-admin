@@ -136,7 +136,7 @@ export default function ArticleForm({
             required
           >
             <option value="release">เผยแพร่</option>
-            <option value="pending">รอตรวจสอบ</option>
+            <option value="pending">ปิดการเผยแพร่</option>
           </select>
         </div>
         

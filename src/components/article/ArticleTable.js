@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import img1 from '@/images/food1.webp';
 
-export default function ArticleTable({ articles, onDelete }) {
+export default function ArticleTable({ articles, onDelete, onStatusUpdate }) {
   console.log('ArticleTable received articles:', articles); // เพิ่ม debug log
   console.log('Articles length:', articles?.length); // เพิ่ม debug log
 
@@ -24,6 +24,12 @@ export default function ArticleTable({ articles, onDelete }) {
       case 'release': return 'text-green-600 bg-green-100';
       case 'pending': return 'text-yellow-600 bg-yellow-100';
       default: return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  const handleStatusChange = async (articleId, newStatus) => {
+    if (onStatusUpdate) {
+      await onStatusUpdate(articleId, newStatus);
     }
   };
 
@@ -92,9 +98,14 @@ export default function ArticleTable({ articles, onDelete }) {
                 {formatDate(article.date)}
               </td>
               <td className="px-6 py-4 text-sm">
-                <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(article.status)}`}>
-                  {getStatusText(article.status)}
-                </span>
+                <select
+                  value={article.status}
+                  onChange={(e) => handleStatusChange(article.id, e.target.value)}
+                  className={`px-2 py-1 rounded-full text-xs border-0 ${getStatusColor(article.status)} cursor-pointer`}
+                >
+                  <option value="release">เผยแพร่</option>
+                  <option value="pending">ปิดการเผยแพร่</option>
+                </select>
               </td>
               <td className="px-6 py-4 text-sm">
                 <div className="flex gap-2">

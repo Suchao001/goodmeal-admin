@@ -59,6 +59,10 @@ export default function MealPlanner() {
   // Pagination for food search
   const [currentFoodPage, setCurrentFoodPage] = useState(1);
   const foodsPerPage = 5;
+  
+  // Pagination for meal plan days
+  const [currentDayPage, setCurrentDayPage] = useState(1);
+  const daysPerPage = 10;
   // Fetch foods from API
   useEffect(() => {
     const fetchFoods = async () => {
@@ -153,10 +157,21 @@ export default function MealPlanner() {
   const deleteDay = (dayId) => {
     const updatedDays = days.filter((day) => day.id !== dayId);
     setDays(updatedDays);
+    
+    // Adjust current page if needed
+    const totalPages = Math.ceil(updatedDays.length / daysPerPage);
+    if (currentDayPage > totalPages && totalPages > 0) {
+      setCurrentDayPage(totalPages);
+    }
   };
   const addDay = () => {
     const newDay = { id: days.length + 1, meals: [] };
     setDays([...days, newDay]);
+    
+    // Calculate which page the new day will be on
+    const totalDays = days.length + 1;
+    const newPage = Math.ceil(totalDays / daysPerPage);
+    setCurrentDayPage(newPage);
   };
   const saveMealPlan = async () => {
     if (!planId) {
@@ -338,7 +353,9 @@ export default function MealPlanner() {
               </button>
             </div>
         <div className="meal-planner-container flex flex-wrap gap-4">
-          {days.map((day) => (
+          {days
+            .slice((currentDayPage - 1) * daysPerPage, currentDayPage * daysPerPage)
+            .map((day) => (
             <div key={day.id} className="day-card bg-white shadow rounded-lg p-4 relative flex flex-col space-y-4" style={{ flex: '1 1 20%', maxWidth: '25%' }}>
               <button
                 onClick={() => deleteDay(day.id)}
@@ -404,6 +421,18 @@ export default function MealPlanner() {
             </button>
           </div>
         </div>
+
+        {/* Day Pagination */}
+        {days.length > daysPerPage && (
+          <div className="mt-6 flex justify-center">
+            <Pagination
+              currentPage={currentDayPage}
+              totalPages={Math.ceil(days.length / daysPerPage)}
+              onPageChange={setCurrentDayPage}
+              mode="compact"
+            />
+          </div>
+        )}
 
         {isModalOpen && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">

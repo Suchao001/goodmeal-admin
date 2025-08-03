@@ -1,12 +1,17 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
+import Pagination from '@/components/Pagination';
 import Link from 'next/link';
 import { ArticleTable } from '@/components/article';
 
 export default function EatingArticles() {
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 10;
 
   useEffect(() => {
     fetchArticles();
@@ -47,7 +52,14 @@ export default function EatingArticles() {
         });
 
         if (res.ok) {
-          setArticles(articles.filter(article => article.id !== id));
+          const updatedArticles = articles.filter(article => article.id !== id);
+          setArticles(updatedArticles);
+          
+          // Adjust current page if needed
+          const totalPages = Math.ceil(updatedArticles.length / articlesPerPage);
+          if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+          }
         } else {
           const error = await res.json();
           alert(error.error || 'เกิดข้อผิดพลาดในการลบบทความ');
@@ -58,6 +70,44 @@ export default function EatingArticles() {
       }
     }
   };
+
+  const updateArticleStatus = async (id, newStatus) => {
+    try {
+      const res = await fetch(`/api/articles/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (res.ok) {
+        // อัพเดต state ด้วยสถานะใหม่
+        setArticles(articles.map(article => 
+          article.id === id 
+            ? { ...article, status: newStatus }
+            : article
+        ));
+        console.log(`Article ${id} status updated to ${newStatus}`);
+      } else {
+        const error = await res.json();
+        alert(error.error || 'เกิดข้อผิดพลาดในการอัพเดตสถานะ');
+        // รีโหลดหน้าเพื่อให้ได้ข้อมูลล่าสุด
+        fetchArticles();
+      }
+    } catch (error) {
+      console.error('Error updating article status:', error);
+      alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+      // รีโหลดหน้าเพื่อให้ได้ข้อมูลล่าสุด
+      fetchArticles();
+    }
+  };
+
+  // Calculate pagination
+  const totalPages = Math.ceil(articles.length / articlesPerPage);
+  const startIndex = (currentPage - 1) * articlesPerPage;
+  const endIndex = startIndex + articlesPerPage;
+  const currentArticles = articles.slice(startIndex, endIndex);
 
   if (isLoading) {
     return (
@@ -90,12 +140,31 @@ export default function EatingArticles() {
           </div>
         </div>
 
-        <ArticleTable articles={articles} onDelete={deleteArticle} />
+        <ArticleTable 
+          articles={currentArticles} 
+          onDelete={deleteArticle}
+          onStatusUpdate={updateArticleStatus}
+        />
+        
+        {/* Pagination */}
+        {articles.length > articlesPerPage && (
+          <div className="mt-6 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              mode="full"
+            />
+          </div>
+        )}
         
         {/* Debug info */}
         {!isLoading && (
           <div className="mt-4 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
             <p>จำนวนบทความทั้งหมด: {articles.length}</p>
+            {articles.length > 0 && (
+              <p>แสดงบทความที่ {startIndex + 1}-{Math.min(endIndex, articles.length)} จาก {articles.length} บทความ</p>
+            )}
             {articles.length === 0 && <p className="text-red-600">ไม่มีบทความในระบบ กรุณาเพิ่มบทความใหม่</p>}
           </div>
         )}
