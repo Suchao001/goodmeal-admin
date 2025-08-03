@@ -3,6 +3,9 @@ import Link from 'next/link';
 import img1 from '@/images/food1.webp';
 
 export default function ArticleTable({ articles, onDelete }) {
+  console.log('ArticleTable received articles:', articles); // เพิ่ม debug log
+  console.log('Articles length:', articles?.length); // เพิ่ม debug log
+
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('th-TH');
@@ -95,7 +98,7 @@ export default function ArticleTable({ articles, onDelete }) {
               </td>
               <td className="px-6 py-4 text-sm">
                 <div className="flex gap-2">
-                  <Link href={`/article/${article.id}/preview`} target="_blank">
+                  <Link href={`/article/${article.id}/view`} target="_blank">
                     <button className="px-3 py-1 bg-green-100 text-green-600 rounded-lg hover:bg-green-200">
                       ดู
                     </button>

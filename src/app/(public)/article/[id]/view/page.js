@@ -109,7 +109,7 @@ export default function ArticlePublicView() {
         <div className="max-w-4xl mx-auto px-4 py-4">
           <Link href="/articles" className="inline-flex items-center text-blue-600 hover:text-blue-800">
             <Icon icon="mdi:arrow-left" className="h-5 w-5 mr-2" />
-            กลับไปหน้าบทความ
+            ไปหน้าบทความ
           </Link>
         </div>
       </header>
@@ -190,29 +190,85 @@ export default function ArticlePublicView() {
         <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">แชร์บทความนี้</h3>
           <div className="flex gap-4">
-            <button 
-              onClick={() => {
-                if (navigator.share) {
-                  navigator.share({
-                    title: article.title,
-                    text: article.excerpt,
-                    url: window.location.href
-                  });
-                } else {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert('คัดลอกลิงก์แล้ว!');
+            {/* <button 
+              onClick={async () => {
+                try {
+                  // ลองใช้ Web Share API ก่อนสำหรับมือถือ
+                  if (navigator.share) {
+                    await navigator.share({
+                      title: article.title,
+                      text: article.excerpt,
+                      url: window.location.href
+                    });
+                  } else if (navigator.clipboard && window.isSecureContext) {
+                    // fallback เป็น clipboard API
+                    await navigator.clipboard.writeText(window.location.href);
+                    alert('คัดลอกลิงก์แล้ว!');
+                  } else {
+                    // fallback สำหรับเบราว์เซอร์เก่า
+                    const textArea = document.createElement('textarea');
+                    textArea.value = window.location.href;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    try {
+                      document.execCommand('copy');
+                      alert('คัดลอกลิงก์แล้ว!');
+                    } catch (err) {
+                      prompt('คัดลอกลิงก์นี้:', window.location.href);
+                    }
+                    
+                    document.body.removeChild(textArea);
+                  }
+                } catch (err) {
+                  console.error('Failed to share: ', err);
+                  // fallback สุดท้าย
+                  prompt('คัดลอกลิงก์นี้:', window.location.href);
                 }
               }}
               className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200"
             >
               <Icon icon="mdi:share" className="h-5 w-5" />
               แชร์
-            </button>
+            </button> */}
             
             <button 
-              onClick={() => {
-                navigator.clipboard.writeText(window.location.href);
-                alert('คัดลอกลิงก์แล้ว!');
+              onClick={async () => {
+                try {
+                  // ลองใช้ modern clipboard API ก่อน
+                  if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(window.location.href);
+                    alert('คัดลอกลิงก์แล้ว!');
+                  } else {
+                    // fallback สำหรับเบราว์เซอร์เก่าหรือไม่ secure context
+                    const textArea = document.createElement('textarea');
+                    textArea.value = window.location.href;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    try {
+                      document.execCommand('copy');
+                      alert('คัดลอกลิงก์แล้ว!');
+                    } catch (err) {
+                      // หากยังไม่ได้ ให้แสดงลิงก์ให้ user คัดลอกเอง
+                      prompt('คัดลอกลิงก์นี้:', window.location.href);
+                    }
+                    
+                    document.body.removeChild(textArea);
+                  }
+                } catch (err) {
+                  console.error('Failed to copy: ', err);
+                  // fallback สุดท้าย - แสดงลิงก์ให้ user คัดลอกเอง
+                  prompt('คัดลอกลิงก์นี้:', window.location.href);
+                }
               }}
               className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200"
             >
@@ -223,10 +279,10 @@ export default function ArticlePublicView() {
         </div>
 
         {/* Related Articles Placeholder */}
-        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+        {/* <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">บทความที่เกี่ยวข้อง</h3>
           <p className="text-gray-600">ฟีเจอร์นี้จะพัฒนาในอนาคต</p>
-        </div>
+        </div> */}
       </main>
 
       {/* Footer */}

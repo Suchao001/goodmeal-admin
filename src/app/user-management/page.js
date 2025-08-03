@@ -16,11 +16,22 @@ export default function UserManagement() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("/api/user/get_user");
+      const response = await axios.get("/api/user/get_user", {
+        params: {
+          all: true, // ดึงข้อมูลทั้งหมดมาก่อน
+          search: searchQuery,
+          status: statusFilter
+        }
+      });
        
       if (response.status === 200) {
-       
-        setUsers(response.data);
+        // หากมี pagination response
+        if (response.data.users) {
+          setUsers(response.data.users);
+        } else {
+          // หากเป็น array ธรรมดา
+          setUsers(response.data);
+        }
       } else {
         console.error("Failed to fetch users");
       }
@@ -31,7 +42,7 @@ export default function UserManagement() {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [searchQuery, statusFilter]); // เพิ่ม dependencies เพื่อ fetch ใหม่เมื่อมีการ filter
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -46,13 +57,13 @@ export default function UserManagement() {
       user.username.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .filter((user) =>
-      statusFilter ? user.account_status.toLowerCase() === statusFilter.toLowerCase() : true
+      statusFilter ? user.account_status === statusFilter : true
     );
 
   const openModal = (user) => {
     setSelectedUser(user);
     setNewStatus(user.account_status);
-    setReason(user.reason);
+    setReason(user.suspend_reason || "");
     setIsModalOpen(true);
   };
 
@@ -63,15 +74,36 @@ export default function UserManagement() {
     setReason("");
   };
 
-  const handleSave = () => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === selectedUser.id
-          ? { ...user, status: newStatus, reason: reason || "-" }
-          : user
-      )
-    );
-    closeModal();
+  const handleSave = async () => {
+    try {
+      const response = await axios.put(`/api/user/${selectedUser.id}/status`, {
+        account_status: newStatus, // ใช้ค่า enum ตรงๆ
+        suspend_reason: newStatus === 'suspended' ? reason : null
+      });
+
+      if (response.status === 200) {
+        // อัพเดต state ด้วยข้อมูลที่ส่งกลับมาจาก API
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === selectedUser.id
+              ? { 
+                  ...user, 
+                  account_status: response.data.user.account_status,
+                  suspend_reason: response.data.user.suspend_reason || null,
+                  updated_at: response.data.user.updated_at
+                }
+              : user
+          )
+        );
+        alert('อัพเดตสถานะผู้ใช้งานสำเร็จ');
+        closeModal();
+      } else {
+        alert('เกิดข้อผิดพลาดในการอัพเดตสถานะ');
+      }
+    } catch (error) {
+      console.error("Error updating user status:", error);
+      alert('เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + (error.response?.data?.error || error.message));
+    }
   };
 
   // Pagination logic
@@ -99,10 +131,12 @@ export default function UserManagement() {
           <select
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={handleStatusFilter}
+            value={statusFilter}
           >
             <option value="">ทั้งหมด</option>
-            <option value="ปกติ">ปกติ</option>
-            <option value="ถูกระงับ">ถูกระงับ</option>
+            <option value="active">ปกติ</option>
+            <option value="suspended">ถูกระงับ</option>
+            <option value="deactivated">ปิดใช้งาน</option>
           </select>
         </div>
 
@@ -136,10 +170,25 @@ export default function UserManagement() {
                     {user.email}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {user.account_status}
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      user.account_status === 'active' 
+                        ? 'bg-green-100 text-green-800' 
+                        : user.account_status === 'suspended'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {user.account_status === 'active' 
+                        ? 'ปกติ' 
+                        : user.account_status === 'suspended'
+                        ? 'ถูกระงับ'
+                        : user.account_status === 'deactivated'
+                        ? 'ปิดใช้งาน'
+                        : user.account_status
+                      }
+                    </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {user.reason}
+                    {user.suspend_reason || "-"}
                   </td>
                   <td className="px-6 py-4 text-sm">
                     <button
@@ -179,7 +228,7 @@ export default function UserManagement() {
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
             <h2 className="text-lg font-bold mb-4">จัดการผู้ใช้</h2>
-            <p className="text-sm mb-4">ผู้ใช้งาน: {selectedUser?.name}</p>
+            <p className="text-sm mb-4">ผู้ใช้งาน: {selectedUser?.username}</p>
             <div className="mb-4">
               <label className="block text-sm mb-2">สถานะ</label>
               <select
@@ -187,19 +236,23 @@ export default function UserManagement() {
                 onChange={(e) => setNewStatus(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               >
-                <option value="ปกติ">ปกติ</option>
-                <option value="ถูกระงับ">ถูกระงับ</option>
+                <option value="active">ปกติ</option>
+                <option value="suspended">ถูกระงับ</option>
+                <option value="deactivated">ปิดใช้งาน</option>
               </select>
             </div>
-            <div className="mb-4">
-              <label className="block text-sm mb-2">เหตุผล</label>
-              <textarea
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-                rows="3"
-              ></textarea>
-            </div>
+            {newStatus === 'suspended' && (
+              <div className="mb-4">
+                <label className="block text-sm mb-2">เหตุผลการระงับ</label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                  rows="3"
+                  placeholder="กรุณาระบุเหตุผลในการระงับบัญชี"
+                ></textarea>
+              </div>
+            )}
             <div className="flex justify-end space-x-2">
               <button
                 onClick={closeModal}

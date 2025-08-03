@@ -1,5 +1,6 @@
 // pages/dashboard.js
 'use client';
+import { useState, useEffect } from 'react';
 import Layout from "../components/Layout";
 import Link from "next/link";
 import { Icon } from '@iconify/react';
@@ -10,20 +11,45 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Dashboard() {
-  const data = {
-    labels: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม'],
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      const response = await fetch('/api/dashboard-stats');
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      } else {
+        console.error('Failed to fetch dashboard stats');
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ข้อมูลสำหรับกราฟ
+  const chartData = stats ? {
+    labels: stats.chartData.map(item => item.month),
     datasets: [
       {
-        label: 'จำนวนผู้ใช้งาน',
-        data: [120, 150, 200, 180, 220, 250, 300],
+        label: 'จำนวนผู้ใช้งานใหม่',
+        data: stats.chartData.map(item => item.count),
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
         tension: 0.1
       }
     ]
-  };
+  } : null;
 
-  const options = {
+  const chartOptions = {
     responsive: true,
     plugins: {
       legend: {
@@ -31,9 +57,17 @@ export default function Dashboard() {
       },
       title: {
         display: true,
-        text: 'จำนวนผู้ใช้งานที่เพิ่มขึ้นตามเวลา',
+        text: 'จำนวนผู้ใช้งานใหม่ตามเดือน',
       },
     },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        }
+      }
+    }
   };
 
   return (
@@ -73,28 +107,61 @@ export default function Dashboard() {
 
       {/* เนื้อหาของ Dashboard */}
       <h1 className="text-2xl font-bold text-gray-800 mb-6">แดชบอร์ด</h1>
-      <div className="grid grid-cols-4 gap-6 mb-6">
-        {[
-          { label: "ผู้ใช้งานทั้งหมด", value: "5,687", change: "15%", color: "text-green-500" },
-          { label: "ผู้ใช้งานใหม่/สัปดาห์", value: "892", change: "10%", color: "text-green-500" },
-          { label: "ผู้ใช้งานที่กำลังใช้งาน", value: "12,345", change: "8%", color: "text-green-500" },
-          { label: "ผู้ใช้งานที่ถูกระงับสิทธิ์", value: "234", change: "2%", color: "text-red-500" },
-        ].map((card, index) => (
-          <div
-            key={index}
-            className="p-4 bg-white rounded-lg shadow border border-gray-200"
-          >
-            <h2 className="text-sm text-gray-500">{card.label}</h2>
-            <div className="text-3xl font-bold text-gray-800">{card.value}</div>
-            <div className={`mt-2 text-sm ${card.color}`}>{card.change} จากเดือนที่แล้ว</div>
+      
+      {loading ? (
+        <div className="grid grid-cols-3 gap-6 mb-6">
+          {[1, 2, 3].map((_, index) => (
+            <div key={index} className="p-4 bg-white rounded-lg shadow border border-gray-200 animate-pulse">
+              <div className="h-4 bg-gray-200 rounded mb-2"></div>
+              <div className="h-8 bg-gray-200 rounded mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded"></div>
+            </div>
+          ))}
+        </div>
+      ) : stats ? (
+        <div className="grid grid-cols-3 gap-6 mb-6">
+          <div className="p-4 bg-white rounded-lg shadow border border-gray-200">
+            <h2 className="text-sm text-gray-500">ผู้ใช้งานทั้งหมด</h2>
+            <div className="text-3xl font-bold text-gray-800">{stats.totalUsers.value.toLocaleString()}</div>
+            <div className={`mt-2 text-sm ${stats.totalUsers.changeType === 'increase' ? 'text-green-500' : 'text-red-500'}`}>
+              {stats.totalUsers.changeType === 'increase' ? '+' : ''}{stats.totalUsers.change}% จากเดือนที่แล้ว
+            </div>
           </div>
-        ))}
-      </div>
 
-      {/* กราฟแสดงจำนวนผู้ใช้งานที่เพิ่มขึ้น */}
+          <div className="p-4 bg-white rounded-lg shadow border border-gray-200">
+            <h2 className="text-sm text-gray-500">ผู้ใช้งานใหม่/สัปดาห์</h2>
+            <div className="text-3xl font-bold text-gray-800">{stats.newUsersThisWeek.value.toLocaleString()}</div>
+            <div className={`mt-2 text-sm ${stats.newUsersThisWeek.changeType === 'increase' ? 'text-green-500' : 'text-red-500'}`}>
+              {stats.newUsersThisWeek.changeType === 'increase' ? '+' : ''}{stats.newUsersThisWeek.change}% จากสัปดาห์ที่แล้ว
+            </div>
+          </div>
+
+          <div className="p-4 bg-white rounded-lg shadow border border-gray-200">
+            <h2 className="text-sm text-gray-500">ผู้ใช้งานที่ถูกระงับสิทธิ์</h2>
+            <div className="text-3xl font-bold text-gray-800">{stats.suspendedUsers.value.toLocaleString()}</div>
+            <div className={`mt-2 text-sm ${stats.suspendedUsers.changeType === 'increase' ? 'text-red-500' : 'text-green-500'}`}>
+              {stats.suspendedUsers.changeType === 'increase' ? '+' : ''}{stats.suspendedUsers.change}% จากเดือนที่แล้ว
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="p-6 bg-white rounded-lg shadow border border-gray-200 text-center text-gray-500 mb-6">
+          ไม่สามารถโหลดข้อมูลได้
+        </div>
+      )}
+
+      {/* กราฟแสดงจำนวนผู้ใช้งานใหม่ */}
       <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-        <h2 className="text-lg font-bold text-gray-800 mb-4">จำนวนผู้ใช้งานที่เพิ่มขึ้นตามเวลา</h2>
-        <Line data={data} options={options} />
+        <h2 className="text-lg font-bold text-gray-800 mb-4">จำนวนผู้ใช้งานใหม่ตามเดือน</h2>
+        {loading ? (
+          <div className="h-64 bg-gray-200 rounded animate-pulse"></div>
+        ) : chartData ? (
+          <Line data={chartData} options={chartOptions} />
+        ) : (
+          <div className="h-64 flex items-center justify-center text-gray-500">
+            ไม่สามารถโหลดข้อมูลกราฟได้
+          </div>
+        )}
       </div>
     </Layout>
   );

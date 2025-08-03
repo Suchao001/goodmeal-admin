@@ -14,15 +14,22 @@ export default function EatingArticles() {
 
   const fetchArticles = async () => {
     try {
+      setIsLoading(true);
+      console.log('Fetching articles...'); // เพิ่ม debug log
       const res = await fetch('/api/articles');
+      console.log('Response status:', res.status); // เพิ่ม debug log
+      
       if (res.ok) {
         const data = await res.json();
+        console.log('Articles data:', data); // เพิ่ม debug log
         setArticles(data);
       } else {
-        console.error('Failed to fetch articles');
+        console.error('Failed to fetch articles:', res.status, res.statusText);
+        alert('ไม่สามารถโหลดบทความได้: ' + res.statusText);
       }
     } catch (err) {
       console.error('Error fetching articles:', err);
+      alert('เกิดข้อผิดพลาดในการโหลดบทความ: ' + err.message);
     } finally {
       setIsLoading(false);
     }
@@ -84,6 +91,14 @@ export default function EatingArticles() {
         </div>
 
         <ArticleTable articles={articles} onDelete={deleteArticle} />
+        
+        {/* Debug info */}
+        {!isLoading && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
+            <p>จำนวนบทความทั้งหมด: {articles.length}</p>
+            {articles.length === 0 && <p className="text-red-600">ไม่มีบทความในระบบ กรุณาเพิ่มบทความใหม่</p>}
+          </div>
+        )}
       </div>
     </Layout>
   );

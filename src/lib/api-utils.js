@@ -34,6 +34,24 @@ export function createApiRoute() {
     return handler;
   };
   
+  handler.put = (middleware, controller) => {
+    if (typeof middleware === 'function' && typeof controller === 'function') {
+      router.put(middleware, controller);
+    } else if (typeof middleware === 'function') {
+      router.put(middleware);
+    }
+    return handler;
+  };
+  
+  handler.delete = (middleware, controller) => {
+    if (typeof middleware === 'function' && typeof controller === 'function') {
+      router.delete(middleware, controller);
+    } else if (typeof middleware === 'function') {
+      router.delete(middleware);
+    }
+    return handler;
+  };
+  
   handler.use = (middleware) => {
     router.use(middleware);
     return handler;

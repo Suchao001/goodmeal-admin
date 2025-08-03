@@ -22,8 +22,14 @@ export default function ArticlesPublicList() {
       
       if (response.ok) {
         const data = await response.json();
-        // Filter only published articles for public view
-        const publishedArticles = data.filter(article => article.status === 'published');
+       
+        
+        // Filter only published/released articles for public view
+        const publishedArticles = data.filter(article => 
+          article.status === 'published' || article.status === 'release'
+        );
+       
+        
         setArticles(publishedArticles);
       } else {
         setError('เกิดข้อผิดพลาดในการโหลดบทความ');
