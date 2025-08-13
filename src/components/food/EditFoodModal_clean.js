@@ -23,11 +23,6 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
 
   useEffect(() => {
     if (food) {
-      console.log('=== EditFoodModal useEffect ===');
-      console.log('Food data received:', food);
-      console.log('Food ingredients:', food.ingredients);
-      console.log('Food categories:', food.categories);
-      
       setFormData({
         name: food.name || '',
         ingredients: food.ingredients || '',
@@ -39,7 +34,6 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
       
       // Set current categories
       const currentCategories = food.categories?.map(cat => cat.name) || [];
-      console.log('Current categories mapped:', currentCategories);
       setSelectedCategories(currentCategories);
       
       // Set current image
@@ -47,11 +41,8 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
       setImagePreview(food.image);
       
       // Parse ingredients into array
-      const ingredientsList = food.ingredients ? 
-        food.ingredients.split(',').map(ing => ing.trim()).filter(ing => ing) : [''];
-      console.log('Ingredients parsed:', ingredientsList);
+      const ingredientsList = food.ingredients ? food.ingredients.split(', ').filter(ing => ing.trim()) : [''];
       setIngredients(ingredientsList.length > 0 ? ingredientsList : ['']);
-      console.log('===============================');
     }
   }, [food]);
 
@@ -139,38 +130,24 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
       }
 
       // Combine ingredients array into string
-      const ingredientsString = ingredients
-        .filter(ing => ing.trim())
-        .map(ing => ing.trim())
-        .join(', ');
-
-      // Convert category names to IDs
-      const categoryIds = selectedCategories.map(catName => {
-        const category = categories?.find(cat => cat.name === catName);
-        return category ? category.id : null;
-      }).filter(id => id !== null);
+      const ingredientsString = ingredients.filter(ing => ing.trim()).join(', ');
 
       const updatedFood = {
         ...formData,
         ingredients: ingredientsString,
         image: imageUrl,
-        categories: categoryIds, // Send category IDs instead of names
+        categories: selectedCategories,
         calories: Number(formData.calories),
         carbohydrates: Number(formData.carbohydrates),
         protein: Number(formData.protein),
         fat: Number(formData.fat)
       };
 
-    
-
       await onSave(food.id, updatedFood);
       handleClose();
     } catch (error) {
-      console.error('=== EditFoodModal Error ===');
       console.error('Error updating food:', error);
-      console.error('Error details:', error.message);
-      console.error('========================');
-      alert('เกิดข้อผิดพลาดในการบันทึก: ' + error.message);
+      alert('Error updating food. Please try again.');
     } finally {
       setIsSubmitting(false);
       setIsUploading(false);
@@ -295,7 +272,6 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-3">
               ส่วนผสม
-              <span className="text-xs text-gray-500 ml-2">(แต่ละรายการจะถูกบันทึกแยกด้วยเครื่องหมายจุลภาค)</span>
             </label>
             <div className="space-y-3">
               {ingredients.map((ingredient, index) => (

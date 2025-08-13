@@ -121,7 +121,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-emerald-600 bg-clip-text text-transparent">
-                      แดชบอร์ดภาพรวมระบบ
+                     ภาพรวมระบบ
                     </h1>
                     <p className="text-lg text-slate-600 mt-1">
                       สรุปข้อมูลผู้ใช้งาน การเติบโต และกิจกรรมล่าสุด
@@ -129,7 +129,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
-                <div className="hidden md:flex items-center gap-4 text-sm text-slate-500">
+                {/* <div className="hidden md:flex items-center gap-4 text-sm text-slate-500">
                   <div className="flex items-center gap-2">
                     <Icon icon="heroicons:calendar-days-20-solid" className="text-emerald-500" />
                     <span>{new Date().toLocaleDateString('th-TH')}</span>
@@ -138,7 +138,7 @@ export default function Dashboard() {
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                     <span>ออนไลน์</span>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -262,7 +262,7 @@ export default function Dashboard() {
                       <div key={card.key} className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 p-6 shadow-lg shadow-emerald-900/5 hover:shadow-xl hover:shadow-emerald-900/10 transition-all duration-300 group">
                         <div className="flex items-start justify-between mb-4">
                           <div className={`p-3 bg-gradient-to-br ${card.bgGradient} rounded-2xl`}>
-                            <Icon icon={card.icon} className={`text-2xl bg-gradient-to-r ${card.gradient} text-transparent bg-clip-text`} />
+                            <Icon icon={card.icon} className={`text-2xl bg-gradient-to-r ${card.gradient}  bg-clip-text`} />
                           </div>
                           {change !== undefined && (
                             <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${

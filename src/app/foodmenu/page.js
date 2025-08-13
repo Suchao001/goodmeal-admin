@@ -136,9 +136,36 @@ export default function MenuManagement() {
         setIsEditModalOpen(true);
     };
 
-    const handleSaveFood = async (updatedFood) => {
-        // Refresh the foods list from the database to get the most current data
-        await fetchFoods();
+    const handleSaveFood = async (foodId, updatedFood) => {
+        console.log('=== handleSaveFood called ===');
+        console.log('Food ID:', foodId);
+        console.log('Updated Food Data:', updatedFood);
+        
+        try {
+            const res = await fetch('/api/foods', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: foodId,
+                    ...updatedFood
+                }),
+            });
+
+            if (res.ok) {
+                console.log('Food updated successfully');
+                await fetchFoods(); // Refresh the foods list
+            } else {
+                const errorData = await res.json();
+                console.error('Failed to update food:', errorData);
+                alert('ไม่สามารถบันทึกข้อมูลได้: ' + (errorData.error || 'เกิดข้อผิดพลาด'));
+            }
+        } catch (error) {
+            console.error('Error updating food:', error);
+            alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+        }
+        console.log('=============================');
     };
 
     const handleDeleteFood = async (food) => {

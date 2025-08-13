@@ -292,7 +292,7 @@ export default function UserManagement() {
                           </div>
                           <div>
                             <div className="font-semibold text-slate-800">{user.username}</div>
-                            <div className="text-xs text-slate-500">ID: {user.id}</div>
+                            
                           </div>
                         </div>
                       </td>
