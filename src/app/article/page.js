@@ -172,11 +172,10 @@ export default function EatingArticles() {
         </div>
 
         {/* Action Buttons */}
-        <div className="mb-8">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100/50 shadow-xl shadow-emerald-900/5 p-6">
+        <div className="mb-8 flex justify-end">
+          <div className="">
             <div className="flex items-center gap-2 mb-4">
-              <Icon icon="heroicons:cog-6-tooth-20-solid" className="text-emerald-600 text-xl" />
-              <h3 className="font-semibold text-emerald-800">การจัดการ</h3>
+             
             </div>
             
             <div className="flex flex-wrap gap-4">
