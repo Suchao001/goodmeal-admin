@@ -37,7 +37,7 @@ export default function Layout({ children }) {
 
   return (
     <SidebarContext.Provider value={{ isSidebarOpen }}>
-      <div className="min-h-screen flex ">
+       <div className="min-h-screen flex bg-gradient-to-br from-emerald-50 via-white to-emerald-50/60">
         {/* Sidebar */}
         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 

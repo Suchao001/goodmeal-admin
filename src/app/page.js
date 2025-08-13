@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Icon } from '@iconify/react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { theme } from '@/lib/theme';
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -43,10 +44,15 @@ export default function Dashboard() {
       {
         label: 'จำนวนผู้ใช้งานใหม่',
         data: stats.chartData.map(item => item.count),
-        fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        tension: 0.1
+        fill: true,
+        borderColor: 'rgb(16, 185, 129)',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        tension: 0.4,
+        pointBackgroundColor: 'rgb(16, 185, 129)',
+        pointBorderColor: 'rgb(255, 255, 255)',
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
       }
     ]
   } : null;
@@ -55,151 +61,285 @@ export default function Dashboard() {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        display: false,
       },
       title: {
-        display: true,
-        text: 'จำนวนผู้ใช้งานใหม่ตามเดือน',
+        display: false,
       },
     },
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: 1
+          stepSize: 1,
+          color: 'rgb(100, 116, 139)',
+          font: {
+            size: 12,
+          }
+        },
+        grid: {
+          color: 'rgba(16, 185, 129, 0.1)',
+          borderDash: [5, 5],
+        },
+        border: {
+          display: false,
         }
+      },
+      x: {
+        ticks: {
+          color: 'rgb(100, 116, 139)',
+          font: {
+            size: 12,
+          }
+        },
+        grid: {
+          display: false,
+        },
+        border: {
+          display: false,
+        }
+      }
+    },
+    elements: {
+      line: {
+        borderWidth: 3,
       }
     }
   };
 
   return (
     <Layout>
-      <div className={`transition-all duration-300 ${isSidebarOpen ? 'pr-0' : 'pr-2'} 2xl:pr-0`}> 
-        {/* Page Header */}
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">แดชบอร์ดภาพรวมระบบ</h1>
-              <p className="text-sm text-gray-500 mt-1">สรุปข้อมูลผู้ใช้งาน การเติบโต และกิจกรรมล่าสุด</p>
-          </div>
-         
-        </div>
-
-        {/* Quick Actions (converted to feature cards) */}
-        <div className="grid gap-5 mb-10 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
-          <Link href="/articles" target="_blank" className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-5 border border-blue-100 hover:shadow-md transition-all">
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-[radial-gradient(circle_at_top_left,#3b82f6,transparent_50%)]" />
-            <div className="flex items-start gap-4">
-              <div className="h-12 w-12 rounded-xl bg-white/70 backdrop-blur flex items-center justify-center shadow ring-1 ring-white/60">
-                <Icon icon="mdi:newspaper" className="text-2xl text-blue-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-blue-900 mb-1">ดูบทความสาธารณะ</h3>
-                <p className="text-xs text-blue-700/80">เปิดหน้าเว็บในมุมมองผู้เข้าชม</p>
-              </div>
-            </div>
-          </Link>
-          <Link href="/article/add" className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 to-emerald-100 p-5 border border-green-100 hover:shadow-md transition-all">
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-[radial-gradient(circle_at_top_left,#10b981,transparent_50%)]" />
-            <div className="flex items-start gap-4">
-              <div className="h-12 w-12 rounded-xl bg-white/70 backdrop-blur flex items-center justify-center shadow ring-1 ring-white/60">
-                <Icon icon="mdi:plus-circle" className="text-2xl text-green-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-emerald-900 mb-1">เขียนบทความใหม่</h3>
-                <p className="text-xs text-emerald-700/80">สร้างเนื้อหาใหม่ให้ผู้ใช้งาน</p>
-              </div>
-            </div>
-          </Link>
-          <Link href="/article" className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-50 to-fuchsia-100 p-5 border border-purple-100 hover:shadow-md transition-all">
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-[radial-gradient(circle_at_top_left,#8b5cf6,transparent_50%)]" />
-            <div className="flex items-start gap-4">
-              <div className="h-12 w-12 rounded-xl bg-white/70 backdrop-blur flex items-center justify-center shadow ring-1 ring-white/60">
-                <Icon icon="mdi:cog" className="text-2xl text-purple-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-purple-900 mb-1">จัดการบทความ</h3>
-                <p className="text-xs text-purple-700/80">แก้ไข / ลบ / อัพเดต สถานะ</p>
-              </div>
-            </div>
-          </Link>
-        </div>
-
-        {/* KPI Cards */}
-        {loading ? (
-          <div className="grid gap-5 mb-10 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-            {[1,2,3,4].map(i => (
-              <div key={i} className="p-5 rounded-2xl bg-white border border-gray-200 shadow-sm animate-pulse">
-                <div className="h-4 w-24 bg-gray-200 rounded mb-4"></div>
-                <div className="h-8 w-32 bg-gray-200 rounded mb-3"></div>
-                <div className="h-3 w-20 bg-gray-200 rounded"></div>
-              </div>
-            ))}
-          </div>
-        ) : stats ? (
-          <div className="grid gap-5 mb-10 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-            {[
-              { key:'totalUsers', label:'ผู้ใช้งานทั้งหมด', icon:'mdi:account-multiple', accent:'from-sky-500 to-cyan-500' },
-              { key:'newUsersThisWeek', label:'ผู้ใช้งานใหม่ / สัปดาห์', icon:'mdi:account-plus', accent:'from-emerald-500 to-green-500' },
-              { key:'suspendedUsers', label:'ผู้ใช้งานถูกระงับ', icon:'mdi:account-cancel', accent:'from-rose-500 to-pink-500' },
-              
-            ].map(card => {
-              const metric = stats[card.key] || {}; // for activeRate we use customValue
-              const value = card.customValue !== undefined ? card.customValue : metric.value?.toLocaleString?.();
-              const changeType = metric.changeType;
-              const change = metric.change;
-              const positive = changeType === 'increase';
-              return (
-                <div key={card.key} className="relative p-5 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all group">
-                  <div className={`absolute -top-3 -right-3 h-16 w-16 blur-2xl opacity-20 bg-gradient-to-br ${card.accent} rounded-full`}></div>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-gray-50 to-white flex items-center justify-center ring-1 ring-gray-200 shadow-sm">
-                      <Icon icon={card.icon} className={`text-xl bg-gradient-to-r ${card.accent} text-transparent bg-clip-text`} />
-                    </div>
-                    {change !== undefined && (
-                      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium ${positive ? 'bg-green-50 text-green-600 ring-1 ring-green-100' : 'bg-red-50 text-red-600 ring-1 ring-red-100'}`}>
-                        <Icon icon={positive ? 'mdi:arrow-up' : 'mdi:arrow-down'} className="text-sm" />
-                        {positive ? '+' : ''}{change}%
-                      </span>
-                    )}
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+        <div className="px-6 py-8">
+          {/* Page Header */}
+          <div className="max-w-7xl mx-auto mb-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 shadow-xl shadow-emerald-900/5 p-8">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-4 bg-gradient-to-br from-emerald-600 to-emerald-500 rounded-2xl shadow-lg">
+                    <Icon icon="heroicons:chart-bar-square-20-solid" className="text-3xl text-white" />
                   </div>
-                  <p className="text-xs uppercase tracking-wide text-gray-500 font-medium mb-1">{card.label}</p>
-                  <p className="text-3xl font-bold text-gray-800 tracking-tight">{value}</p>
-                  {change !== undefined && (
-                    <p className={`mt-2 text-xs ${positive ? 'text-green-500' : 'text-red-500'}`}>
-                      {positive ? 'เพิ่มขึ้น' : 'ลดลง'} จากช่วงก่อนหน้า
+                  <div>
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-emerald-600 bg-clip-text text-transparent">
+                      แดชบอร์ดภาพรวมระบบ
+                    </h1>
+                    <p className="text-lg text-slate-600 mt-1">
+                      สรุปข้อมูลผู้ใช้งาน การเติบโต และกิจกรรมล่าสุด
                     </p>
+                  </div>
+                </div>
+                
+                <div className="hidden md:flex items-center gap-4 text-sm text-slate-500">
+                  <div className="flex items-center gap-2">
+                    <Icon icon="heroicons:calendar-days-20-solid" className="text-emerald-500" />
+                    <span>{new Date().toLocaleDateString('th-TH')}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span>ออนไลน์</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto space-y-8">
+            {/* Quick Actions */}
+            <div>
+              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <Icon icon="heroicons:bolt-20-solid" className="text-emerald-600" />
+                การดำเนินการด่วน
+              </h2>
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <Link href="/articles" target="_blank" className="group">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 p-6 shadow-lg shadow-emerald-900/5 hover:shadow-xl hover:shadow-emerald-900/10 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl">
+                        <Icon icon="heroicons:newspaper-20-solid" className="text-2xl text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-slate-800 mb-2">ดูบทความสาธารณะ</h3>
+                        <p className="text-sm text-slate-600 leading-relaxed">เปิดหน้าเว็บในมุมมองผู้เข้าชม</p>
+                        <div className="flex items-center gap-1 mt-3 text-blue-600 text-sm font-medium">
+                          <span>ดูหน้าเว็บ</span>
+                          <Icon icon="heroicons:arrow-top-right-on-square-20-solid" className="text-base" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/article/add" className="group">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 p-6 shadow-lg shadow-emerald-900/5 hover:shadow-xl hover:shadow-emerald-900/10 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-2xl">
+                        <Icon icon="heroicons:plus-circle-20-solid" className="text-2xl text-emerald-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-slate-800 mb-2">เขียนบทความใหม่</h3>
+                        <p className="text-sm text-slate-600 leading-relaxed">สร้างเนื้อหาใหม่ให้ผู้ใช้งาน</p>
+                        <div className="flex items-center gap-1 mt-3 text-emerald-600 text-sm font-medium">
+                          <span>เริ่มเขียน</span>
+                          <Icon icon="heroicons:arrow-right-20-solid" className="text-base" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/article" className="group">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 p-6 shadow-lg shadow-emerald-900/5 hover:shadow-xl hover:shadow-emerald-900/10 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl">
+                        <Icon icon="heroicons:cog-6-tooth-20-solid" className="text-2xl text-purple-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-slate-800 mb-2">จัดการบทความ</h3>
+                        <p className="text-sm text-slate-600 leading-relaxed">แก้ไข / ลบ / อัพเดต สถานะ</p>
+                        <div className="flex items-center gap-1 mt-3 text-purple-600 text-sm font-medium">
+                          <span>จัดการเนื้อหา</span>
+                          <Icon icon="heroicons:arrow-right-20-solid" className="text-base" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            </div>
+
+            {/* KPI Cards */}
+            <div>
+              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <Icon icon="heroicons:chart-pie-20-solid" className="text-emerald-600" />
+                สถิติภาพรวม
+              </h2>
+              {loading ? (
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  {[1,2,3].map(i => (
+                    <div key={i} className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 p-6 shadow-lg shadow-emerald-900/5 animate-pulse">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="w-14 h-14 bg-emerald-100 rounded-2xl"></div>
+                        <div className="w-16 h-6 bg-emerald-100 rounded-lg"></div>
+                      </div>
+                      <div className="w-32 h-4 bg-emerald-100 rounded mb-3"></div>
+                      <div className="w-24 h-8 bg-emerald-100 rounded mb-2"></div>
+                      <div className="w-20 h-3 bg-emerald-100 rounded"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : stats ? (
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  {[
+                    { 
+                      key:'totalUsers', 
+                      label:'ผู้ใช้งานทั้งหมด', 
+                      icon:'heroicons:users-20-solid', 
+                      gradient:'from-blue-600 to-blue-500',
+                      bgGradient:'from-blue-100 to-blue-50'
+                    },
+                    { 
+                      key:'newUsersThisWeek', 
+                      label:'ผู้ใช้งานใหม่ / สัปดาห์', 
+                      icon:'heroicons:user-plus-20-solid', 
+                      gradient:'from-emerald-600 to-emerald-500',
+                      bgGradient:'from-emerald-100 to-emerald-50'
+                    },
+                    { 
+                      key:'suspendedUsers', 
+                      label:'ผู้ใช้งานถูกระงับ', 
+                      icon:'heroicons:user-minus-20-solid', 
+                      gradient:'from-red-600 to-red-500',
+                      bgGradient:'from-red-100 to-red-50'
+                    },
+                  ].map(card => {
+                    const metric = stats[card.key] || {};
+                    const value = metric.value?.toLocaleString?.() || '0';
+                    const changeType = metric.changeType;
+                    const change = metric.change;
+                    const positive = changeType === 'increase';
+                    
+                    return (
+                      <div key={card.key} className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 p-6 shadow-lg shadow-emerald-900/5 hover:shadow-xl hover:shadow-emerald-900/10 transition-all duration-300 group">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className={`p-3 bg-gradient-to-br ${card.bgGradient} rounded-2xl`}>
+                            <Icon icon={card.icon} className={`text-2xl bg-gradient-to-r ${card.gradient} text-transparent bg-clip-text`} />
+                          </div>
+                          {change !== undefined && (
+                            <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
+                              positive 
+                                ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200' 
+                                : 'bg-red-100 text-red-700 ring-1 ring-red-200'
+                            }`}>
+                              <Icon icon={positive ? 'heroicons:arrow-trending-up-20-solid' : 'heroicons:arrow-trending-down-20-solid'} className="text-sm" />
+                              {positive ? '+' : ''}{change}%
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-sm font-medium text-slate-600 mb-2">{card.label}</p>
+                        <p className="text-3xl font-bold text-slate-800 mb-2">{value}</p>
+                        {change !== undefined && (
+                          <p className={`text-xs font-medium ${positive ? 'text-emerald-600' : 'text-red-600'}`}>
+                            {positive ? '📈 เพิ่มขึ้น' : '📉 ลดลง'} จากช่วงก่อนหน้า
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 p-8 shadow-lg shadow-emerald-900/5 text-center">
+                  <Icon icon="heroicons:exclamation-triangle-20-solid" className="text-4xl text-amber-500 mx-auto mb-3" />
+                  <p className="text-slate-600 font-medium">ไม่สามารถโหลดข้อมูลได้</p>
+                  <p className="text-sm text-slate-500 mt-1">โปรดลองใหม่อีกครั้ง</p>
+                </div>
+              )}
+            </div>
+
+            {/* Chart */}
+            <div>
+              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <Icon icon="heroicons:chart-bar-20-solid" className="text-emerald-600" />
+                แนวโน้มการเติบโต
+              </h2>
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 shadow-lg shadow-emerald-900/5 p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-800 mb-1">จำนวนผู้ใช้งานใหม่ตามเดือน</h3>
+                    <p className="text-sm text-slate-600">แสดงแนวโน้มการเติบโตของผู้ใช้งานใหม่</p>
+                  </div>
+                  {!loading && chartData && (
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-emerald-100 rounded-xl">
+                        <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                        <span className="text-sm font-medium text-emerald-700">ผู้ใช้งานใหม่</span>
+                      </div>
+                    </div>
                   )}
                 </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-200 text-center text-gray-500 mb-6">
-            ไม่สามารถโหลดข้อมูลได้
-          </div>
-        )}
-
-        {/* Chart */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-            <h2 className="text-lg font-semibold text-gray-800">จำนวนผู้ใช้งานใหม่ตามเดือน</h2>
-            {!loading && chartData && (
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-teal-400"></span> ผู้ใช้งานใหม่</span>
+                
+                {loading ? (
+                  <div className="h-80 bg-emerald-50 rounded-2xl animate-pulse flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mx-auto mb-3"></div>
+                      <p className="text-emerald-600 font-medium">กำลังโหลดข้อมูล...</p>
+                    </div>
+                  </div>
+                ) : chartData ? (
+                  <div className="relative h-80">
+                    <Line data={chartData} options={chartOptions} />
+                  </div>
+                ) : (
+                  <div className="h-80 flex items-center justify-center bg-emerald-50 rounded-2xl">
+                    <div className="text-center">
+                      <Icon icon="heroicons:chart-bar-square-20-solid" className="text-4xl text-emerald-300 mx-auto mb-3" />
+                      <p className="text-emerald-600 font-medium">ไม่สามารถโหลดข้อมูลกราฟได้</p>
+                      <p className="text-sm text-emerald-500 mt-1">ลองรีเฟรชหน้าใหม่</p>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-          {loading ? (
-            <div className="h-64 bg-gray-100 rounded-md animate-pulse"></div>
-          ) : chartData ? (
-            <div className="relative">
-              <Line data={chartData} options={chartOptions} />
-            </div>
-          ) : (
-            <div className="h-64 flex items-center justify-center text-gray-500">
-              ไม่สามารถโหลดข้อมูลกราฟได้
-            </div>
-          )}
         </div>
       </div>
     </Layout>
