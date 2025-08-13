@@ -7,6 +7,8 @@ import AddFoodModal from '@/components/food/AddFoodModal';
 import EditFoodModal from '@/components/food/EditFoodModal';
 import FoodCategoryModal from '@/components/food/FoodCategoryModal';
 import FoodFilters from '@/components/food/FoodFilters';
+import { Icon } from '@iconify/react';
+import { theme } from '@/lib/theme';
 
 export default function MenuManagement() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -186,48 +188,126 @@ export default function MenuManagement() {
 
     return (
         <Layout>
-            <div className="p-6 bg-gray-100 min-h-screen">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">การจัดการเมนูอาหาร</h1>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => router.push('/foodcategories')}
-                            className="px-4 py-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200"
-                        >
-                            จัดการประเภทอาหาร
-                        </button>
-                        <button 
-                            onClick={() => setIsCategoryModalOpen(true)} 
-                            className="px-4 py-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200"
-                        >
-                            + เพิ่มประเภทอาหาร
-                        </button>
-                        <button 
-                            onClick={() => setIsAddModalOpen(true)} 
-                            className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200"
-                        >
-                            + เพิ่มเมนูอาหารใหม่
-                        </button>
+            <div className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-cyan-50/30 -m-6 p-6">
+                {/* Header Section */}
+                <div className="mb-8 relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/5 via-teal-600/5 to-cyan-600/5 rounded-3xl"></div>
+                    <div className="relative bg-white/70 backdrop-blur-sm rounded-3xl border border-emerald-100/50 p-8 shadow-lg shadow-emerald-900/5">
+                        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                            <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                        <Icon icon="material-symbols:restaurant-menu" className="text-white text-2xl" />
+                                    </div>
+                                    <div>
+                                        <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-800 to-teal-700 bg-clip-text text-transparent">
+                                            การจัดการเมนูอาหาร
+                                        </h1>
+                                    </div>
+                                </div>
+                                <p className="text-emerald-700/70 font-medium">จัดการรายการเมนูอาหาร ประเภทอาหาร และข้อมูลโภชนาการ</p>
+                            </div>
+                            
+                            {/* Quick Stats */}
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                                    <div className="text-2xl font-bold text-emerald-700">{foods.length}</div>
+                                    <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">เมนูทั้งหมด</div>
+                                </div>
+                                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                                    <div className="text-2xl font-bold text-emerald-600">{categories.length}</div>
+                                    <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">ประเภท</div>
+                                </div>
+                                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                                    <div className="text-2xl font-bold text-amber-600">{filteredFoods.length}</div>
+                                    <div className="text-xs text-amber-600/70 font-medium uppercase tracking-wide">ผลการค้นหา</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <FoodFilters
-                    categories={categories}
-                    onSearch={setSearchTerm}
-                    onCategoryFilter={setCategoryFilter}
-                    onCalorieFilter={setCalorieFilter}
-                />
+               {/* Combined Section */}
+                <div className="mb-8">
+                <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100/50 shadow-xl shadow-emerald-900/5 p-6">
+                    
+                    {/* Header Row: Title + Action Buttons */}
+                    <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+                    <div className="flex items-center gap-2">
+                        <Icon icon="heroicons:cog-6-tooth-20-solid" className="text-emerald-600 text-xl" />
+                        <h3 className="font-semibold text-emerald-800">การจัดการ</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-4">
+                        <button
+                        onClick={() => router.push('/foodcategories')}
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-medium shadow-lg shadow-purple-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                        >
+                        <Icon icon="material-symbols:category" className="text-lg" />
+                        จัดการประเภทอาหาร
+                        </button>
+                        <button 
+                        onClick={() => setIsCategoryModalOpen(true)} 
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-500 text-white font-medium shadow-lg shadow-amber-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                        >
+                        <Icon icon="heroicons:plus-20-solid" className="text-lg" />
+                        เพิ่มประเภทอาหาร
+                        </button>
+                        <button 
+                        onClick={() => setIsAddModalOpen(true)} 
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                        >
+                        <Icon icon="heroicons:plus-20-solid" className="text-lg" />
+                        เพิ่มเมนูอาหารใหม่
+                        </button>
+                    </div>
+                    </div>
 
-                <FoodTable
-                    foods={currentPageFoods}
-                    onEdit={handleEditFood}
-                    onDelete={handleDeleteFood}
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    totalItems={totalItems}
-                    itemsPerPage={itemsPerPage}
-                    onPageChange={handlePageChange}
-                />
+                    {/* Filters */}
+                    <div>
+                    <div className="flex items-center gap-2 mb-4">
+                        <Icon icon="heroicons:funnel-20-solid" className="text-emerald-600 text-xl" />
+                        <h3 className="font-semibold text-emerald-800">ตัวกรองข้อมูล</h3>
+                    </div>
+                    <FoodFilters
+                        categories={categories}
+                        onSearch={setSearchTerm}
+                        onCategoryFilter={setCategoryFilter}
+                        onCalorieFilter={setCalorieFilter}
+                    />
+                    </div>
+
+                </div>
+                </div>
+
+
+                {/* Enhanced Food Table */}
+                <div className="bg-white/80 backdrop-blur-sm shadow-xl shadow-emerald-900/5 rounded-3xl border border-emerald-100/50 overflow-hidden">
+                    <div className="bg-gradient-to-r from-emerald-600/10 via-teal-600/10 to-cyan-600/10 px-6 py-4 border-b border-emerald-100/50">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Icon icon="heroicons:table-cells-20-solid" className="text-emerald-600 text-xl" />
+                                <h3 className="font-semibold text-emerald-800">รายการเมนูอาหาร</h3>
+                                <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
+                                    {filteredFoods.length} รายการ
+                                </span>
+                            </div>
+                            <div className="text-sm text-emerald-600/70">
+                                หน้า {currentPage} จาก {totalPages}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <FoodTable
+                        foods={currentPageFoods}
+                        onEdit={handleEditFood}
+                        onDelete={handleDeleteFood}
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        totalItems={totalItems}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={handlePageChange}
+                    />
+                </div>
 
                 <AddFoodModal
                     isOpen={isAddModalOpen}

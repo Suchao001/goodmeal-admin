@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import { MealPlanTable, MealPlanModal } from "../../components/mealplan";
 import Pagination from "../../components/Pagination";
+import { Icon } from '@iconify/react';
+import { theme } from '@/lib/theme';
 
 export default function MealPlanManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -133,9 +135,12 @@ export default function MealPlanManagement() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-cyan-50/30 -m-6 p-6">
           <div className="flex justify-center items-center h-64">
-            <div className="text-lg">กำลังโหลด...</div>
+            <div className="flex flex-col items-center gap-4">
+              <Icon icon="heroicons:arrow-path-20-solid" className="text-4xl text-emerald-400 animate-spin" />
+              <span className="text-emerald-600 font-medium text-lg">กำลังโหลดข้อมูล...</span>
+            </div>
           </div>
         </div>
       </Layout>
@@ -144,32 +149,130 @@ export default function MealPlanManagement() {
 
   return (
     <Layout>
-      <div className="p-6 bg-gray-100 min-h-screen">
-        <div className="my-3">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">จัดการแผนอาหาร</h1>
-          <button
-            onClick={() => openModal()}
-            className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200"
-          >
-            + เพิ่มแผนอาหารใหม่
-          </button>
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-cyan-50/30 -m-6 p-6">
+        {/* Header Section */}
+        <div className="mb-8 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/5 via-teal-600/5 to-cyan-600/5 rounded-3xl"></div>
+          <div className="relative bg-white/70 backdrop-blur-sm rounded-3xl border border-emerald-100/50 p-8 shadow-lg shadow-emerald-900/5">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <Icon icon="material-symbols:food-bank-rounded" className="text-white text-2xl" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-800 to-teal-700 bg-clip-text text-transparent">
+                      จัดการแผนอาหาร
+                    </h1>
+                  </div>
+                </div>
+                <p className="text-emerald-700/70 font-medium">จัดการแผนอาหารรายสัปดาห์ ระยะเวลา และรายละเอียดต่างๆ</p>
+              </div>
+              
+              {/* Quick Stats */}
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                  <div className="text-2xl font-bold text-emerald-700">{mealPlans.length}</div>
+                  <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">แผนทั้งหมด</div>
+                </div>
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                  <div className="text-2xl font-bold text-emerald-600">{currentPage}</div>
+                  <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">หน้าปัจจุบัน</div>
+                </div>
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-amber-100/50 shadow-sm">
+                  <div className="text-2xl font-bold text-amber-600">{totalPages}</div>
+                  <div className="text-xs text-amber-600/70 font-medium uppercase tracking-wide">หน้าทั้งหมด</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <MealPlanTable 
-          mealPlans={currentPagePlans}
-          onEdit={openModal}
-          onDelete={deletePlan}
-        />
+        {/* Action Buttons */}
+        <div className="mb-8">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100/50 shadow-xl shadow-emerald-900/5 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Icon icon="heroicons:cog-6-tooth-20-solid" className="text-emerald-600 text-xl" />
+              <h3 className="font-semibold text-emerald-800">การจัดการ</h3>
+            </div>
+            
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={() => openModal()}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+              >
+                <Icon icon="heroicons:plus-20-solid" className="text-lg" />
+                เพิ่มแผนอาหารใหม่
+              </button>
+            </div>
+          </div>
+        </div>
 
+        {/* Enhanced Meal Plan Table */}
+        <div className="bg-white/80 backdrop-blur-sm shadow-xl shadow-emerald-900/5 rounded-3xl border border-emerald-100/50 overflow-hidden">
+          <div className="bg-gradient-to-r from-emerald-600/10 via-teal-600/10 to-cyan-600/10 px-6 py-4 border-b border-emerald-100/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Icon icon="heroicons:table-cells-20-solid" className="text-emerald-600 text-xl" />
+                <h3 className="font-semibold text-emerald-800">รายการแผนอาหาร</h3>
+                <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
+                  {mealPlans.length} รายการ
+                </span>
+              </div>
+              <div className="text-sm text-emerald-600/70">
+                หน้า {currentPage} จาก {totalPages}
+              </div>
+            </div>
+          </div>
+          
+          <MealPlanTable 
+            mealPlans={currentPagePlans}
+            onEdit={openModal}
+            onDelete={deletePlan}
+          />
+        </div>
+
+        {/* Enhanced Pagination */}
         {totalPages > 1 && (
-          <div className="mt-6">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
-            />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
+            <div className="text-sm text-emerald-700 font-medium">
+              แสดง {startIndex + 1}-{Math.min(endIndex, totalItems)} จาก {totalItems} รายการ
+            </div>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => handlePageChange(1)} 
+                disabled={currentPage === 1} 
+                className="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+              >
+                <Icon icon="heroicons:chevron-double-left-20-solid" />
+              </button>
+              <button 
+                onClick={() => handlePageChange(currentPage - 1)} 
+                disabled={currentPage === 1} 
+                className="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+              >
+                <Icon icon="heroicons:chevron-left-20-solid" />
+              </button>
+              
+              <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg">
+                {currentPage} / {totalPages}
+              </div>
+              
+              <button 
+                onClick={() => handlePageChange(currentPage + 1)} 
+                disabled={currentPage === totalPages} 
+                className="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+              >
+                <Icon icon="heroicons:chevron-right-20-solid" />
+              </button>
+              <button 
+                onClick={() => handlePageChange(totalPages)} 
+                disabled={currentPage === totalPages} 
+                className="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+              >
+                <Icon icon="heroicons:chevron-double-right-20-solid" />
+              </button>
+            </div>
           </div>
         )}
 

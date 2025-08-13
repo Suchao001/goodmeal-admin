@@ -2,6 +2,7 @@
 import Image from "next/image";
 import imageUrl from '../../images/imgplaceholder.jpg';
 import Pagination from '../Pagination';
+import { Icon } from '@iconify/react';
 
 export default function FoodTable({ 
   foods, 
@@ -14,65 +15,146 @@ export default function FoodTable({
   itemsPerPage = 10 
 }) {
   const startIndex = (currentPage - 1) * itemsPerPage;
+
   return (
-    <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-      <table className="w-full text-left">
-        <thead className="bg-gray-50">
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-left">
+        <thead className="bg-emerald-50/50 text-emerald-800 text-sm font-semibold uppercase tracking-wide">
           <tr>
-            <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">ลำดับ</th>
-            <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">อาหาร</th>
-            <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">รูปภาพ</th>
-            <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">แคลอรี่</th>
-            <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">จัดการ</th>
+            <th className="px-6 py-4">ลำดับ</th>
+            <th className="px-6 py-4">เมนูอาหาร</th>
+            <th className="px-6 py-4">รูปภาพ</th>
+            <th className="px-6 py-4">แคลอรี่</th>
+            <th className="px-6 py-4 text-center">การจัดการ</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200">
-          {foods.map((food, index) => (
-            <tr key={food.id} className="hover:bg-gray-50">
-              <td className="px-6 py-4 text-sm text-gray-800">{startIndex + index + 1}</td>
-              <td className="px-6 py-4 text-sm text-gray-800">
-                <div>{food.name}</div>
-                <div className="text-xs text-gray-500">
-                  {food.categories?.map(cat => cat.name).join(', ')}
+        <tbody className="divide-y divide-emerald-100/50">
+          {foods.length === 0 ? (
+            <tr>
+              <td colSpan={5} className="py-16 text-center">
+                <div className="flex flex-col items-center gap-4">
+                  <Icon icon="heroicons:face-frown-20-solid" className="text-4xl text-slate-400" />
+                  <span className="text-slate-500 font-medium">ไม่พบข้อมูลเมนูอาหาร</span>
+                  <span className="text-sm text-slate-400">ลองเปลี่ยนเงื่อนไขการค้นหา</span>
                 </div>
               </td>
-              <td className="px-6 py-4 text-sm">
-                {food.img ? (
-                  <img src={food.img} alt={food.name} className="w-16 h-16 rounded-lg object-cover" />
-                ) : (
-                  <Image src={imageUrl} alt={food.name} className="w-16 h-16 rounded-lg object-cover" />
-                )}
-              </td>
-              <td className="px-6 py-4 text-sm text-gray-800">{food.calories}</td>
-              <td className="px-6 py-4 text-sm">
-                <button
-                  onClick={() => onEdit(food)}
-                  className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200"
-                >
-                  แก้ไข
-                </button>
-                <button
-                  onClick={() => onDelete(food)}
-                  className="px-4 py-2 mx-1 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
-                >
-                  ลบ
-                </button>
-              </td>
             </tr>
-          ))}
+          ) : (
+            foods.map((food, index) => (
+              <tr key={food.id} className="hover:bg-emerald-50/30 transition-colors duration-150">
+                <td className="px-6 py-5">
+                  <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    {startIndex + index + 1}
+                  </div>
+                </td>
+                <td className="px-6 py-5">
+                  <div className="flex flex-col gap-1">
+                    <h4 className="font-semibold text-slate-800 text-lg">{food.name}</h4>
+                    {food.categories && food.categories.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {food.categories.map((cat, idx) => (
+                          <span key={idx} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                            <Icon icon="material-symbols:category" className="mr-1 text-xs" />
+                            {cat.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {food.ingredients && (
+                      <p className="text-sm text-slate-600 mt-1 line-clamp-2">{food.ingredients}</p>
+                    )}
+                  </div>
+                </td>
+                <td className="px-6 py-5">
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-sm border border-emerald-100">
+                    {food.img ? (
+                      <img 
+                        src={food.img} 
+                        alt={food.name} 
+                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-200" 
+                      />
+                    ) : (
+                      <Image 
+                        src={imageUrl} 
+                        alt={food.name} 
+                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-200" 
+                      />
+                    )}
+                  </div>
+                </td>
+                <td className="px-6 py-5">
+                  <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-semibold text-emerald-600 bg-emerald-50">
+                    <Icon icon="heroicons:fire-20-solid" className="text-base" />
+                    {food.calories || 0} kcal
+                  </div>
+                </td>
+                <td className="px-6 py-5">
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => onEdit(food)}
+                      className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                    >
+                      <Icon icon="heroicons:pencil-20-solid" className="text-base" />
+                      แก้ไข
+                    </button>
+                    <button
+                      onClick={() => onDelete(food)}
+                      className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                    >
+                      <Icon icon="heroicons:trash-20-solid" className="text-base" />
+                      ลบ
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
       
-      {/* Pagination */}
+      {/* Enhanced Pagination */}
       {totalPages > 1 && onPageChange && (
-        <div className="px-6 py-4 border-t border-gray-200">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
-            totalItems={totalItems}
-            itemsPerPage={itemsPerPage}
-          />
+        <div className="px-6 py-6 border-t border-emerald-100/50 bg-emerald-50/20">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-sm text-emerald-700 font-medium">
+              แสดง {Math.min(startIndex + 1, totalItems)}-{Math.min(startIndex + foods.length, totalItems)} จาก {totalItems} รายการ
+            </div>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => onPageChange(1)} 
+                disabled={currentPage === 1} 
+                className="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+              >
+                <Icon icon="heroicons:chevron-double-left-20-solid" />
+              </button>
+              <button 
+                onClick={() => onPageChange(currentPage - 1)} 
+                disabled={currentPage === 1} 
+                className="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+              >
+                <Icon icon="heroicons:chevron-left-20-solid" />
+              </button>
+              
+              <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg">
+                {currentPage} / {totalPages}
+              </div>
+              
+              <button 
+                onClick={() => onPageChange(currentPage + 1)} 
+                disabled={currentPage === totalPages} 
+                className="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+              >
+                <Icon icon="heroicons:chevron-right-20-solid" />
+              </button>
+              <button 
+                onClick={() => onPageChange(totalPages)} 
+                disabled={currentPage === totalPages} 
+                className="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+              >
+                <Icon icon="heroicons:chevron-double-right-20-solid" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
