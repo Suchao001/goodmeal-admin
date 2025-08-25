@@ -13,6 +13,133 @@ export default function DailyUpdate() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [eatingRecords, setEatingRecords] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Today's date
+  const [dailySummary, setDailySummary] = useState(null);
+
+  // Function to calculate which day of the plan corresponds to today
+  const calculateTodaysPlan = (startDate, isRepeat, parsedPlan) => {
+    if (!startDate || !parsedPlan) {
+      return { dayNumber: null, dayData: null, message: "ไม่มีข้อมูลวันเริ่มต้น" };
+    }
+
+    const today = new Date();
+    const planStart = new Date(startDate);
+    
+    // Calculate difference in days
+    const timeDiff = today.getTime() - planStart.getTime();
+    const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+    
+    console.log("Plan start date:", planStart);
+    console.log("Today:", today);
+    console.log("Days difference:", daysDiff);
+
+    // If today is before the plan start date
+    if (daysDiff < 0) {
+      return { 
+        dayNumber: null, 
+        dayData: null, 
+        message: `แผนจะเริ่มในอีก ${Math.abs(daysDiff)} วัน (${planStart.toLocaleDateString('th-TH')})` 
+      };
+    }
+
+    const totalDays = Object.keys(parsedPlan).length;
+    let currentDay;
+
+    if (isRepeat) {
+      // If repeat is enabled, cycle through the plan
+      currentDay = (daysDiff % totalDays) + 1;
+    } else {
+      // If no repeat, check if we're within the plan duration
+      if (daysDiff >= totalDays) {
+        return { 
+          dayNumber: null, 
+          dayData: null, 
+          message: `แผนสิ้นสุดแล้ว (สิ้นสุดเมื่อ ${new Date(planStart.getTime() + (totalDays - 1) * 24 * 60 * 60 * 1000).toLocaleDateString('th-TH')})` 
+        };
+      }
+      currentDay = daysDiff + 1;
+    }
+
+    const dayData = parsedPlan[currentDay.toString()];
+    
+    return {
+      dayNumber: currentDay,
+      dayData: dayData,
+      message: isRepeat ? `วันที่ ${currentDay} (วนซ้ำ - รอบที่ ${Math.floor(daysDiff / totalDays) + 1})` : `วันที่ ${currentDay}`,
+      isRepeat: isRepeat,
+      totalDays: totalDays,
+      daysPassed: daysDiff
+    };
+  };
+
+  const fetchEatingRecords = async (userId = null, date = null) => {
+    setLoading(true);
+    try {
+      const params = {};
+      if (userId) params.user_id = userId;
+      if (date) params.date = date;
+      
+      const response = await axios.get("/api/eating-records", { params });
+      
+      if (response.status === 200) {
+        console.log("Eating records fetched:", response.data);
+        setEatingRecords(response.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching eating records:", error);
+      setEatingRecords([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateDailyNutritionSummary = async (userId, summaryDate) => {
+    try {
+      console.log(`Updating daily nutrition summary for user ${userId} on ${summaryDate}`);
+      
+      const response = await axios.post("/api/daily-nutrition-summary", {
+        user_id: userId,
+        summary_date: summaryDate
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        console.log("Daily nutrition summary updated:", response.data);
+        alert(`✅ ${response.data.action === 'updated' ? 'อัพเดท' : 'สร้าง'}ข้อมูลสรุปโภชนาการรายวันสำเร็จ`);
+        // Refresh the summary data
+        await fetchDailySummary(userId, summaryDate);
+        return response.data;
+      }
+    } catch (error) {
+      console.error("Error updating daily nutrition summary:", error);
+      alert(`❌ เกิดข้อผิดพลาดในการอัพเดทข้อมูลสรุปโภชนาการ: ${error.response?.data?.message || error.message}`);
+      throw error;
+    }
+  };
+
+  const fetchDailySummary = async (userId, summaryDate) => {
+    try {
+      const response = await axios.get("/api/daily-nutrition-summary", {
+        params: {
+          user_id: userId,
+          summary_date: summaryDate
+        }
+      });
+
+      if (response.status === 200) {
+        console.log("Daily summary fetched:", response.data);
+        setDailySummary(response.data);
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        console.log("No daily summary found for this date");
+        setDailySummary(null);
+      } else {
+        console.error("Error fetching daily summary:", error);
+        setDailySummary(null);
+      }
+    }
+  };
 
   const fetchPlanUsages = async () => {
     setLoading(true);
@@ -47,17 +174,42 @@ export default function DailyUpdate() {
         // Parse the plan JSON and display it
         let parsedPlan = null;
         try {
-          parsedPlan = JSON.parse(planData.plan);
-          console.log("Parsed plan JSON:", parsedPlan);
+          // Handle double-stringified JSON (JSON wrapped in quotes)
+          let planDataString = planData.plan;
+      
+          if (typeof planDataString === 'string' && planDataString.startsWith('"') && planDataString.endsWith('"')) {
+            // Remove outer quotes and unescape
+            planDataString = JSON.parse(planDataString);
+          }
+          
+          // Now parse the actual JSON
+          if (typeof planDataString === 'string') {
+            parsedPlan = JSON.parse(planDataString);
+          } else {
+            parsedPlan = planDataString;
+          }
+          
         } catch (parseError) {
           console.error("Error parsing plan JSON:", parseError);
+          console.log("Raw plan data:", planData.plan);
         }
+
+        // Calculate today's plan
+        const todaysPlan = calculateTodaysPlan(planData.plan_start_date, planData.is_repeat, parsedPlan);
         
         setSelectedPlan({
           ...planData,
           parsedPlan: parsedPlan,
-          planStringified: JSON.stringify(parsedPlan, null, 2)
+          planStringified: JSON.stringify(parsedPlan, null, 2),
+          todaysPlan: todaysPlan
         });
+
+        // Fetch eating records for this user and today's date
+        await fetchEatingRecords(planData.user_id, selectedDate);
+        
+        // Fetch daily nutrition summary for this user and today's date
+        await fetchDailySummary(planData.user_id, selectedDate);
+        
         setIsModalOpen(true);
       }
     } catch (error) {
@@ -112,18 +264,29 @@ export default function DailyUpdate() {
                 User: {selectedPlan.username || 'Unknown'} (ID: {selectedPlan.user_id})
               </p>
             </div>
-            <button
-              onClick={closeModal}
-              className="text-white hover:text-red-300 transition-colors p-2 rounded-full hover:bg-white/10"
-            >
-              <Icon icon="mdi:close" className="w-6 h-6" />
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Update Daily Summary Button */}
+              <button
+                onClick={() => updateDailyNutritionSummary(selectedPlan.user_id, selectedDate)}
+                className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium border border-white/30 hover:border-white/50"
+                title="อัพเดทข้อมูลสรุปโภชนาการรายวัน"
+              >
+                <Icon icon="mdi:database-sync" className="w-4 h-4" />
+                อัพเดทสรุปโภชนาการ
+              </button>
+              <button
+                onClick={closeModal}
+                className="text-white hover:text-red-300 transition-colors p-2 rounded-full hover:bg-white/10"
+              >
+                <Icon icon="mdi:close" className="w-6 h-6" />
+              </button>
+            </div>
           </div>
 
           <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
             <div className="space-y-6">
               {/* Basic Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-semibold text-gray-700 mb-2">Plan ID</h4>
                   <p className="text-lg font-bold text-emerald-600">{selectedPlan.id}</p>
@@ -134,7 +297,501 @@ export default function DailyUpdate() {
                   <p className="text-sm text-gray-500">ID: {selectedPlan.user_id}</p>
                   <p className="text-sm text-gray-500">{selectedPlan.email || 'No email'}</p>
                 </div>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-gray-700 mb-2">Plan Details</h4>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Start Date:</span> {selectedPlan.plan_start_date ? new Date(selectedPlan.plan_start_date).toLocaleDateString('th-TH') : 'Not set'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Repeat:</span> {selectedPlan.is_repeat ? 'Yes' : 'No'}
+                  </p>
+                </div>
               </div>
+
+              {/* Today's Meal Plan */}
+              {selectedPlan.todaysPlan && (
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border-2 border-blue-200 shadow-md">
+                  <h4 className="font-semibold text-blue-700 mb-4 flex items-center gap-2 text-lg">
+                    <Icon icon="mdi:calendar-today" className="w-6 h-6" />
+                    🍽️ แผนอาหารวันนี้ ({new Date().toLocaleDateString('th-TH')})
+                  </h4>
+                  
+                  {selectedPlan.todaysPlan.dayData ? (
+                    <div className="bg-white rounded-lg p-4 border border-blue-100">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h5 className="font-bold text-blue-800 text-xl">
+                            {selectedPlan.todaysPlan.message}
+                          </h5>
+                          <p className="text-sm text-blue-600">
+                            วันที่ {selectedPlan.todaysPlan.daysPassed + 1} นับจากวันเริ่มต้น
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm">
+                          <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
+                            {selectedPlan.todaysPlan.dayData.totalCal} แคล
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="grid gap-3">
+                        {Object.entries(selectedPlan.todaysPlan.dayData.meals || {}).map(([mealType, meal]) => {
+                          const mealTypeNames = {
+                            breakfast: '🌅 เช้า',
+                            lunch: '☀️ กลางวัน', 
+                            dinner: '🌙 เย็น'
+                          };
+                          
+                          return (
+                            <div key={mealType} className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                              <div className="flex items-center justify-between mb-2">
+                                <h6 className="font-semibold text-blue-700">
+                                  {mealTypeNames[mealType] || mealType} - {meal.time}
+                                </h6>
+                                <span className="text-sm font-medium text-blue-600">
+                                  {meal.totalCal} แคล
+                                </span>
+                              </div>
+                              <p className="font-medium text-blue-800 text-lg">{meal.name}</p>
+                              {meal.items && meal.items.length > 0 && (
+                                <div className="mt-2">
+                                  {meal.items.map((item, idx) => (
+                                    <div key={idx} className="text-sm text-blue-600 bg-white p-2 rounded border border-blue-100 mt-1">
+                                      <div className="flex items-center justify-between">
+                                        <span className="font-medium">{item.name}</span>
+                                        <span className="text-blue-600 font-medium">{item.cal} แคล</span>
+                                      </div>
+                                      <div className="text-xs text-blue-500 mt-1 flex gap-3">
+                                        <span>คาร์บ: {item.carb}g</span>
+                                        <span>ไฟ: {item.fat}g</span>
+                                        <span>โปรตีน: {item.protein}g</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                      <div className="flex items-center gap-3">
+                        <Icon icon="mdi:information" className="w-6 h-6 text-yellow-600" />
+                        <p className="text-yellow-700 font-medium">
+                          {selectedPlan.todaysPlan.message}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Daily Nutrition Summary */}
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6 border-2 border-purple-200 shadow-md">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold text-purple-700 flex items-center gap-2 text-lg">
+                    <Icon icon="mdi:chart-bar" className="w-6 h-6" />
+                    📈 สรุปโภชนาการรายวัน ({new Date(selectedDate).toLocaleDateString('th-TH')})
+                  </h4>
+                </div>
+
+                {dailySummary ? (
+                  <div className="space-y-4">
+                    {/* Target vs Actual Comparison */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {/* Calories */}
+                      <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-sm">
+                        <h5 className="font-medium text-gray-700 mb-2 text-sm">แคลอรี่</h5>
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-green-600">เป้าหมาย:</span>
+                            <span className="font-medium">{dailySummary.target_cal || 0} kcal</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-blue-600">กิน:</span>
+                            <span className="font-medium">{dailySummary.total_calories || 0} kcal</span>
+                          </div>
+                          <div className="flex justify-between text-xs font-semibold">
+                            <span className={dailySummary.total_calories > dailySummary.target_cal ? 'text-red-600' : 'text-emerald-600'}>
+                              ส่วนต่าง:
+                            </span>
+                            <span className={dailySummary.total_calories > dailySummary.target_cal ? 'text-red-600' : 'text-emerald-600'}>
+                              {dailySummary.target_cal ? (dailySummary.total_calories - dailySummary.target_cal) : dailySummary.total_calories} kcal
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Carbs */}
+                      <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-sm">
+                        <h5 className="font-medium text-gray-700 mb-2 text-sm">คาร์โบไฮเดรต</h5>
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-green-600">เป้าหมาย:</span>
+                            <span className="font-medium">{dailySummary.target_carb || 0}g</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-blue-600">กิน:</span>
+                            <span className="font-medium">{dailySummary.total_carbs || 0}g</span>
+                          </div>
+                          <div className="flex justify-between text-xs font-semibold">
+                            <span className={dailySummary.total_carbs > dailySummary.target_carb ? 'text-red-600' : 'text-emerald-600'}>
+                              ส่วนต่าง:
+                            </span>
+                            <span className={dailySummary.total_carbs > dailySummary.target_carb ? 'text-red-600' : 'text-emerald-600'}>
+                              {dailySummary.target_carb ? (dailySummary.total_carbs - dailySummary.target_carb) : dailySummary.total_carbs}g
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Fat */}
+                      <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-sm">
+                        <h5 className="font-medium text-gray-700 mb-2 text-sm">ไขมัน</h5>
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-green-600">เป้าหมาย:</span>
+                            <span className="font-medium">{dailySummary.target_fat || 0}g</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-blue-600">กิน:</span>
+                            <span className="font-medium">{dailySummary.total_fat || 0}g</span>
+                          </div>
+                          <div className="flex justify-between text-xs font-semibold">
+                            <span className={dailySummary.total_fat > dailySummary.target_fat ? 'text-red-600' : 'text-emerald-600'}>
+                              ส่วนต่าง:
+                            </span>
+                            <span className={dailySummary.total_fat > dailySummary.target_fat ? 'text-red-600' : 'text-emerald-600'}>
+                              {dailySummary.target_fat ? (dailySummary.total_fat - dailySummary.target_fat) : dailySummary.total_fat}g
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Protein */}
+                      <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-sm">
+                        <h5 className="font-medium text-gray-700 mb-2 text-sm">โปรตีน</h5>
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-green-600">เป้าหมาย:</span>
+                            <span className="font-medium">{dailySummary.target_protein || 0}g</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-blue-600">กิน:</span>
+                            <span className="font-medium">{dailySummary.total_protein || 0}g</span>
+                          </div>
+                          <div className="flex justify-between text-xs font-semibold">
+                            <span className={dailySummary.total_protein > dailySummary.target_protein ? 'text-red-600' : 'text-emerald-600'}>
+                              ส่วนต่าง:
+                            </span>
+                            <span className={dailySummary.total_protein > dailySummary.target_protein ? 'text-red-600' : 'text-emerald-600'}>
+                              {dailySummary.target_protein ? (dailySummary.total_protein - dailySummary.target_protein) : dailySummary.total_protein}g
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Info */}
+                    {dailySummary.recommendation && (
+                      <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-sm">
+                        <h5 className="font-medium text-gray-700 mb-2">คำแนะนำ</h5>
+                        <p className="text-sm text-gray-600">{dailySummary.recommendation}</p>
+                      </div>
+                    )}
+
+                    {dailySummary.weight && (
+                      <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-sm">
+                        <h5 className="font-medium text-gray-700 mb-2">น้ำหนัก</h5>
+                        <p className="text-lg font-semibold text-purple-600">{dailySummary.weight} kg</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-white p-8 rounded-lg border border-purple-100 text-center">
+                    <Icon icon="mdi:chart-bar" className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                    <p className="text-gray-500 font-medium">ยังไม่มีข้อมูลสรุปโภชนาการสำหรับวันที่เลือก</p>
+                    <p className="text-gray-400 text-sm mt-2">กดปุ่ม "อัพเดทสรุปโภชนาการ" เพื่อสร้างข้อมูล</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Eating Records for Selected Date */}
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-lg p-6 border-2 border-orange-200 shadow-md">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold text-orange-700 flex items-center gap-2 text-lg">
+                    <Icon icon="mdi:food-apple" className="w-6 h-6" />
+                    📊 บันทึกการกิน - {selectedPlan?.username}
+                  </h4>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => {
+                        setSelectedDate(e.target.value);
+                        if (selectedPlan) {
+                          fetchEatingRecords(selectedPlan.user_id, e.target.value);
+                          fetchDailySummary(selectedPlan.user_id, e.target.value);
+                        }
+                      }}
+                      className="px-3 py-2 border border-orange-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                    />
+                    <button
+                      onClick={() => {
+                        fetchEatingRecords(selectedPlan?.user_id, selectedDate);
+                        fetchDailySummary(selectedPlan?.user_id, selectedDate);
+                      }}
+                      className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
+                    >
+                      <Icon icon="mdi:refresh" className="w-4 h-4" />
+                      รีเฟรช
+                    </button>
+                  </div>
+                </div>
+                
+                {eatingRecords.length > 0 ? (
+                  <div className="space-y-4">
+                    {/* Summary */}
+                    <div className="bg-white rounded-lg p-4 border border-orange-100">
+                      <h5 className="font-semibold text-orange-700 mb-3">สรุปคุณค่าทางโภชนาการ</h5>
+                      <div className="grid grid-cols-4 gap-4">
+                        <div className="text-center bg-orange-50 p-3 rounded-lg">
+                          <p className="text-2xl font-bold text-orange-600">
+                            {eatingRecords.reduce((sum, record) => sum + (record.calories || 0), 0)}
+                          </p>
+                          <p className="text-sm text-orange-600">แคลอรี่</p>
+                        </div>
+                        <div className="text-center bg-blue-50 p-3 rounded-lg">
+                          <p className="text-2xl font-bold text-blue-600">
+                            {eatingRecords.reduce((sum, record) => sum + (record.carbs || 0), 0)}
+                          </p>
+                          <p className="text-sm text-blue-600">คาร์บ (g)</p>
+                        </div>
+                        <div className="text-center bg-yellow-50 p-3 rounded-lg">
+                          <p className="text-2xl font-bold text-yellow-600">
+                            {eatingRecords.reduce((sum, record) => sum + (record.fat || 0), 0)}
+                          </p>
+                          <p className="text-sm text-yellow-600">ไฟ (g)</p>
+                        </div>
+                        <div className="text-center bg-purple-50 p-3 rounded-lg">
+                          <p className="text-2xl font-bold text-purple-600">
+                            {eatingRecords.reduce((sum, record) => sum + (record.protein || 0), 0)}
+                          </p>
+                          <p className="text-sm text-purple-600">โปรตีน (g)</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Eating Records by Meal Type */}
+                    <div className="bg-white rounded-lg p-4 border border-orange-100">
+                      <h5 className="font-semibold text-orange-700 mb-3">รายละเอียดการกิน</h5>
+                      
+                      {/* Group by meal type */}
+                      {['breakfast', 'lunch', 'dinner', 'snack'].map(mealType => {
+                        const mealRecords = eatingRecords.filter(record => 
+                          record.meal_type?.toLowerCase() === mealType
+                        );
+                        
+                        if (mealRecords.length === 0) return null;
+                        
+                        const mealTypeNames = {
+                          breakfast: '🌅 เช้า',
+                          lunch: '☀️ กลางวัน',
+                          dinner: '🌙 เย็น',
+                          snack: '🍎 ขนม'
+                        };
+                        
+                        return (
+                          <div key={mealType} className="mb-4">
+                            <h6 className="font-medium text-orange-600 mb-2 flex items-center gap-2">
+                              {mealTypeNames[mealType] || mealType}
+                              <span className="text-sm bg-orange-100 px-2 py-1 rounded">
+                                {mealRecords.reduce((sum, record) => sum + (record.calories || 0), 0)} แคล
+                              </span>
+                            </h6>
+                            <div className="space-y-2">
+                              {mealRecords.map((record) => (
+                                <div key={record.id} className="bg-orange-50 rounded-lg p-3 border border-orange-100">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex-1">
+                                      <p className="font-medium text-gray-800">{record.food_name}</p>
+                                      <p className="text-sm text-gray-600">
+                                        เวลา: {record.meal_time ? new Date(`1970-01-01T${record.meal_time}`).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) : '-'}
+                                      </p>
+                                      <div className="text-xs text-gray-500 mt-1 flex gap-4">
+                                        <span>คาร์บ: {record.carbs || 0}g</span>
+                                        <span>ไฟ: {record.fat || 0}g</span>
+                                        <span>โปรตีน: {record.protein || 0}g</span>
+                                      </div>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="text-lg font-bold text-orange-600">{record.calories || 0}</p>
+                                      <p className="text-sm text-orange-600">แคล</p>
+                                    </div>
+                                    {record.image && (
+                                      <div className="ml-3">
+                                        <img 
+                                          src={record.image} 
+                                          alt={record.food_name}
+                                          className="w-12 h-12 object-cover rounded-lg"
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                      
+                      {/* Other records (no meal type) */}
+                      {eatingRecords.filter(record => !record.meal_type || !['breakfast', 'lunch', 'dinner', 'snack'].includes(record.meal_type?.toLowerCase())).length > 0 && (
+                        <div>
+                          <h6 className="font-medium text-orange-600 mb-2">🍽️ อื่นๆ</h6>
+                          <div className="space-y-2">
+                            {eatingRecords.filter(record => !record.meal_type || !['breakfast', 'lunch', 'dinner', 'snack'].includes(record.meal_type?.toLowerCase())).map((record) => (
+                              <div key={record.id} className="bg-orange-50 rounded-lg p-3 border border-orange-100">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <p className="font-medium text-gray-800">{record.food_name}</p>
+                                    <p className="text-sm text-gray-600">
+                                      ประเภท: {record.meal_type || 'ไม่ระบุ'} | เวลา: {record.meal_time ? new Date(`1970-01-01T${record.meal_time}`).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) : '-'}
+                                    </p>
+                                    <div className="text-xs text-gray-500 mt-1 flex gap-4">
+                                      <span>คาร์บ: {record.carbs || 0}g</span>
+                                      <span>ไฟ: {record.fat || 0}g</span>
+                                      <span>โปรตีน: {record.protein || 0}g</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-lg font-bold text-orange-600">{record.calories || 0}</p>
+                                    <p className="text-sm text-orange-600">แคล</p>
+                                  </div>
+                                  {record.image && (
+                                    <div className="ml-3">
+                                      <img 
+                                        src={record.image} 
+                                        alt={record.food_name}
+                                        className="w-12 h-12 object-cover rounded-lg"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 rounded-lg p-8 text-center border border-gray-200">
+                    <Icon icon="mdi:food-off" className="w-16 h-16 text-gray-400 mx-auto mb-3" />
+                    <p className="text-gray-500 font-medium">ไม่พบบันทึกการกินในวันที่เลือก</p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      วันที่: {new Date(selectedDate).toLocaleDateString('th-TH')}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Daily Meal Plan Breakdown */}
+              {selectedPlan.parsedPlan && (
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-6 border border-emerald-200">
+                  <h4 className="font-semibold text-emerald-700 mb-4 flex items-center gap-2 text-lg">
+                    <Icon icon="mdi:calendar-today" className="w-6 h-6" />
+                    Daily Meal Plan Breakdown
+                  </h4>
+                  <div className="grid gap-4">
+                    {Object.entries(selectedPlan.parsedPlan).map(([day, dayData]) => {
+                      const totalCal = dayData.totalCal || 0;
+                      const meals = dayData.meals || {};
+                      
+                      // Calculate total macros for the day
+                      let totalCarb = 0;
+                      let totalFat = 0;
+                      let totalProtein = 0;
+                      
+                      Object.values(meals).forEach(meal => {
+                        if (meal.items) {
+                          meal.items.forEach(item => {
+                            totalCarb += item.carb || 0;
+                            totalFat += item.fat || 0;
+                            totalProtein += item.protein || 0;
+                          });
+                        }
+                      });
+
+                      return (
+                        <div key={day} className="bg-white rounded-lg border border-emerald-100 p-4 shadow-sm">
+                          <div className="flex items-center justify-between mb-3">
+                            <h5 className="font-bold text-emerald-800 text-lg">วันที่ {day}</h5>
+                            <div className="flex items-center gap-4 text-sm">
+                              <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-medium">
+                                {totalCal} แคล
+                              </span>
+                              <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium">
+                                คาร์บ {totalCarb.toFixed(1)}g
+                              </span>
+                              <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded font-medium">
+                                ไฟ {totalFat.toFixed(1)}g
+                              </span>
+                              <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded font-medium">
+                                โปรตีน {totalProtein.toFixed(1)}g
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="grid gap-3">
+                            {Object.entries(meals).map(([mealType, meal]) => {
+                              const mealTypeNames = {
+                                breakfast: '🌅 เช้า',
+                                lunch: '☀️ กลางวัน', 
+                                dinner: '🌙 เย็น'
+                              };
+                              
+                              return (
+                                <div key={mealType} className="bg-gray-50 rounded p-3">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <h6 className="font-semibold text-gray-700 text-sm">
+                                      {mealTypeNames[mealType] || mealType} - {meal.time}
+                                    </h6>
+                                    <span className="text-sm font-medium text-emerald-600">
+                                      {meal.totalCal} แคล
+                                    </span>
+                                  </div>
+                                  <p className="font-medium text-gray-800 mb-2">{meal.name}</p>
+                                  {meal.items && meal.items.length > 0 && (
+                                    <div className="space-y-1">
+                                      {meal.items.map((item, idx) => (
+                                        <div key={idx} className="text-sm text-gray-600 bg-white p-2 rounded border">
+                                          <div className="flex items-center justify-between">
+                                            <span className="font-medium">{item.name}</span>
+                                            <span className="text-emerald-600 font-medium">{item.cal} แคล</span>
+                                          </div>
+                                          <div className="text-xs text-gray-500 mt-1 flex gap-3">
+                                            <span>คาร์บ: {item.carb}g</span>
+                                            <span>ไฟ: {item.fat}g</span>
+                                            <span>โปรตีน: {item.protein}g</span>
+                                            <span className="bg-gray-100 px-1 rounded">{item.source}</span>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* JSON Plan Data */}
               <div className="bg-gray-50 rounded-lg p-4">

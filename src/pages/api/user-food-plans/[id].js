@@ -16,6 +16,8 @@ export default async function handler(req, res) {
           'ufp.id',
           'ufp.user_id',
           'ufp.plan',
+          'ufp.plan_start_date',
+          'ufp.is_repeat',
           'u.username',
           'u.email'
         )
