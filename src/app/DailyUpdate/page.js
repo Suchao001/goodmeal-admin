@@ -399,26 +399,32 @@ export default function DailyUpdate() {
 
                 {dailySummary ? (
                   <div className="space-y-4">
-                    {/* Target vs Actual Comparison */}
+                    {/* Target vs Actual vs Recommended Comparison */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {/* Calories */}
                       <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-sm">
                         <h5 className="font-medium text-gray-700 mb-2 text-sm">แคลอรี่</h5>
                         <div className="space-y-1">
+                          {dailySummary.recommended_cal && (
+                            <div className="flex justify-between text-xs">
+                              <span className="text-purple-600">แนะนำ:</span>
+                              <span className="font-medium">{dailySummary.recommended_cal} kcal</span>
+                            </div>
+                          )}
                           <div className="flex justify-between text-xs">
-                            <span className="text-green-600">เป้าหมาย:</span>
+                            <span className="text-green-600">แผน:</span>
                             <span className="font-medium">{dailySummary.target_cal || 0} kcal</span>
                           </div>
                           <div className="flex justify-between text-xs">
                             <span className="text-blue-600">กิน:</span>
                             <span className="font-medium">{dailySummary.total_calories || 0} kcal</span>
                           </div>
-                          <div className="flex justify-between text-xs font-semibold">
-                            <span className={dailySummary.total_calories > dailySummary.target_cal ? 'text-red-600' : 'text-emerald-600'}>
+                          <div className="flex justify-between text-xs font-semibold border-t border-gray-200 pt-1">
+                            <span className={dailySummary.total_calories > (dailySummary.recommended_cal || dailySummary.target_cal) ? 'text-red-600' : 'text-emerald-600'}>
                               ส่วนต่าง:
                             </span>
-                            <span className={dailySummary.total_calories > dailySummary.target_cal ? 'text-red-600' : 'text-emerald-600'}>
-                              {dailySummary.target_cal ? (dailySummary.total_calories - dailySummary.target_cal) : dailySummary.total_calories} kcal
+                            <span className={dailySummary.total_calories > (dailySummary.recommended_cal || dailySummary.target_cal) ? 'text-red-600' : 'text-emerald-600'}>
+                              {(dailySummary.recommended_cal || dailySummary.target_cal) ? (dailySummary.total_calories - (dailySummary.recommended_cal || dailySummary.target_cal)) : dailySummary.total_calories} kcal
                             </span>
                           </div>
                         </div>
@@ -428,20 +434,26 @@ export default function DailyUpdate() {
                       <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-sm">
                         <h5 className="font-medium text-gray-700 mb-2 text-sm">คาร์โบไฮเดรต</h5>
                         <div className="space-y-1">
+                          {dailySummary.recommended_carb && (
+                            <div className="flex justify-between text-xs">
+                              <span className="text-purple-600">แนะนำ:</span>
+                              <span className="font-medium">{dailySummary.recommended_carb}g</span>
+                            </div>
+                          )}
                           <div className="flex justify-between text-xs">
-                            <span className="text-green-600">เป้าหมาย:</span>
+                            <span className="text-green-600">แผน:</span>
                             <span className="font-medium">{dailySummary.target_carb || 0}g</span>
                           </div>
                           <div className="flex justify-between text-xs">
                             <span className="text-blue-600">กิน:</span>
                             <span className="font-medium">{dailySummary.total_carbs || 0}g</span>
                           </div>
-                          <div className="flex justify-between text-xs font-semibold">
-                            <span className={dailySummary.total_carbs > dailySummary.target_carb ? 'text-red-600' : 'text-emerald-600'}>
+                          <div className="flex justify-between text-xs font-semibold border-t border-gray-200 pt-1">
+                            <span className={dailySummary.total_carbs > (dailySummary.recommended_carb || dailySummary.target_carb) ? 'text-red-600' : 'text-emerald-600'}>
                               ส่วนต่าง:
                             </span>
-                            <span className={dailySummary.total_carbs > dailySummary.target_carb ? 'text-red-600' : 'text-emerald-600'}>
-                              {dailySummary.target_carb ? (dailySummary.total_carbs - dailySummary.target_carb) : dailySummary.total_carbs}g
+                            <span className={dailySummary.total_carbs > (dailySummary.recommended_carb || dailySummary.target_carb) ? 'text-red-600' : 'text-emerald-600'}>
+                              {(dailySummary.recommended_carb || dailySummary.target_carb) ? (dailySummary.total_carbs - (dailySummary.recommended_carb || dailySummary.target_carb)) : dailySummary.total_carbs}g
                             </span>
                           </div>
                         </div>
@@ -451,20 +463,26 @@ export default function DailyUpdate() {
                       <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-sm">
                         <h5 className="font-medium text-gray-700 mb-2 text-sm">ไขมัน</h5>
                         <div className="space-y-1">
+                          {dailySummary.recommended_fat && (
+                            <div className="flex justify-between text-xs">
+                              <span className="text-purple-600">แนะนำ:</span>
+                              <span className="font-medium">{dailySummary.recommended_fat}g</span>
+                            </div>
+                          )}
                           <div className="flex justify-between text-xs">
-                            <span className="text-green-600">เป้าหมาย:</span>
+                            <span className="text-green-600">แผน:</span>
                             <span className="font-medium">{dailySummary.target_fat || 0}g</span>
                           </div>
                           <div className="flex justify-between text-xs">
                             <span className="text-blue-600">กิน:</span>
                             <span className="font-medium">{dailySummary.total_fat || 0}g</span>
                           </div>
-                          <div className="flex justify-between text-xs font-semibold">
-                            <span className={dailySummary.total_fat > dailySummary.target_fat ? 'text-red-600' : 'text-emerald-600'}>
+                          <div className="flex justify-between text-xs font-semibold border-t border-gray-200 pt-1">
+                            <span className={dailySummary.total_fat > (dailySummary.recommended_fat || dailySummary.target_fat) ? 'text-red-600' : 'text-emerald-600'}>
                               ส่วนต่าง:
                             </span>
-                            <span className={dailySummary.total_fat > dailySummary.target_fat ? 'text-red-600' : 'text-emerald-600'}>
-                              {dailySummary.target_fat ? (dailySummary.total_fat - dailySummary.target_fat) : dailySummary.total_fat}g
+                            <span className={dailySummary.total_fat > (dailySummary.recommended_fat || dailySummary.target_fat) ? 'text-red-600' : 'text-emerald-600'}>
+                              {(dailySummary.recommended_fat || dailySummary.target_fat) ? (dailySummary.total_fat - (dailySummary.recommended_fat || dailySummary.target_fat)) : dailySummary.total_fat}g
                             </span>
                           </div>
                         </div>
@@ -474,20 +492,26 @@ export default function DailyUpdate() {
                       <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-sm">
                         <h5 className="font-medium text-gray-700 mb-2 text-sm">โปรตีน</h5>
                         <div className="space-y-1">
+                          {dailySummary.recommended_protein && (
+                            <div className="flex justify-between text-xs">
+                              <span className="text-purple-600">แนะนำ:</span>
+                              <span className="font-medium">{dailySummary.recommended_protein}g</span>
+                            </div>
+                          )}
                           <div className="flex justify-between text-xs">
-                            <span className="text-green-600">เป้าหมาย:</span>
+                            <span className="text-green-600">แผน:</span>
                             <span className="font-medium">{dailySummary.target_protein || 0}g</span>
                           </div>
                           <div className="flex justify-between text-xs">
                             <span className="text-blue-600">กิน:</span>
                             <span className="font-medium">{dailySummary.total_protein || 0}g</span>
                           </div>
-                          <div className="flex justify-between text-xs font-semibold">
-                            <span className={dailySummary.total_protein > dailySummary.target_protein ? 'text-red-600' : 'text-emerald-600'}>
+                          <div className="flex justify-between text-xs font-semibold border-t border-gray-200 pt-1">
+                            <span className={dailySummary.total_protein > (dailySummary.recommended_protein || dailySummary.target_protein) ? 'text-red-600' : 'text-emerald-600'}>
                               ส่วนต่าง:
                             </span>
-                            <span className={dailySummary.total_protein > dailySummary.target_protein ? 'text-red-600' : 'text-emerald-600'}>
-                              {dailySummary.target_protein ? (dailySummary.total_protein - dailySummary.target_protein) : dailySummary.total_protein}g
+                            <span className={dailySummary.total_protein > (dailySummary.recommended_protein || dailySummary.target_protein) ? 'text-red-600' : 'text-emerald-600'}>
+                              {(dailySummary.recommended_protein || dailySummary.target_protein) ? (dailySummary.total_protein - (dailySummary.recommended_protein || dailySummary.target_protein)) : dailySummary.total_protein}g
                             </span>
                           </div>
                         </div>
