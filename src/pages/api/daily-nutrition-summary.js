@@ -196,7 +196,42 @@ export default async function handler(req, res) {
 
       console.log('Eating totals:', eatingRecords);
 
-      // 2. Calculate targets from user_food_plans
+      // 4. Get latest weight from user_weight_logs for the selected date
+      let latestWeight = null;
+      try {
+        // First, try to get weight from the specific date
+        let weightLog = await db('user_weight_logs')
+          .where('user_id', user_id)
+          .whereRaw('DATE(logged_at) = ?', [summary_date])
+          .orderBy('logged_at', 'desc')
+          .select('weight')
+          .first();
+
+        if (weightLog) {
+          latestWeight = parseFloat(weightLog.weight);
+          console.log('Weight found for specific date:', latestWeight);
+        } else {
+          // If no weight found for that date, get the latest weight overall
+          console.log('No weight found for specific date, fetching latest weight overall');
+          
+          weightLog = await db('user_weight_logs')
+            .where('user_id', user_id)
+            .orderBy('logged_at', 'desc')
+            .select('weight')
+            .first();
+
+          if (weightLog) {
+            latestWeight = parseFloat(weightLog.weight);
+            console.log('Latest weight overall:', latestWeight);
+          } else {
+            console.log('No weight logs found for user');
+          }
+        }
+      } catch (weightError) {
+        console.error('Error fetching weight log:', weightError);
+      }
+
+      // 5. Calculate targets from user_food_plans
       let targets = {
         target_cal: null,
         target_fat: null,
@@ -286,7 +321,7 @@ export default async function handler(req, res) {
         }
       }
 
-      // 4. Check if record exists
+      // 6. Check if record exists
       const existingRecord = await db('daily_nutrition_summary')
         .where('user_id', user_id)
         .where('summary_date', summary_date)
@@ -299,6 +334,7 @@ export default async function handler(req, res) {
         total_fat: eatingRecords.total_fat,
         total_protein: eatingRecords.total_protein,
         total_carbs: eatingRecords.total_carbs,
+        weight: latestWeight, // Add the latest weight from user_weight_logs
         ...targets,
         ...recommendedNutrition
       };
