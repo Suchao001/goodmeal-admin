@@ -3,6 +3,7 @@ import Layout from "@/components/Layout";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Icon } from '@iconify/react';
+import { showToast, showConfirm } from '@/lib/sweetAlert';
 
 export default function UserManagement() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,6 +16,7 @@ export default function UserManagement() {
   const [newStatus, setNewStatus] = useState("");
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -31,6 +33,7 @@ export default function UserManagement() {
       }
     } catch (error) {
       console.error("Error fetching users:", error);
+      showToast.error('เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้งาน');
     } finally {
       setLoading(false);
     }
@@ -65,6 +68,22 @@ export default function UserManagement() {
   const closeModal = () => { setIsModalOpen(false); setSelectedUser(null); setNewStatus(""); setReason(""); };
 
   const handleSave = async () => {
+    // Show confirmation for potentially destructive actions
+    if (newStatus === 'suspended' || newStatus === 'inactive') {
+      const actionText = newStatus === 'suspended' ? 'ระงับบัญชี' : 'ปิดใช้งานบัญชี';
+      const confirmed = await showConfirm({
+        title: `ยืนยันการ${actionText}`,
+        text: `คุณแน่ใจหรือไม่ที่จะ${actionText}ของ "${selectedUser.username}"?`,
+        confirmButtonText: `ยืนยัน${actionText}`,
+        cancelButtonText: 'ยกเลิก'
+      });
+      
+      if (!confirmed) {
+        return; // User cancelled
+      }
+    }
+
+    setSaving(true);
     try {
       const response = await axios.put(`/api/user/${selectedUser.id}/status`, {
         account_status: newStatus,
@@ -78,12 +97,15 @@ export default function UserManagement() {
           updated_at: response.data.user.updated_at 
         } : u));
         closeModal();
+        showToast.success('อัพเดตสถานะผู้ใช้งานสำเร็จ');
       } else { 
-        alert('เกิดข้อผิดพลาดในการอัพเดตสถานะ'); 
+        showToast.error('เกิดข้อผิดพลาดในการอัพเดตสถานะ');
       }
     } catch (error) {
       console.error("Error updating user status:", error);
-      alert('เกิดข้อผิดพลาด: ' + (error.response?.data?.error || error.message));
+      showToast.error('เกิดข้อผิดพลาด: ' + (error.response?.data?.error || error.message));
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -470,11 +492,20 @@ export default function UserManagement() {
                 </button>
                 <button 
                   onClick={handleSave} 
-                  disabled={newStatus === 'suspended' && !reason.trim()}
+                  disabled={saving || (newStatus === 'suspended' && !reason.trim())}
                   className="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
                 >
-                  <Icon icon="heroicons:check-circle-20-solid" className="text-lg" />
-                  บันทึกการเปลี่ยนแปลง
+                  {saving ? (
+                    <>
+                      <Icon icon="mdi:loading" className="text-lg animate-spin" />
+                      กำลังบันทึก...
+                    </>
+                  ) : (
+                    <>
+                      <Icon icon="heroicons:check-circle-20-solid" className="text-lg" />
+                      บันทึกการเปลี่ยนแปลง
+                    </>
+                  )}
                 </button>
               </div>
             </div>
