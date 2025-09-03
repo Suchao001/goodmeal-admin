@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import SampleUserIcon from "../images/Sample_User_Icon.png";
 import { theme } from '@/lib/theme';
+import { showConfirm } from '@/lib/sweetAlert';
 
 export default function Topbar({ toggleSidebar, isSidebarOpen }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -30,10 +31,20 @@ export default function Topbar({ toggleSidebar, isSidebarOpen }) {
         router.push('/admin-profile');
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         setIsDropdownOpen(false);
-        // Add logout logic here
-        if (confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
+        
+        const confirmed = await showConfirm({
+            title: 'ออกจากระบบ?',
+            text: 'คุณต้องการออกจากระบบใช่หรือไม่?',
+            icon: 'question',
+            confirmButtonText: 'ออกจากระบบ',
+            cancelButtonText: 'ยกเลิก',
+            confirmButtonColor: '#dc2626', // Red color for logout
+            showCancelButton: true
+        });
+
+        if (confirmed) {
             // Clear any auth tokens/data
             localStorage.removeItem('authToken'); // Example
             router.push('/login');
