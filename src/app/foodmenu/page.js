@@ -9,6 +9,7 @@ import FoodCategoryModal from '@/components/food/FoodCategoryModal';
 import FoodFilters from '@/components/food/FoodFilters';
 import { Icon } from '@iconify/react';
 import { theme } from '@/lib/theme';
+import { showToast, showConfirm } from '@/lib/sweetAlert';
 
 export default function MenuManagement() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -156,38 +157,44 @@ export default function MenuManagement() {
             if (res.ok) {
                 console.log('Food updated successfully');
                 await fetchFoods(); // Refresh the foods list
+                showToast.success('อัพเดตเมนูอาหารเรียบร้อยแล้ว');
             } else {
                 const errorData = await res.json();
                 console.error('Failed to update food:', errorData);
-                alert('ไม่สามารถบันทึกข้อมูลได้: ' + (errorData.error || 'เกิดข้อผิดพลาด'));
+                showToast.error('ไม่สามารถบันทึกข้อมูลได้: ' + (errorData.error || 'เกิดข้อผิดพลาด'));
             }
         } catch (error) {
             console.error('Error updating food:', error);
-            alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+            showToast.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
         }
-        console.log('=============================');
     };
 
     const handleDeleteFood = async (food) => {
-        if (confirm(`คุณต้องการลบเมนู "${food.name}" หรือไม่?`)) {
-            try {
-                const res = await fetch('/api/foods', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ id: food.id }),
-                });
-
-                if (res.ok) {
-                    setFoods(foods.filter(f => f.id !== food.id));
-                } else {
-                    console.error('Failed to delete food');
-                }
-            } catch (error) {
-                console.error('Error deleting food:', error);
-            }
+      const confirmed = await showConfirm({
+        title: `ย้ายไปยังถังขยะ?`,
+        text: `คุณต้องการย้าย "${food.name}" ไปยังถังขยะหรือไม่?\n\n(ข้อมูลจะถูกซ่อนจากรายการ แต่ยังสามารถกู้คืนได้)`,
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก'
+      });
+      if (!confirmed) return;
+      try {
+        const res = await fetch('/api/foods', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: food.id }),
+        });
+        if (res.ok) {
+          setFoods(foods.filter(f => f.id !== food.id));
+          showToast.success('ย้ายเมนูไปยังถังขยะเรียบร้อยแล้ว');
+        } else {
+          const errorData = await res.json();
+          console.error('Failed to delete food:', errorData);
+          showToast.error('ไม่สามารถย้ายเมนูไปยังถังขยะได้: ' + (errorData.error || 'เกิดข้อผิดพลาด'));
         }
+      } catch (error) {
+        console.error('Error deleting food:', error);
+        showToast.error('เกิดข้อผิดพลาดในการย้ายเมนูไปยังถังขยะ');
+      }
     };
 
     const handleAddCategory = async (categoryName) => {

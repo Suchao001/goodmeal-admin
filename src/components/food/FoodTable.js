@@ -99,10 +99,11 @@ export default function FoodTable({
                     </button>
                     <button
                       onClick={() => onDelete(food)}
-                      className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                      className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                      title="ย้ายไปถังขยะ (สามารถกู้คืนได้)"
                     >
-                      <Icon icon="heroicons:trash-20-solid" className="text-base" />
-                      ลบ
+                      <Icon icon="heroicons:archive-box-20-solid" className="text-base" />
+                      ย้ายถังขยะ
                     </button>
                   </div>
                 </td>

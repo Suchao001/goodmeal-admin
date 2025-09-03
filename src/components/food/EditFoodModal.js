@@ -27,6 +27,8 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
       console.log('Food data received:', food);
       console.log('Food ingredients:', food.ingredients);
       console.log('Food categories:', food.categories);
+      console.log('Food image field:', food.image);
+      console.log('Food img field:', food.img);
       
       setFormData({
         name: food.name || '',
@@ -42,9 +44,18 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
       console.log('Current categories mapped:', currentCategories);
       setSelectedCategories(currentCategories);
       
-      // Set current image
-      setCurrentImage(food.image);
-      setImagePreview(food.image);
+      // Set current image - using 'img' field to match FoodTable
+      const imageUrl = food.img || food.image; // Support both field names
+      // Ensure the image URL is properly formatted
+      const fullImageUrl = imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/') 
+        ? `/foods/${imageUrl}` 
+        : imageUrl;
+      
+      console.log('Raw image URL:', imageUrl);
+      console.log('Full image URL:', fullImageUrl);
+      
+      setCurrentImage(fullImageUrl);
+      setImagePreview(fullImageUrl);
       
       // Parse ingredients into array
       const ingredientsList = food.ingredients ? 
@@ -252,12 +263,25 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
                         alt="Food preview"
                         fill
                         className="object-cover"
+                        onError={(e) => {
+                          console.log('Image load error:', imagePreview);
+                          // Fallback to placeholder on error
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
                       />
+                      <div className="hidden flex-col items-center justify-center h-full text-gray-400">
+                        <Icon icon="ph:image" className="text-4xl mb-2" />
+                        <span className="text-sm">ไม่สามารถโหลดรูปภาพได้</span>
+                      </div>
                       <button
                         type="button"
                         onClick={() => {
                           setImagePreview(currentImage);
                           setImageFile(null);
+                          // Clear the file input
+                          const fileInput = document.querySelector('input[type="file"]');
+                          if (fileInput) fileInput.value = '';
                         }}
                         className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
                       >

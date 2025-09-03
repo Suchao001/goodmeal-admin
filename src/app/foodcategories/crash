@@ -66,20 +66,7 @@ export default function FoodCategoriesManagement() {
         showToast.success('แก้ไขหมวดหมู่อาหารเรียบร้อยแล้ว');
       } else {
         const error = await res.json();
-        let errorMessage = 'เกิดข้อผิดพลาดในการแก้ไขหมวดหมู่อาหาร';
-        
-        // Translate specific error messages to Thai
-        if (error.error === 'Category name already exists') {
-          errorMessage = 'ชื่อหมวดหมู่นี้มีอยู่แล้ว กรุณาใช้ชื่อใหม่';
-        } else if (error.error === 'Category name is required') {
-          errorMessage = 'กรุณากรอกชื่อหมวดหมู่';
-        } else if (error.error === 'Category not found') {
-          errorMessage = 'ไม่พบหมวดหมู่ที่ต้องการแก้ไข';
-        } else if (error.error) {
-          errorMessage = error.error;
-        }
-        
-        showToast.error(errorMessage);
+        showToast.error(error.error || 'เกิดข้อผิดพลาดในการแก้ไขหมวดหมู่อาหาร');
       }
     } catch (error) {
       console.error('Error updating category:', error);
@@ -117,16 +104,7 @@ export default function FoodCategoriesManagement() {
         showToast.success('ย้ายหมวดหมู่ไปยังถังขยะเรียบร้อยแล้ว');
       } else {
         const error = await res.json();
-        let errorMessage = 'เกิดข้อผิดพลาดในการลบหมวดหมู่อาหาร';
-        
-        // Translate specific error messages to Thai
-        if (error.error === 'Cannot delete category that is in use by active foods') {
-          errorMessage = 'ไม่สามารถลบหมวดหมู่นี้ได้ เนื่องจากมีอาหารที่ยังใช้อยู่';
-        } else if (error.error) {
-          errorMessage = error.error;
-        }
-        
-        showToast.error(errorMessage);
+        showToast.error(error.error || 'เกิดข้อผิดพลาดในการลบหมวดหมู่อาหาร');
       }
     } catch (error) {
       console.error('Error deleting category:', error);
@@ -146,23 +124,12 @@ export default function FoodCategoriesManagement() {
 
       if (res.ok) {
         const newCategory = await res.json();
-        setCategories([newCategory, ...categories]);
+        setCategories([newCategory, ...categories]); // เพิ่มที่ด้านบนสำหรับรายการใหม่
         showToast.success('เพิ่มหมวดหมู่อาหารเรียบร้อยแล้ว');
-        setIsCategoryModalOpen(false);
+        setIsCategoryModalOpen(false); // ปิด Modal หลังเพิ่มสำเร็จ
       } else {
         const error = await res.json();
-        let errorMessage = 'เกิดข้อผิดพลาดในการเพิ่มหมวดหมู่อาหาร';
-        
-        // Translate specific error messages to Thai
-        if (error.error === 'Category name already exists') {
-          errorMessage = 'ชื่อหมวดหมู่นี้มีอยู่แล้ว กรุณาใช้ชื่อใหม่';
-        } else if (error.error === 'Category name is required') {
-          errorMessage = 'กรุณากรอกชื่อหมวดหมู่';
-        } else if (error.error) {
-          errorMessage = error.error;
-        }
-        
-        showToast.error(errorMessage);
+        showToast.error(error.error || 'เกิดข้อผิดพลาดในการเพิ่มหมวดหมู่อาหาร');
       }
     } catch (error) {
       console.error('Error adding category:', error);
@@ -200,7 +167,7 @@ export default function FoodCategoriesManagement() {
                   </div>
                   <div>
                     <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-800 to-teal-700 bg-clip-text text-transparent">
-                      จัดการหมวดหมู่อาหาร
+                      จัดการประเภทอาหาร
                     </h1>
                   </div>
                 </div>
@@ -211,7 +178,7 @@ export default function FoodCategoriesManagement() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
                   <div className="text-2xl font-bold text-emerald-700">{categories.length}</div>
-                  <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">หมวดหมู่ทั้งหมด</div>
+                  <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">ประเภททั้งหมด</div>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-amber-100/50 shadow-sm">
                   <div className="text-2xl font-bold text-amber-600">
@@ -224,6 +191,7 @@ export default function FoodCategoriesManagement() {
           </div>
         </div>
 
+     
         {/* Action Bar */}
         <div className="mb-6">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-emerald-100/50 shadow-lg p-4">
@@ -232,33 +200,143 @@ export default function FoodCategoriesManagement() {
                 <Icon icon="material-symbols:category-outline" className="text-emerald-600 text-xl" />
                 <h3 className="font-semibold text-emerald-800">รายการหมวดหมู่อาหาร</h3>
               </div>
-              <div className="flex items-center gap-3">
-                <button 
-                  onClick={() => setIsCategoryModalOpen(true)} 
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
-                >
-                  <Icon icon="heroicons:plus-20-solid" className="text-lg" />
-                  เพิ่มหมวดหมู่ใหม่
-                </button>
-                <button
-                  onClick={() => router.push('/foodmenu')}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-slate-600 to-slate-500 text-white font-medium shadow-lg shadow-slate-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
-                >
-                  <Icon icon="heroicons:arrow-left-20-solid" className="text-lg" />
-                  กลับไปเมนูอาหาร
-                </button>
-              </div>
+              <button 
+                onClick={() => setIsCategoryModalOpen(true)} 
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+              >
+                <Icon icon="heroicons:plus-20-solid" className="text-lg" />
+                เพิ่มหมวดหมู่ใหม่
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Categories Table */}
+        {/* Categories Grid */}
         <div className="bg-white/80 backdrop-blur-sm shadow-xl shadow-emerald-900/5 rounded-2xl border border-emerald-100/50 overflow-hidden">
+          {categories.length === 0 ? (
+            <div className="py-16 text-center">
+              <div className="flex flex-col items-center gap-4">
+                <Icon icon="material-symbols:category-outline" className="text-6xl text-slate-300" />
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-600 mb-2">ยังไม่มีหมวดหมู่อาหาร</h3>
+                  <p className="text-slate-400">เริ่มต้นโดยการเพิ่มหมวดหมู่อาหารใหม่</p>
+                </div>
+                <button 
+                  onClick={() => setIsCategoryModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-lg hover:scale-105 transition-all duration-200"
+                >
+                  <Icon icon="heroicons:plus-20-solid" className="text-lg" />
+                  เพิ่มหมวดหมู่แรก
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-6">
+              {categories.map((category) => (
+                <div 
+                  key={category.id} 
+                  className={`relative group border border-emerald-100 rounded-2xl p-6 transition-all duration-200 hover:shadow-lg ${
+                    editingCategory === category.id 
+                      ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 ring-2 ring-amber-200' 
+                      : 'bg-gradient-to-br from-emerald-50/50 to-teal-50/30 hover:border-emerald-200'
+                  }`}
+                >
+                  {editingCategory === category.id ? (
+                    // Edit Mode
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-amber-600 mb-2">
+                        <Icon icon="heroicons:pencil-20-solid" className="text-lg" />
+                        <span className="font-medium text-sm">กำลังแก้ไข</span>
+                      </div>
+                      
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-amber-200 bg-white focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 text-lg font-medium"
+                        placeholder="ชื่อหมวดหมู่"
+                        autoFocus
+                        onKeyPress={(e) => e.key === 'Enter' && handleSaveEdit(category.id)}
+                      />
+                      
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleSaveEdit(category.id)}
+                          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium text-sm hover:scale-105 transition-all duration-200 shadow-md"
+                        >
+                          <Icon icon="heroicons:check-20-solid" className="text-base" />
+                          บันทึก
+                        </button>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-700 font-medium text-sm hover:bg-slate-200 transition-all duration-200"
+                        >
+                          <Icon icon="heroicons:x-mark-20-solid" className="text-base" />
+                          ยกเลิก
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // View Mode
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                            {category.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-emerald-800 text-lg group-hover:text-emerald-900 transition-colors">
+                              {category.name}
+                            </h3>
+                            <p className="text-emerald-600/70 text-sm">ID: {category.id}</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2 pt-2 border-t border-emerald-100">
+                        <button
+                          onClick={() => handleEdit(category)}
+                          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white font-medium text-sm hover:scale-105 transition-all duration-200 shadow-md"
+                        >
+                          <Icon icon="heroicons:pencil-20-solid" className="text-base" />
+                          แก้ไข
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category.id, category.name)}
+                          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-orange-600 to-red-500 text-white font-medium text-sm hover:scale-105 transition-all duration-200 shadow-md"
+                        >
+                          <Icon icon="heroicons:archive-box-20-solid" className="text-base" />
+                          ย้ายถังขยะ
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+                >
+            <Icon icon="heroicons:plus-20-solid" className="text-lg" />
+            เพิ่มประเภทอาหาร
+                </button>
+                <button
+            onClick={() => router.push('/foodmenu')}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-slate-600 to-slate-500 text-white font-medium shadow-lg shadow-slate-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                >
+            <Icon icon="heroicons:arrow-left-20-solid" className="text-lg" />
+            กลับไปที่เมนูอาหาร
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Enhanced Categories Table */}
+        <div className="bg-white/80 backdrop-blur-sm shadow-xl shadow-emerald-900/5 rounded-3xl border border-emerald-100/50 overflow-hidden">
           <div className="bg-gradient-to-r from-emerald-600/10 via-teal-600/10 to-cyan-600/10 px-6 py-4 border-b border-emerald-100/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Icon icon="heroicons:table-cells-20-solid" className="text-emerald-600 text-xl" />
-                <h3 className="font-semibold text-emerald-800">รายการหมวดหมู่อาหาร</h3>
+                <h3 className="font-semibold text-emerald-800">รายการประเภทอาหาร</h3>
                 <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
                   {categories.length} รายการ
                 </span>
@@ -270,9 +348,9 @@ export default function FoodCategoriesManagement() {
             <table className="min-w-full text-left">
               <thead className="bg-emerald-50/50 text-emerald-800 text-sm font-semibold uppercase tracking-wide">
                 <tr>
-                  <th className="px-6 py-4 w-20">ลำดับ</th>
-                  <th className="px-6 py-4 w-96">ชื่อหมวดหมู่อาหาร</th>
-                  <th className="px-6 py-4 text-center w-48">การจัดการ</th>
+                  <th className="px-6 py-4">ลำดับ</th>
+                  <th className="px-6 py-4">ชื่อประเภทอาหาร</th>
+                  <th className="px-6 py-4 text-center">การจัดการ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-emerald-100/50">
@@ -280,18 +358,9 @@ export default function FoodCategoriesManagement() {
                   <tr>
                     <td colSpan={3} className="py-16 text-center">
                       <div className="flex flex-col items-center gap-4">
-                        <Icon icon="material-symbols:category-outline" className="text-6xl text-slate-300" />
-                        <div>
-                          <h3 className="text-lg font-semibold text-slate-600 mb-2">ยังไม่มีหมวดหมู่อาหาร</h3>
-                          <p className="text-slate-400">เริ่มต้นโดยการเพิ่มหมวดหมู่อาหารใหม่</p>
-                        </div>
-                        <button 
-                          onClick={() => setIsCategoryModalOpen(true)}
-                          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-lg hover:scale-105 transition-all duration-200"
-                        >
-                          <Icon icon="heroicons:plus-20-solid" className="text-lg" />
-                          เพิ่มหมวดหมู่แรก
-                        </button>
+                        <Icon icon="heroicons:face-frown-20-solid" className="text-4xl text-slate-400" />
+                        <span className="text-slate-500 font-medium">ไม่มีประเภทอาหาร</span>
+                        <span className="text-sm text-slate-400">เริ่มต้นด้วยการเพิ่มประเภทอาหารใหม่</span>
                       </div>
                     </td>
                   </tr>
@@ -310,7 +379,7 @@ export default function FoodCategoriesManagement() {
                               type="text"
                               value={editName}
                               onChange={(e) => setEditName(e.target.value)}
-                              className="w-full px-4 py-3 rounded-xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 text-sm font-medium transition-all duration-200"
+                              className="w-full px-4 py-3 rounded-2xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 text-sm font-medium transition-all duration-200"
                               onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
                                   handleSaveEdit(category.id);
@@ -318,7 +387,6 @@ export default function FoodCategoriesManagement() {
                                   handleCancelEdit();
                                 }
                               }}
-                              placeholder="ชื่อหมวดหมู่"
                               autoFocus
                             />
                             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-emerald-500">
@@ -328,10 +396,7 @@ export default function FoodCategoriesManagement() {
                         ) : (
                           <div className="flex items-center gap-3">
                             <Icon icon="material-symbols:category" className="text-emerald-500 text-xl" />
-                            <div>
-                              <span className="font-semibold text-slate-800 text-lg">{category.name}</span>
-                            
-                            </div>
+                            <span className="font-semibold text-slate-800 text-lg">{category.name}</span>
                           </div>
                         )}
                       </td>
@@ -339,24 +404,36 @@ export default function FoodCategoriesManagement() {
                         <div className="flex items-center justify-center gap-2">
                           {editingCategory === category.id ? (
                             <>
-                              <button onClick={() => handleSaveEdit(category.id)} className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200">
+                              <button
+                                onClick={() => handleSaveEdit(category.id)}
+                                className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                              >
                                 <Icon icon="heroicons:check-20-solid" className="text-base" />
                                 บันทึก
                               </button>
-                              <button onClick={handleCancelEdit} className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-slate-600 to-slate-500 hover:from-slate-700 hover:to-slate-600 text-white text-sm font-medium shadow-lg shadow-slate-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200">
+                              <button
+                                onClick={handleCancelEdit}
+                                className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-slate-600 to-slate-500 hover:from-slate-700 hover:to-slate-600 text-white text-sm font-medium shadow-lg shadow-slate-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                              >
                                 <Icon icon="heroicons:x-mark-20-solid" className="text-base" />
                                 ยกเลิก
                               </button>
                             </>
                           ) : (
                             <>
-                              <button onClick={() => handleEdit(category)} className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white text-sm font-medium shadow-lg shadow-amber-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200">
+                              <button
+                                onClick={() => handleEdit(category)}
+                                className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white text-sm font-medium shadow-lg shadow-amber-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                              >
                                 <Icon icon="heroicons:pencil-20-solid" className="text-base" />
                                 แก้ไข
                               </button>
-                              <button onClick={() => handleDelete(category.id, category.name)} className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200">
-                                <Icon icon="heroicons:archive-box-20-solid" className="text-base" />
-                                ย้ายถังขยะ
+                              <button
+                                onClick={() => handleDelete(category.id, category.name)}
+                                className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                              >
+                                <Icon icon="heroicons:trash-20-solid" className="text-base" />
+                                ลบ
                               </button>
                             </>
                           )}
@@ -370,11 +447,10 @@ export default function FoodCategoriesManagement() {
           </div>
         </div>
 
-        {/* Add Category Modal */}
         <FoodCategoryModal
           isOpen={isCategoryModalOpen}
           onClose={() => setIsCategoryModalOpen(false)}
-          onSave={handleAddCategory}
+          onAddCategory={handleAddCategory}
         />
       </div>
     </Layout>

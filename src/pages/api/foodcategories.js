@@ -5,6 +5,7 @@ export default async function handler(req, res) {
     try {
       const categories = await db('food_category')
         .select('id', 'name')
+        .where('is_delete', false) // เฉพาะหมวดหมู่ที่ไม่ถูกลบ
         .orderBy('id', 'desc');
       res.status(200).json(categories);
     } catch (error) {
@@ -18,7 +19,8 @@ export default async function handler(req, res) {
       }
 
       const [categoryId] = await db('food_category').insert({
-        name
+        name,
+        is_delete: false // ตั้งค่าเริ่มต้นเป็น false (ไม่ถูกลบ)
       });
 
       res.status(201).json({ id: categoryId, name, message: 'Category created successfully' });
@@ -40,10 +42,11 @@ export default async function handler(req, res) {
 
       const updated = await db('food_category')
         .where('id', id)
+        .where('is_delete', false) // เฉพาะหมวดหมู่ที่ไม่ถูกลบ
         .update({ name });
 
       if (updated === 0) {
-        return res.status(404).json({ error: 'Category not found' });
+        return res.status(404).json({ error: 'Category not found or has been deleted' });
       }
 
       res.status(200).json({ id, name, message: 'Category updated successfully' });
@@ -63,24 +66,47 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Category ID is required' });
       }
 
-      // Check if category is being used by any foods
+      // Check if category exists and is not already deleted
+      const category = await db('food_category')
+        .where('id', id)
+        .where('is_delete', false)
+        .select('id', 'name')
+        .first();
+
+      if (!category) {
+        return res.status(404).json({ error: 'Category not found or already deleted' });
+      }
+
+      // Check if category is being used by any non-deleted foods
       const categoryInUse = await db('food_category_map')
-        .where('category_id', id)
+        .join('foods', 'food_category_map.food_id', 'foods.id')
+        .where('food_category_map.category_id', id)
+        .where('foods.is_delete', false) // เฉพาะอาหารที่ไม่ถูกลบ
         .first();
 
       if (categoryInUse) {
-        return res.status(400).json({ error: 'Cannot delete category that is in use by foods' });
+        return res.status(400).json({ error: 'Cannot delete category that is in use by active foods' });
       }
 
-      const deleted = await db('food_category')
+      // Soft delete: Mark as deleted instead of actually deleting
+      const updated = await db('food_category')
         .where('id', id)
-        .del();
+        .update({
+          is_delete: true,
+          updated_at: db.fn.now() // Update timestamp if you have this column
+        });
 
-      if (deleted === 0) {
-        return res.status(404).json({ error: 'Category not found' });
+      if (updated === 0) {
+        return res.status(404).json({ error: 'Failed to delete category' });
       }
 
-      res.status(200).json({ message: 'Category deleted successfully' });
+      res.status(200).json({ 
+        message: 'Category deleted successfully',
+        category: {
+          id: category.id,
+          name: category.name
+        }
+      });
     } catch (error) {
       console.error('Error deleting category:', error);
       res.status(500).json({ error: 'Failed to delete category' });

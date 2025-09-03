@@ -4,7 +4,7 @@ import { deleteImageFile } from '@/lib/imageUpload';
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      // Get all foods with their categories
+      // Get all foods with their categories (exclude deleted items)
       const foods = await db('foods')
         .leftJoin('food_category_map', 'foods.id', 'food_category_map.food_id')
         .leftJoin('food_category', 'food_category_map.category_id', 'food_category.id')
@@ -20,6 +20,7 @@ export default async function handler(req, res) {
           'food_category.id as category_id',
           'food_category.name as category_name'
         )
+        .where('foods.is_delete', false) // เฉพาะข้อมูลที่ไม่ถูกลบ
         .orderBy('foods.id', 'desc');
 
       // Group foods by id and collect categories
@@ -60,7 +61,7 @@ export default async function handler(req, res) {
     try {
       const { name, calories, carbohydrates, fat, protein, image, ingredients, categories } = req.body;
 
-      // Insert the food
+      // Insert the food with is_delete = false as default
       const [foodId] = await db('foods').insert({
         name,
         cal: calories,
@@ -68,10 +69,10 @@ export default async function handler(req, res) {
         fat,
         protein,
         img: image,
-        ingredient: ingredients
+        ingredient: ingredients,
+        is_delete: false 
       });
 
-      // Insert category mappings if categories are provided
       if (categories && categories.length > 0) {
         const categoryMappings = categories.map(categoryId => ({
           food_id: foodId,
@@ -93,14 +94,15 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Food ID is required' });
       }
 
-      // Get current food data to check for old image
+      // Get current food data to check for old image (only if not deleted)
       const currentFood = await db('foods')
         .where('id', id)
+        .where('is_delete', false) // เฉพาะข้อมูลที่ไม่ถูกลบ
         .select('img')
         .first();
 
       if (!currentFood) {
-        return res.status(404).json({ error: 'Food not found' });
+        return res.status(404).json({ error: 'Food not found or has been deleted' });
       }
 
       // If image is being changed, delete the old image
@@ -108,9 +110,10 @@ export default async function handler(req, res) {
         deleteImageFile(currentFood.img);
       }
 
-      // Update the food
+      // Update the food (only if not deleted)
       const updated = await db('foods')
         .where('id', id)
+        .where('is_delete', false) // ป้องกันการอัพเดทข้อมูลที่ถูกลบแล้ว
         .update({
           name,
           cal: calories,
@@ -153,32 +156,35 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Food ID is required' });
       }
 
-      // Get the food data to get the image path before deletion
+      // Check if food exists and is not already deleted
       const food = await db('foods')
         .where('id', id)
-        .select('img')
+        .where('is_delete', false)
+        .select('id', 'name', 'img')
         .first();
 
       if (!food) {
-        return res.status(404).json({ error: 'Food not found' });
+        return res.status(404).json({ error: 'Food not found or already deleted' });
       }
 
-      // Delete category mappings first
-      await db('food_category_map').where('food_id', id).del();
-      
-      // Delete the food
-      const deleted = await db('foods').where('id', id).del();
+      // Soft delete: Mark as deleted instead of actually deleting
+      const updated = await db('foods')
+        .where('id', id)
+        .update({
+          is_delete: true,
+        });
 
-      if (deleted === 0) {
-        return res.status(404).json({ error: 'Food not found' });
+      if (updated === 0) {
+        return res.status(404).json({ error: 'Failed to delete food' });
       }
 
-      // Delete the associated image file
-      if (food.img) {
-        deleteImageFile(food.img);
-      }
-
-      res.status(200).json({ message: 'Food deleted successfully' });
+      res.status(200).json({ 
+        message: 'Food deleted successfully',
+        food: {
+          id: food.id,
+          name: food.name
+        }
+      });
     } catch (error) {
       console.error('Error deleting food:', error);
       res.status(500).json({ error: 'Failed to delete food' });
