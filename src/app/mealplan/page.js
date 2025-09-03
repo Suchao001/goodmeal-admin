@@ -5,6 +5,7 @@ import { MealPlanTable, MealPlanModal } from "../../components/mealplan";
 import Pagination from "../../components/Pagination";
 import { Icon } from '@iconify/react';
 import { theme } from '@/lib/theme';
+import { showToast, showConfirm } from '@/lib/sweetAlert';
 
 export default function MealPlanManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,9 +29,11 @@ export default function MealPlanManagement() {
         setMealPlans(data);
       } else {
         console.error('Failed to fetch meal plans');
+        showToast.error('ไม่สามารถดึงข้อมูลแผนอาหารได้');
       }
     } catch (err) {
       console.error('Error fetching meal plans:', err);
+      showToast.error('เกิดข้อผิดพลาดในการเชื่อมต่อ');
     } finally {
       setIsLoading(false);
     }
@@ -65,9 +68,10 @@ export default function MealPlanManagement() {
 
         if (res.ok) {
           await fetchMealPlans(); // Refresh the list
+          showToast.success('แก้ไขแผนอาหารเรียบร้อยแล้ว');
         } else {
           const error = await res.json();
-          alert(error.error || 'เกิดข้อผิดพลาดในการแก้ไขแผนอาหาร');
+          showToast.error(error.error || 'เกิดข้อผิดพลาดในการแก้ไขแผนอาหาร');
         }
       } else {        // Add new plan
         const res = await fetch('/api/meal-plans', {
@@ -85,39 +89,58 @@ export default function MealPlanManagement() {
 
         if (res.ok) {
           await fetchMealPlans(); // Refresh the list
+          showToast.success('เพิ่มแผนอาหารเรียบร้อยแล้ว');
         } else {
           const error = await res.json();
-          alert(error.error || 'เกิดข้อผิดพลาดในการเพิ่มแผนอาหาร');
+          showToast.error(error.error || 'เกิดข้อผิดพลาดในการเพิ่มแผนอาหาร');
         }
       }
     } catch (error) {
       console.error('Error saving meal plan:', error);
-      alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+      showToast.error('เกิดข้อผิดพลาดในการเชื่อมต่อ');
     }
     closeModal();
   };
 
   const deletePlan = async (planId, planName) => {
-    if (confirm(`คุณต้องการลบแผนอาหาร "${planName}" หรือไม่?`)) {
-      try {
-        const res = await fetch('/api/meal-plans', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ plan_id: planId }),
-        });
+    const confirmed = await showConfirm({
+      title: 'ย้ายไปยังถังขยะ?',
+      text: `คุณต้องการย้าย "${planName}" ไปยังถังขยะหรือไม่?\n\n(ข้อมูลจะถูกซ่อนจากรายการ แต่ยังสามารถกู้คืนได้)`,
+      icon: 'warning',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    });
 
-        if (res.ok) {
-          setMealPlans(mealPlans.filter(plan => plan.plan_id !== planId));
-        } else {
-          const error = await res.json();
-          alert(error.error || 'เกิดข้อผิดพลาดในการลบแผนอาหาร');
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch('/api/meal-plans', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ plan_id: planId }),
+      });
+
+      if (res.ok) {
+        setMealPlans(mealPlans.filter(plan => plan.plan_id !== planId));
+        showToast.success('ย้ายแผนอาหารไปยังถังขยะเรียบร้อยแล้ว');
+      } else {
+        const error = await res.json();
+        let errorMessage = 'เกิดข้อผิดพลาดในการลบแผนอาหาร';
+        
+        // Translate specific error messages to Thai
+        if (error.error === 'Meal plan not found or already deleted') {
+          errorMessage = 'ไม่พบแผนอาหารหรือถูกลบไปแล้ว';
+        } else if (error.error) {
+          errorMessage = error.error;
         }
-      } catch (error) {
-        console.error('Error deleting meal plan:', error);
-        alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        
+        showToast.error(errorMessage);
       }
+    } catch (error) {
+      console.error('Error deleting meal plan:', error);
+      showToast.error('เกิดข้อผิดพลาดในการเชื่อมต่อ');
     }
   };
 

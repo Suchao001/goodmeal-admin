@@ -6,6 +6,7 @@ export default async function handler(req, res) {
     try {
       const plans = await db('global_food_plan')
         .select('plan_id', 'plan_name', 'duration', 'description', 'image', 'created_at')
+        .where('is_delete', false) // เฉพาะแผนอาหารที่ไม่ถูกลบ
         .orderBy('created_at', 'desc');
 
       res.status(200).json(plans);
@@ -26,6 +27,7 @@ export default async function handler(req, res) {
         duration: duration || null,
         description: description || null,
         image: image || null,
+        is_delete: false, // ตั้งค่าเริ่มต้นเป็น false (ไม่ถูกลบ)
         created_at: new Date()
       });
 
@@ -56,11 +58,12 @@ export default async function handler(req, res) {
       // Get current meal plan data to check for old image
       const currentPlan = await db('global_food_plan')
         .where('plan_id', plan_id)
+        .where('is_delete', false) // เฉพาะแผนอาหารที่ไม่ถูกลบ
         .select('image')
         .first();
 
       if (!currentPlan) {
-        return res.status(404).json({ error: 'Meal plan not found' });
+        return res.status(404).json({ error: 'Meal plan not found or has been deleted' });
       }
 
       // If image is being changed, delete the old image
@@ -70,6 +73,7 @@ export default async function handler(req, res) {
 
       const updated = await db('global_food_plan')
         .where('plan_id', plan_id)
+        .where('is_delete', false) // เฉพาะแผนอาหารที่ไม่ถูกลบ
         .update({
           plan_name,
           duration: duration || null,
@@ -78,7 +82,7 @@ export default async function handler(req, res) {
         });
 
       if (updated === 0) {
-        return res.status(404).json({ error: 'Meal plan not found' });
+        return res.status(404).json({ error: 'Meal plan not found or has been deleted' });
       }
 
       res.status(200).json({ 
@@ -101,32 +105,32 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Plan ID is required' });
       }
 
-      // Get the meal plan data to get the image path before deletion
+      // Check if meal plan exists and is not already soft deleted
       const plan = await db('global_food_plan')
         .where('plan_id', plan_id)
-        .select('image')
+        .where('is_delete', false)
+        .select('plan_id')
         .first();
 
       if (!plan) {
-        return res.status(404).json({ error: 'Meal plan not found' });
+        return res.status(404).json({ error: 'Meal plan not found or already deleted' });
       }
 
+      // Perform soft delete by setting is_delete to true
       const deleted = await db('global_food_plan')
         .where('plan_id', plan_id)
-        .del();
+        .where('is_delete', false)
+        .update({
+          is_delete: true
+        });
 
       if (deleted === 0) {
-        return res.status(404).json({ error: 'Meal plan not found' });
+        return res.status(404).json({ error: 'Meal plan not found or already deleted' });
       }
 
-      // Delete the associated image file
-      if (plan.image) {
-        deleteImageFile(plan.image);
-      }
-
-      res.status(200).json({ message: 'Meal plan deleted successfully' });
+      res.status(200).json({ message: 'Meal plan moved to trash successfully' });
     } catch (error) {
-      console.error('Error deleting meal plan:', error);
+      console.error('Error soft deleting meal plan:', error);
       res.status(500).json({ error: 'Failed to delete meal plan' });
     }
   } else {

@@ -93,7 +93,7 @@ export default async function handler(req, res) {
         .where('id', id)
         .update({
           is_delete: true,
-          updated_at: db.fn.now() // Update timestamp if you have this column
+          
         });
 
       if (updated === 0) {
