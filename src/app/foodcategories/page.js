@@ -6,6 +6,7 @@ import FoodCategoryModal from '@/components/food/FoodCategoryModal';
 import { Icon } from '@iconify/react';
 import { theme } from '@/lib/theme';
 import { showToast, showConfirm } from '@/lib/sweetAlert';
+import Pagination from '@/components/Pagination';
 
 export default function FoodCategoriesManagement() {
   const [categories, setCategories] = useState([]);
@@ -15,9 +16,18 @@ export default function FoodCategoriesManagement() {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const router = useRouter();
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  // Reset to first page when categories change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [categories]);
 
   const fetchCategories = async () => {
     try {
@@ -170,6 +180,17 @@ export default function FoodCategoriesManagement() {
     }
   };
 
+  // Calculate pagination details
+  const totalItems = categories.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentCategories = categories.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   if (isLoading) {
     return (
       <Layout>
@@ -276,7 +297,7 @@ export default function FoodCategoriesManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-emerald-100/50">
-                {categories.length === 0 ? (
+                {currentCategories.length === 0 ? (
                   <tr>
                     <td colSpan={3} className="py-16 text-center">
                       <div className="flex flex-col items-center gap-4">
@@ -296,11 +317,11 @@ export default function FoodCategoriesManagement() {
                     </td>
                   </tr>
                 ) : (
-                  categories.map((category, index) => (
+                  currentCategories.map((category, index) => (
                     <tr key={category.id} className="hover:bg-emerald-50/30 transition-colors duration-150">
                       <td className="px-6 py-5">
                         <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                          {index + 1}
+                          {startIndex + index + 1}
                         </div>
                       </td>
                       <td className="px-6 py-5">
@@ -367,6 +388,10 @@ export default function FoodCategoriesManagement() {
                 )}
               </tbody>
             </table>
+          </div>
+          {/* Pagination Component */}
+          <div className="px-6 py-4">
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
           </div>
         </div>
 
