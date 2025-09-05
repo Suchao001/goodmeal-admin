@@ -1,4 +1,5 @@
 import db from '@/lib/db';
+import { sendSuspensionEmail, sendUnsuspensionEmail } from '@/lib/emailService';
 
 export default async function handler(req, res) {
   const { id } = req.query;
@@ -20,6 +21,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ 
         error: 'Invalid account status. Must be one of: active, suspended, deactivated' 
       });
+    }
+
+    // Get current user data before update
+    const currentUser = await db('users')
+      .where('id', id)
+      .first();
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
     const updateData = {
@@ -48,6 +58,27 @@ export default async function handler(req, res) {
       .select('id', 'username', 'email', 'account_status', 'suspend_reason', 'created_date', 'updated_at')
       .where('id', id)
       .first();
+
+    // Send email notifications based on status change
+    const previousStatus = currentUser.account_status;
+    const newStatus = account_status;
+
+    if (previousStatus !== newStatus) {
+      if (newStatus === 'suspended') {
+        // Send suspension email
+        await sendSuspensionEmail(
+          currentUser.email, 
+          currentUser.username, 
+          suspend_reason
+        );
+      } else if (previousStatus === 'suspended' && newStatus === 'active') {
+        // Send unsuspension email
+        await sendUnsuspensionEmail(
+          currentUser.email, 
+          currentUser.username
+        );
+      }
+    }
 
     res.status(200).json({ 
       message: 'User status updated successfully',
