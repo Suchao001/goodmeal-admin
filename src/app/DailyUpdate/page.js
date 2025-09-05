@@ -16,6 +16,10 @@ export default function DailyUpdate() {
   const [eatingRecords, setEatingRecords] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Today's date
   const [dailySummary, setDailySummary] = useState(null);
+  
+  // Cron job states
+  const [cronLoading, setCronLoading] = useState(false);
+  const [cronResults, setCronResults] = useState(null);
 
   // Function to calculate which day of the plan corresponds to today
   const calculateTodaysPlan = (startDate, isRepeat, parsedPlan) => {
@@ -138,6 +142,36 @@ export default function DailyUpdate() {
         console.error("Error fetching daily summary:", error);
         setDailySummary(null);
       }
+    }
+  };
+
+  // Cron job function to update all users
+  const runDailyNutritionCron = async () => {
+    setCronLoading(true);
+    setCronResults(null);
+
+    try {
+      console.log('Starting manual cron job for daily nutrition summary...');
+      
+      const response = await axios.post('/api/cron/daily-nutrition-update', {
+        manual: true // Flag to indicate this is a manual trigger
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-cron-key': 'your-secret-cron-key-here' // You should set this in env
+        }
+      });
+
+      if (response.status === 200) {
+        console.log('Cron job completed successfully:', response.data);
+        setCronResults(response.data);
+        alert(`✅ อัพเดทข้อมูลสำเร็จ!\n- ผู้ใช้ทั้งหมด: ${response.data.results?.total_users || 0}\n- อัพเดทสำเร็จ: ${response.data.results?.successful_updates || 0}\n- อัพเดทล้มเหลว: ${response.data.results?.failed_updates || 0}`);
+      }
+    } catch (error) {
+      console.error('Error running cron job:', error);
+      alert(`❌ เกิดข้อผิดพลาดในการอัพเดทข้อมูล: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setCronLoading(false);
     }
   };
 
@@ -882,6 +916,102 @@ export default function DailyUpdate() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Cron Job Control */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                <Icon icon="mdi:clock-outline" className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-800">อัพเดทข้อมูลโภชนาการทุก User</h3>
+                <p className="text-gray-600 text-sm">อัพเดทข้อมูลสรุปโภชนาการรายวันสำหรับผู้ใช้ทุกคนที่มีข้อมูลครบถ้วน</p>
+              </div>
+            </div>
+            <button
+              onClick={runDailyNutritionCron}
+              disabled={cronLoading}
+              className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 ${
+                cronLoading
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:scale-105'
+              } text-white shadow-lg`}
+            >
+              {cronLoading ? (
+                <>
+                  <Icon icon="eos-icons:loading" className="w-5 h-5 animate-spin" />
+                  กำลังประมวลผล...
+                </>
+              ) : (
+                <>
+                  <Icon icon="mdi:rocket-launch" className="w-5 h-5" />
+                  เริ่มอัพเดท
+                </>
+              )}
+            </button>
+          </div>
+          
+          <div className="text-sm text-blue-600 bg-blue-50 rounded-lg p-3">
+            <Icon icon="mdi:information" className="inline w-4 h-4 mr-2" />
+            ระบบจะอัพเดทข้อมูลสรุปโภชนาการรายวันสำหรับผู้ใช้ทุกคนที่มีข้อมูลโปรไฟล์ครบถ้วน (อายุ, น้ำหนัก, ส่วนสูง, เพศ, เป้าหมาย, ระดับกิจกรรม)
+          </div>
+
+          {/* Cron Results */}
+          {cronResults && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <Icon icon="mdi:check-circle" className="text-green-600" />
+                ผลการดำเนินการ
+              </h4>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="bg-white rounded-lg p-3 text-center">
+                  <div className="text-2xl font-bold text-blue-700">{cronResults.results?.total_users || 0}</div>
+                  <div className="text-xs text-gray-600">ผู้ใช้ทั้งหมด</div>
+                </div>
+                <div className="bg-white rounded-lg p-3 text-center">
+                  <div className="text-2xl font-bold text-green-700">{cronResults.results?.successful_updates || 0}</div>
+                  <div className="text-xs text-gray-600">อัพเดทสำเร็จ</div>
+                </div>
+                <div className="bg-white rounded-lg p-3 text-center">
+                  <div className="text-2xl font-bold text-red-700">{cronResults.results?.failed_updates || 0}</div>
+                  <div className="text-xs text-gray-600">อัพเดทล้มเหลว</div>
+                </div>
+                <div className="bg-white rounded-lg p-3 text-center">
+                  <div className="text-2xl font-bold text-yellow-700">{cronResults.results?.skipped_users || 0}</div>
+                  <div className="text-xs text-gray-600">ข้าม</div>
+                </div>
+              </div>
+
+              <div className="text-sm space-y-1">
+                <div><strong>วันที่ประมวลผล:</strong> {cronResults.date}</div>
+                <div><strong>ประเภท:</strong> {cronResults.trigger_type === 'manual' ? 'รันด้วยตนเอง' : 'อัตโนมัติ'}</div>
+                <div><strong>เวลาที่ดำเนินการ:</strong> {new Date(cronResults.timestamp).toLocaleString('th-TH')}</div>
+                <div><strong>ผู้ใช้ที่มี Eating Records:</strong> {cronResults.results?.users_with_eating_records || 0}</div>
+                <div><strong>ผู้ใช้ที่ไม่มี Eating Records:</strong> {cronResults.results?.users_without_eating_records || 0}</div>
+              </div>
+
+              {cronResults.results?.errors && cronResults.results.errors.length > 0 && (
+                <div className="mt-3">
+                  <h5 className="font-semibold text-red-700 mb-2">ข้อผิดพลาด:</h5>
+                  <div className="bg-red-50 rounded-lg p-3 max-h-32 overflow-y-auto">
+                    {cronResults.results.errors.slice(0, 5).map((error, index) => (
+                      <div key={index} className="text-sm text-red-600 mb-1">
+                        User {error.user_id}: {error.error}
+                      </div>
+                    ))}
+                    {cronResults.results.errors.length > 5 && (
+                      <div className="text-sm text-red-500 italic">
+                        และอีก {cronResults.results.errors.length - 5} ข้อผิดพลาด...
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Search and Filters */}

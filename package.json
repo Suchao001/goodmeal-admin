@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cron": "node local-cron.js",
+    "test-cron": "node test-cron.js",
+    "dev:with-cron": "concurrently \"npm run dev\" \"npm run cron\""
   },
   "dependencies": {
     "@iconify/react": "^5.2.0",
@@ -23,6 +26,8 @@
     "mysql2": "^3.14.1",
     "next": "15.1.5",
     "next-connect": "^1.0.0",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^2.7.0",
     "nodemailer": "^7.0.6",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
@@ -32,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.5",
     "postcss": "^8",

@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/daily-nutrition-update",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}

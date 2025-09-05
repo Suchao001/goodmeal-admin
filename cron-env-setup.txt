@@ -1,0 +1,2 @@
+# กรุณาเพิ่ม environment variable นี้ใน .env.local ของคุณ
+CRON_SECRET_KEY=goodmeal-cron-secret-2025
