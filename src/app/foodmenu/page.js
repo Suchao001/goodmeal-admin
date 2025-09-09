@@ -6,6 +6,7 @@ import FoodTable from '@/components/food/FoodTable';
 import AddFoodModal from '@/components/food/AddFoodModal';
 import EditFoodModal from '@/components/food/EditFoodModal';
 import FoodCategoryModal from '@/components/food/FoodCategoryModal';
+import BulkAddFoodModal from '@/components/food/BulkAddFoodModal';
 import FoodFilters from '@/components/food/FoodFilters';
 import { Icon } from '@iconify/react';
 import { theme } from '@/lib/theme';
@@ -15,6 +16,7 @@ export default function MenuManagement() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [isBulkAddModalOpen, setIsBulkAddModalOpen] = useState(false);
     const [categories, setCategories] = useState([]);
     const [foods, setFoods] = useState([]);
     const [filteredFoods, setFilteredFoods] = useState([]);
@@ -220,6 +222,10 @@ export default function MenuManagement() {
         }
     };
 
+    const handleBulkAddFood = async () => {
+        await fetchFoods(); // Refresh the foods list
+    };
+
     return (
         <Layout>
             <div className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-cyan-50/30 -m-6 p-6">
@@ -272,6 +278,15 @@ export default function MenuManagement() {
                         <h3 className="font-semibold text-emerald-800">การจัดการ</h3>
                     </div>
                     <div className="flex flex-wrap gap-4">
+                        {/* Dev Button for Bulk Add */}
+                        <button 
+                        onClick={() => setIsBulkAddModalOpen(true)} 
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-lg shadow-indigo-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                        >
+                        <Icon icon="heroicons:code-bracket-20-solid" className="text-lg" />
+                        Bulk Add (Dev)
+                        </button>
+                        
                         <button
                         onClick={() => router.push('/foodcategories')}
                         className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-medium shadow-lg shadow-purple-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
@@ -362,6 +377,13 @@ export default function MenuManagement() {
                     isOpen={isCategoryModalOpen}
                     onClose={() => setIsCategoryModalOpen(false)}
                     onAddCategory={handleAddCategory}
+                />
+
+                <BulkAddFoodModal
+                    isOpen={isBulkAddModalOpen}
+                    onClose={() => setIsBulkAddModalOpen(false)}
+                    categories={categories}
+                    onBulkAddFood={handleBulkAddFood}
                 />
             </div>
         </Layout>
