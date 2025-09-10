@@ -14,7 +14,6 @@ export const AuthProvider = ({ children }) => {
   // Check if current route is public (doesn't need authentication)
   const isPublicRoute = nowLocation.startsWith('/articles') || 
                        nowLocation.startsWith('/article/') ||
-                       nowLocation === '/' ||
                        isLoginPage;
   
   const router = useRouter();

@@ -12,15 +12,32 @@ export default function FoodTable({
   totalPages = 1, 
   onPageChange, 
   totalItems = 0,
-  itemsPerPage = 10 
+  itemsPerPage = 10,
+  selectedIds = [],
+  onToggleSelect,
+  onToggleSelectAll,
+  enableSelection = false
 }) {
   const startIndex = (currentPage - 1) * itemsPerPage;
+  const allVisibleIds = foods.map((f) => f.id);
+  const allSelectedOnPage = enableSelection && allVisibleIds.length > 0 && allVisibleIds.every((id) => selectedIds.includes(id));
+  const emptyColSpan = enableSelection ? 6 : 5;
 
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full text-left">
         <thead className="bg-emerald-50/50 text-emerald-800 text-sm font-semibold uppercase tracking-wide">
           <tr>
+            {enableSelection && (
+              <th className="px-6 py-4 w-12">
+                <input
+                  type="checkbox"
+                  className="w-5 h-5 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                  checked={allSelectedOnPage}
+                  onChange={(e) => onToggleSelectAll && onToggleSelectAll(allVisibleIds, e.target.checked)}
+                />
+              </th>
+            )}
             <th className="px-6 py-4">ลำดับ</th>
             <th className="px-6 py-4">เมนูอาหาร</th>
             <th className="px-6 py-4">รูปภาพ</th>
@@ -31,7 +48,7 @@ export default function FoodTable({
         <tbody className="divide-y divide-emerald-100/50">
           {foods.length === 0 ? (
             <tr>
-              <td colSpan={5} className="py-16 text-center">
+              <td colSpan={emptyColSpan} className="py-16 text-center">
                 <div className="flex flex-col items-center gap-4">
                   <Icon icon="heroicons:face-frown-20-solid" className="text-4xl text-slate-400" />
                   <span className="text-slate-500 font-medium">ไม่พบข้อมูลเมนูอาหาร</span>
@@ -42,6 +59,16 @@ export default function FoodTable({
           ) : (
             foods.map((food, index) => (
               <tr key={food.id} className="hover:bg-emerald-50/30 transition-colors duration-150">
+                {enableSelection && (
+                  <td className="px-6 py-5">
+                    <input
+                      type="checkbox"
+                      className="w-5 h-5 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                      checked={selectedIds.includes(food.id)}
+                      onChange={() => onToggleSelect && onToggleSelect(food.id)}
+                    />
+                  </td>
+                )}
                 <td className="px-6 py-5">
                   <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                     {startIndex + index + 1}

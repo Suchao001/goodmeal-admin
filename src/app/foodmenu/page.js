@@ -24,6 +24,8 @@ export default function MenuManagement() {
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
     const [calorieFilter, setCalorieFilter] = useState('');
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [bulkMode, setBulkMode] = useState(false);
     
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
@@ -199,6 +201,65 @@ export default function MenuManagement() {
       }
     };
 
+    // Selection handlers
+    const handleToggleSelect = (id) => {
+        setSelectedIds(prev => {
+            const set = new Set(prev);
+            if (set.has(id)) set.delete(id); else set.add(id);
+            return Array.from(set);
+        });
+    };
+
+    const handleToggleSelectAllOnPage = (idsOnPage, checked) => {
+        setSelectedIds(prev => {
+            const set = new Set(prev);
+            idsOnPage.forEach(id => {
+                if (checked) set.add(id); else set.delete(id);
+            });
+            return Array.from(set);
+        });
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+        const confirmed = await showConfirm({
+            title: `ย้ายไปยังถังขยะ (${selectedIds.length} รายการ)?`,
+            text: `คุณต้องการย้ายเมนูที่เลือกไปยังถังขยะหรือไม่?\n\n(ข้อมูลจะถูกซ่อนจากรายการ แต่ยังสามารถกู้คืนได้)` ,
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก'
+        });
+        if (!confirmed) return;
+
+        try {
+            const res = await fetch('/api/foods/bulk-delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids: selectedIds })
+            });
+            if (res.ok) {
+                // Refresh list and clear selection
+                await fetchFoods();
+                setSelectedIds([]);
+                showToast.success('ย้ายเมนูที่เลือกไปยังถังขยะเรียบร้อยแล้ว');
+            } else {
+                const errorData = await res.json();
+                console.error('Failed to bulk delete food:', errorData);
+                showToast.error('ไม่สามารถย้ายเมนูที่เลือกได้: ' + (errorData.error || 'เกิดข้อผิดพลาด'));
+            }
+        } catch (error) {
+            console.error('Error bulk deleting food:', error);
+            showToast.error('เกิดข้อผิดพลาดในการย้ายเมนูไปยังถังขยะ');
+        }
+    };
+
+    const toggleBulkMode = () => {
+        setBulkMode(prev => {
+            const next = !prev;
+            if (!next) setSelectedIds([]); // clear selection when turning off
+            return next;
+        });
+    };
+
     const handleAddCategory = async (categoryName) => {
         try {
             const res = await fetch('/api/foodcategories', {
@@ -278,6 +339,31 @@ export default function MenuManagement() {
                         <h3 className="font-semibold text-emerald-800">การจัดการ</h3>
                     </div>
                     <div className="flex flex-wrap gap-4">
+                        <button
+                          onClick={toggleBulkMode}
+                          className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-medium shadow-lg transition-all duration-200 ${bulkMode ? 'bg-gradient-to-r from-slate-600 to-slate-500 text-white hover:from-slate-700 hover:to-slate-600' : 'bg-gradient-to-r from-orange-600 to-red-500 text-white hover:from-orange-700 hover:to-red-600'}`}
+                          title={bulkMode ? 'ปิดโหมดลบหลายรายการ' : 'เปิดโหมดลบหลายรายการ'}
+                        >
+                          <Icon icon={bulkMode ? 'heroicons:x-mark-20-solid' : 'heroicons:trash-20-solid'} className="text-lg" />
+                          {bulkMode ? 'ปิดโหมดลบหลายรายการ' : 'ลบหลายรายการ'}
+                          {bulkMode && selectedIds.length > 0 && (
+                            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-white/20 text-white text-xs">{selectedIds.length}</span>
+                          )}
+                        </button>
+                        {bulkMode && (
+                          <button
+                            onClick={handleBulkDelete}
+                            disabled={selectedIds.length === 0}
+                            className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-white font-medium shadow-lg transition-all duration-200 ${selectedIds.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 hover:shadow-xl hover:scale-105'}`}
+                            title="ย้ายรายการที่เลือกไปยังถังขยะ"
+                          >
+                            <Icon icon="heroicons:archive-box-20-solid" className="text-lg" />
+                            ย้ายถังขยะ (ที่เลือก)
+                            {selectedIds.length > 0 && (
+                              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-white/20 text-white text-xs">{selectedIds.length}</span>
+                            )}
+                          </button>
+                        )}
                         {/* Dev Button for Bulk Add */}
                         <button 
                         onClick={() => setIsBulkAddModalOpen(true)} 
@@ -355,6 +441,10 @@ export default function MenuManagement() {
                         totalItems={totalItems}
                         itemsPerPage={itemsPerPage}
                         onPageChange={handlePageChange}
+                        selectedIds={selectedIds}
+                        onToggleSelect={handleToggleSelect}
+                        onToggleSelectAll={handleToggleSelectAllOnPage}
+                        enableSelection={bulkMode}
                     />
                 </div>
 
