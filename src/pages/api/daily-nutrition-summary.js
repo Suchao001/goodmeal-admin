@@ -9,16 +9,39 @@ const ACTIVITY_MULTIPLIERS = {
   'very high': 1.9     // ใช้ร่างกายอย่างหนัก
 };
 
-const PROTEIN_PER_KG = {
-  'increase': 1.8,    // เพิ่มน้ำหนัก/สร้างกล้ามเนื้อ - ต้องการโปรตีนสูง
-  'decrease': 2.0,    // ลดน้ำหนัก - ต้องการโปรตีนสูงเพื่อรักษากล้ามเนื้อ
-  'healthy': 1.4      // รักษาสุขภาพ - ปริมาณมาตรฐาน
+// โปรตีนแบบ simple (เวอร์ชัน practical สำหรับคนไทยทั่วไป)
+const PROTEIN_PER_KG_SIMPLE = {
+  'increase': 1.4,
+  'decrease': 1.6,
+  'healthy': 1.0
+};
+
+// โปรตีนแบบ dynamic (ตาม goal + activity level)
+const PROTEIN_DYNAMIC = {
+  healthy: {
+    'low': 1.0,
+    'moderate': 1.2,
+    'high': 1.4,
+    'very high': 1.6,
+  },
+  increase: {
+    'low': 1.4,
+    'moderate': 1.6,
+    'high': 1.8,
+    'very high': 2.0,
+  },
+  decrease: {
+    'low': 1.4,
+    'moderate': 1.6,
+    'high': 1.8,
+    'very high': 2.0,
+  },
 };
 
 const REMAINING_ENERGY_RATIOS = {
-  'increase': { carb: 0.65, fat: 0.35 },  // เน้นคาร์บสำหรับพลังงานในการสร้างกล้ามเนื้อ
-  'decrease': { carb: 0.50, fat: 0.50 },  // สมดุลเพื่อการเผาผลาญไขมัน
-  'healthy': { carb: 0.60, fat: 0.40 }    // เน้นคาร์บเล็กน้อยเพื่อสุขภาพทั่วไป
+  'increase': { carb: 0.55, fat: 0.45 },
+  'decrease': { carb: 0.45, fat: 0.55 },
+  'healthy': { carb: 0.55, fat: 0.45 }
 };
 
 const CALORIES_PER_GRAM = {
@@ -28,9 +51,31 @@ const CALORIES_PER_GRAM = {
 };
 
 const DAILY_ADJUSTMENT_BOUNDS = {
-  increase: { min: 250, max: 500, fallback: 350 },
-  decrease: { min: 300, max: 600, fallback: 500 }
+  increase: { min: 150, max: 300, fallback: 200 },
+  decrease: { min: 200, max: 400, fallback: 300 }
 };
+
+function clamp(x, lo, hi) {
+  return Math.max(lo, Math.min(hi, x));
+}
+
+// เลือกกลยุทธ์โปรตีน: 'dynamic' เป็นค่าเริ่มต้น
+// strategy: 'dynamic' | 'simple'
+function getProteinPerKg(profile, strategy = 'dynamic') {
+  let perKg;
+  if (strategy === 'dynamic') {
+    const goal = profile.target_goal;
+    const act = profile.activity_level;
+    // กันกรณีค่าผิดพลาดด้วย fallback ไป healthy/low
+    perKg = (PROTEIN_DYNAMIC[goal] && PROTEIN_DYNAMIC[goal][act])
+      || (PROTEIN_DYNAMIC.healthy && PROTEIN_DYNAMIC.healthy['low'])
+      || 1.2;
+  } else {
+    perKg = PROTEIN_PER_KG_SIMPLE[profile.target_goal] || PROTEIN_PER_KG_SIMPLE.healthy;
+  }
+  // กันค่าแปลก ๆ: ต่ำสุด 1.0 และไม่เกิน 2.2 (ทั่วไป)
+  return clamp(perKg, 1.0, 2.2);
+}
 
 function calculateBMR(weight, height, age, gender) {
   let bmr;
@@ -66,18 +111,19 @@ function calculateTargetCalories(tdee, currentWeight, targetWeight, goal) {
   return Math.round(targetCalories);
 }
 
-function calculateMacronutrients(targetCalories, goal, targetWeight) {
-  const proteinPerKg = PROTEIN_PER_KG[goal] || PROTEIN_PER_KG.healthy;
+function calculateMacronutrients(targetCalories, userProfile, strategy = 'dynamic') {
+  const targetWeight = parseFloat(userProfile.target_weight);
+  const proteinPerKg = getProteinPerKg(userProfile, strategy);
   const proteinGrams = Math.round(targetWeight * proteinPerKg);
-  
+
   const proteinCalories = proteinGrams * CALORIES_PER_GRAM.protein;
-  const remainingCalories = targetCalories - proteinCalories;
-  
-  const ratios = REMAINING_ENERGY_RATIOS[goal] || REMAINING_ENERGY_RATIOS.healthy;
-  
+  const remainingCalories = Math.max(targetCalories - proteinCalories, 0);
+
+  const ratios = REMAINING_ENERGY_RATIOS[userProfile.target_goal] || REMAINING_ENERGY_RATIOS.healthy;
+
   const carbCalories = remainingCalories * ratios.carb;
   const fatCalories = remainingCalories * ratios.fat;
-  
+
   return {
     protein: proteinGrams,
     carb: Math.round(carbCalories / CALORIES_PER_GRAM.carb),
@@ -85,7 +131,7 @@ function calculateMacronutrients(targetCalories, goal, targetWeight) {
   };
 }
 
-function calculateRecommendedNutrition(userProfile) {
+function calculateRecommendedNutrition(userProfile, proteinStrategy = 'dynamic') {
   // Convert birth year to actual age if needed
   let age = parseInt(userProfile.age);
   if (age > 1900) {
@@ -103,7 +149,7 @@ function calculateRecommendedNutrition(userProfile) {
   const bmr = calculateBMR(weight, height, age, userProfile.gender);
   const tdee = calculateTDEE(bmr, userProfile.activity_level);
   const targetCalories = calculateTargetCalories(tdee, weight, targetWeight, userProfile.target_goal);
-  const macros = calculateMacronutrients(targetCalories, userProfile.target_goal, targetWeight);
+  const macros = calculateMacronutrients(targetCalories, userProfile, proteinStrategy);
   
   return {
     cal: targetCalories,
