@@ -15,6 +15,11 @@ export default function EatingArticles() {
   const [currentPage, setCurrentPage] = useState(1);
   const articlesPerPage = 10;
 
+  // Filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState(''); // '', 'release', 'pending', 'draft'
+  const [tagFilter, setTagFilter] = useState(''); // tag name
+
   useEffect(() => {
     fetchArticles();
   }, []);
@@ -105,11 +110,43 @@ export default function EatingArticles() {
     }
   };
 
-  // Calculate pagination
-  const totalPages = Math.ceil(articles.length / articlesPerPage);
+  // Derived filters
+  const filteredArticles = articles.filter(article => {
+    const matchSearch = searchTerm
+      ? (article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()))
+      : true;
+
+    const matchStatus = statusFilter ? article.status === statusFilter : true;
+
+    const matchTag = tagFilter
+      ? (article.tags || []).some(t => t.name === tagFilter)
+      : true;
+
+    return matchSearch && matchStatus && matchTag;
+  });
+
+  // All unique tag options from loaded articles
+  const tagOptions = Array.from(new Set(
+    articles.flatMap(a => (a.tags || []).map(t => t.name))
+  ));
+
+  // Reset to first page when filters/search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, tagFilter]);
+
+  // Calculate pagination over filtered list
+  const totalPages = Math.ceil(filteredArticles.length / articlesPerPage) || 1;
   const startIndex = (currentPage - 1) * articlesPerPage;
   const endIndex = startIndex + articlesPerPage;
-  const currentArticles = articles.slice(startIndex, endIndex);
+  const currentArticles = filteredArticles.slice(startIndex, endIndex);
+
+  // Keep currentPage within bounds when data changes
+  useEffect(() => {
+    const maxPage = Math.ceil(filteredArticles.length / articlesPerPage) || 1;
+    if (currentPage > maxPage) setCurrentPage(maxPage);
+  }, [filteredArticles.length]);
 
   if (isLoading) {
     return (
@@ -203,11 +240,55 @@ export default function EatingArticles() {
                 <Icon icon="heroicons:table-cells-20-solid" className="text-emerald-600 text-xl" />
                 <h3 className="font-semibold text-emerald-800">รายการบทความ</h3>
                 <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
-                  {articles.length} รายการ
+                  {filteredArticles.length} รายการ
                 </span>
               </div>
               <div className="text-sm text-emerald-600/70">
                 หน้า {currentPage} จาก {totalPages}
+              </div>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="px-6 py-4 border-b border-emerald-100/50 bg-white/60">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">ค้นหาตามชื่อ</label>
+                <div className="relative">
+                  <Icon icon="heroicons:magnifying-glass-20-solid" className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="พิมพ์ชื่อบทความหรือคำอธิบาย"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-emerald-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 outline-none"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">สถานะ</label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-emerald-200 bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 outline-none"
+                >
+                  <option value="">ทั้งหมด</option>
+                  <option value="release">เผยแพร่</option>
+                  <option value="pending">ปิดการเผยแพร่</option>
+                  <option value="draft">ร่าง</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">แท็ก</label>
+                <select
+                  value={tagFilter}
+                  onChange={(e) => setTagFilter(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-emerald-200 bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 outline-none"
+                >
+                  <option value="">ทั้งหมด</option>
+                  {tagOptions.map(tag => (
+                    <option key={tag} value={tag}>{tag}</option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
@@ -220,10 +301,10 @@ export default function EatingArticles() {
         </div>
         
         {/* Enhanced Pagination */}
-        {articles.length > articlesPerPage && (
+        {filteredArticles.length > articlesPerPage && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
             <div className="text-sm text-emerald-700 font-medium">
-              แสดง {startIndex + 1}-{Math.min(endIndex, articles.length)} จาก {articles.length} รายการ
+              แสดง {startIndex + 1}-{Math.min(endIndex, filteredArticles.length)} จาก {filteredArticles.length} รายการ
             </div>
             <div className="flex items-center gap-2">
               <button 

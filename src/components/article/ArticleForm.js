@@ -16,6 +16,13 @@ export default function ArticleForm({
   const [currentImage, setCurrentImage] = useState(initialData?.image || null);
   const [imageFile, setImageFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  // Tag states
+  const initialTags = (initialData?.tag || '')
+    .split(',')
+    .map(t => t.trim())
+    .filter(Boolean);
+  const [tags, setTags] = useState(initialTags);
+  const [tagInput, setTagInput] = useState('');
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -66,7 +73,8 @@ export default function ArticleForm({
       title: formData.get("title"),
       date: formData.get("date"),
       status: formData.get("status"),
-      tag: formData.get("tag"),
+      // maintain backward compatibility: provide comma-separated tag string
+      tag: tags.join(', '),
       excerpt: formData.get("excerpt"),
       content: editorRef.current ? editorRef.current.getContent() : "",
       image: imageUrl
@@ -216,7 +224,7 @@ export default function ArticleForm({
                   className="w-full px-4 py-3 bg-white border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200 text-slate-800"
                   required
                 />
-                <Icon icon="heroicons:calendar-days-20-solid" className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />
+                {/* <Icon icon="heroicons:calendar-days-20-solid" className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" /> */}
               </div>
             </div>
             
@@ -241,17 +249,64 @@ export default function ArticleForm({
             {/* Tags */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-600">แท็กบทความ</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="tag"
-                  defaultValue={initialData?.tag || ''}
-                  className="w-full px-4 py-3 bg-white border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200 text-slate-800 placeholder-slate-400"
-                  placeholder="อาหารไทย, สุขภาพ, เมนูใหม่"
-                />
-                <Icon icon="heroicons:tag-20-solid" className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Icon icon="heroicons:tag-20-solid" className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500" />
+                  <input
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault();
+                        const value = tagInput.trim().replace(/,$/, '');
+                        if (!value) return;
+                        const exists = tags.some(t => t.toLowerCase() === value.toLowerCase());
+                        if (!exists) setTags(prev => [...prev, value]);
+                        setTagInput('');
+                      } else if (e.key === 'Backspace' && !tagInput && tags.length > 0) {
+                        // quick remove last tag when input empty
+                        setTags(prev => prev.slice(0, -1));
+                      }
+                    }}
+                    placeholder="พิมพ์แท็กแล้วกด Enter หรือ +"
+                    className="w-full pl-10 pr-3 py-3 bg-white border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200 text-slate-800 placeholder-slate-400"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const value = tagInput.trim().replace(/,$/, '');
+                    if (!value) return;
+                    const exists = tags.some(t => t.toLowerCase() === value.toLowerCase());
+                    if (!exists) setTags(prev => [...prev, value]);
+                    setTagInput('');
+                  }}
+                  className="inline-flex items-center justify-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg shadow-emerald-900/20"
+                  aria-label="เพิ่มแท็ก"
+                >
+                  <Icon icon="heroicons:plus-20-solid" className="text-lg" />
+                </button>
               </div>
-              <p className="text-xs text-slate-500">แยกแท็กด้วยจุลภาค (,)</p>
+              {tags.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((t, idx) => (
+                    <span key={`${t}-${idx}`} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-sm">
+                      {t}
+                      <button
+                        type="button"
+                        onClick={() => setTags(prev => prev.filter((_, i) => i !== idx))}
+                        className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-200 hover:bg-emerald-300 text-emerald-800"
+                        aria-label={`ลบแท็ก ${t}`}
+                      >
+                        <Icon icon="heroicons:x-mark-20-solid" className="text-sm" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500">พิมพ์แท็กแล้วกด Enter หรือกดปุ่ม + เพื่อเพิ่ม</p>
+              )}
             </div>
           </div>
         </div>

@@ -7,11 +7,12 @@ export default async function handler(req, res) {
     try {
       const plan = await db('global_food_plan')
         .where('plan_id', id)
+        .where('is_delete', false)
         .select('plan_id', 'plan_name', 'duration', 'description', 'created_at')
         .first();
 
       if (!plan) {
-        return res.status(404).json({ error: 'Meal plan not found' });
+        return res.status(404).json({ error: 'Meal plan not found or has been deleted' });
       }
 
       res.status(200).json(plan);

@@ -15,10 +15,10 @@ export default async function handler(req, res) {
     }
 
     // Validate status
-    const validStatuses = ['release', 'pending'];
+    const validStatuses = ['release', 'pending', 'draft'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ 
-        error: 'Invalid status. Must be either "release" or "pending"' 
+        error: 'Invalid status. Must be either "release" or "pending" or "draft"' 
       });
     }
 

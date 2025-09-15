@@ -268,7 +268,7 @@ export default function AdminProfile() {
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                            className="w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                             placeholder="กรอกชื่อผู้ดูแลระบบ"
                             maxLength="50"
                             required
@@ -288,7 +288,7 @@ export default function AdminProfile() {
                             name="password"
                             value={formData.password}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                            className="w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                             placeholder="กรอกรหัสผ่านปัจจุบันเพื่อยืนยันตัวตน"
                             required
                           />
@@ -368,7 +368,7 @@ export default function AdminProfile() {
                             name="currentPassword"
                             value={passwordData.currentPassword}
                             onChange={handlePasswordChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                            className="w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                             placeholder="กรอกรหัสผ่านปัจจุบัน"
                             required
                           />
@@ -384,7 +384,7 @@ export default function AdminProfile() {
                             name="newPassword"
                             value={passwordData.newPassword}
                             onChange={handlePasswordChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                            className="w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                             placeholder="กรอกรหัสผ่านใหม่"
                             minLength="6"
                             required
@@ -404,7 +404,7 @@ export default function AdminProfile() {
                             name="confirmPassword"
                             value={passwordData.confirmPassword}
                             onChange={handlePasswordChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                            className="w-full text-gray-900 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                             placeholder="ยืนยันรหัสผ่านใหม่"
                             required
                           />

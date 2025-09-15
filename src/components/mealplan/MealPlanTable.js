@@ -107,7 +107,7 @@ export default function MealPlanTable({ mealPlans, onEdit, onDelete }) {
                     className="inline-flex items-center justify-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
                   >
                     <Icon icon="heroicons:trash-20-solid" className="text-base" />
-                    ลบ
+                    ย้ายลงถังขยะ
                   </button>
                 </div>
               </div>

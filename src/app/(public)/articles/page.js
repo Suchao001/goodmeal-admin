@@ -90,11 +90,7 @@ export default function ArticlesPublicList() {
               <h1 className="text-3xl font-bold text-gray-900">บทความ Goodmeal</h1>
               <p className="text-gray-600 mt-2">เรื่องราวและความรู้เกี่ยวกับอาหารและโภชนาการ</p>
             </div>
-            <div className="flex items-center gap-4">
-              <Link href="https://goodmeal.com" className="text-blue-600 hover:text-blue-800 font-medium">
-                เว็บไซต์หลัก
-              </Link>
-            </div>
+            
           </div>
         </div>
       </header>

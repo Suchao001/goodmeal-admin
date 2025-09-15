@@ -9,6 +9,17 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Plan ID is required' });
       }
 
+      // Ensure the parent plan exists and is not soft-deleted
+      const plan = await db('global_food_plan')
+        .where('plan_id', plan_id)
+        .where('is_delete', false)
+        .select('plan_id')
+        .first();
+
+      if (!plan) {
+        return res.status(404).json({ error: 'Meal plan not found or has been deleted' });
+      }
+
       // Get meal plan details with food information
       const details = await db('meal_plan_detail')
         .leftJoin('foods', 'meal_plan_detail.food_id', 'foods.id')

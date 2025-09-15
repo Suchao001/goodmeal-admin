@@ -5,6 +5,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --text-color: #374151;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,9 +16,10 @@
 }
 
 body {
-  color: var(--foreground);
+  color: var(--text-color);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  
 }
 
 /* Line clamp utilities */
