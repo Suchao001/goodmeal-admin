@@ -208,16 +208,33 @@ export default function MealPlanner() {
     setDays(updatedDays);
   };
 
+  const toNumber = (value) => {
+    if (value === null || value === undefined) return 0;
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  };
+
   const openEditModal = (dayId, mealIndex) => {
     const day = days.find((day) => day.id === dayId);
-    setEditingMeal({ dayId, mealIndex, ...day.meals[mealIndex] });
+    const meal = day.meals[mealIndex] || {};
+    setEditingMeal({
+      dayId,
+      mealIndex,
+      ...meal,
+      calories: toNumber(meal.calories),
+      protein: toNumber(meal.protein),
+      carb: toNumber(meal.carb),
+      fat: toNumber(meal.fat)
+    });
     setIsModalOpen(true);
   };
 
   const closeEditModal = () => {
     setIsModalOpen(false);
     setEditingMeal(null);
-  };  const handleMealTypeSelect = (type) => {
+  };
+
+  const handleMealTypeSelect = (type) => {
     const defaultTimes = {
       'Breakfast': '07:00',
       'Lunch': '12:00',
@@ -237,10 +254,10 @@ export default function MealPlanner() {
     setEditingMeal({ 
       ...editingMeal, 
       name: food.name, 
-      calories: food.calories,
-      carb: food.carbohydrates || 0,
-      protein: food.protein || 0,
-      fat: food.fat || 0,
+      calories: toNumber(food.calories),
+      carb: toNumber(food.carbohydrates),
+      protein: toNumber(food.protein),
+      fat: toNumber(food.fat),
       food_id: food.id,
       img: food.img || null
     });
@@ -383,7 +400,7 @@ export default function MealPlanner() {
                           <h3 className="text-xl font-bold text-slate-800">วันที่ {day.id}</h3>
                         </div>
                         <div className="text-sm text-slate-500">
-                          {day.meals.length} รายการ • {day.meals.reduce((total, meal) => total + (meal.calories || 0), 0)} แคลอรี่
+                          {day.meals.length} รายการ • {day.meals.reduce((total, meal) => total + toNumber(meal.calories), 0)} แคลอรี่
                         </div>
                       </div>
 
@@ -413,13 +430,13 @@ export default function MealPlanner() {
                                   <div className="flex items-center gap-3 text-xs text-slate-600">
                                     <span className="flex items-center gap-1">
                                       <Icon icon="heroicons:fire-20-solid" className="text-orange-500" />
-                                      {meal.calories} แคลอรี่
+                                      {toNumber(meal.calories)} แคลอรี่
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
-                                    <span>P: {meal.protein || 0}g</span>
-                                    <span>C: {meal.carb || 0}g</span>
-                                    <span>F: {meal.fat || 0}g</span>
+                                    <span>P: {toNumber(meal.protein)}g</span>
+                                    <span>C: {toNumber(meal.carb)}g</span>
+                                    <span>F: {toNumber(meal.fat)}g</span>
                                   </div>
                                 </div>
                                 <button
@@ -577,13 +594,13 @@ export default function MealPlanner() {
                                   <div className="flex-1">
                                     <span className="font-semibold text-slate-800 text-lg">{food.name}</span>
                                     <div className="flex items-center gap-4 text-sm text-slate-600 mt-1">
-                                      <span>P: {food.protein || 0}g</span>
-                                      <span>C: {food.carbohydrates || 0}g</span>
-                                      <span>F: {food.fat || 0}g</span>
+                                      <span>P: {toNumber(food.protein)}g</span>
+                                      <span>C: {toNumber(food.carbohydrates)}g</span>
+                                      <span>F: {toNumber(food.fat)}g</span>
                                     </div>
                                   </div>
                                   <div className="text-right">
-                                    <span className="text-lg font-bold text-emerald-600">{food.calories}</span>
+                                    <span className="text-lg font-bold text-emerald-600">{toNumber(food.calories)}</span>
                                     <div className="text-xs text-slate-500">แคลอรี่</div>
                                   </div>
                                 </div>

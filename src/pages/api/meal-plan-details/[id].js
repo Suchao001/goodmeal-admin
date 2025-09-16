@@ -1,5 +1,11 @@
 import db from '@/lib/db';
 
+const toNumber = (value) => {
+  if (value === null || value === undefined) return 0;
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? 0 : parsed;
+};
+
 export default async function handler(req, res) {
   const { id } = req.query;
 
@@ -56,15 +62,20 @@ export default async function handler(req, res) {
           };
         }
         
+        const calories = detail.calories ?? detail.food_calories ?? 0;
+        const protein = detail.protein ?? detail.food_protein ?? 0;
+        const carb = detail.carb ?? detail.food_carb ?? 0;
+        const fat = detail.fat ?? detail.food_fat ?? 0;
+
         dayGroups[dayNumber].meals.push({
           detail_id: detail.detail_id,
           time: detail.meal_time ? detail.meal_time.substring(0, 5) : '', // Format HH:MM
           type: detail.meal_type || '',
           name: detail.meal_name || detail.food_name || '',
-          calories: detail.calories || detail.food_calories || 0,
-          protein: detail.protein || detail.food_protein || 0,
-          carb: detail.carb || detail.food_carb || 0,
-          fat: detail.fat || detail.food_fat || 0,
+          calories: toNumber(calories),
+          protein: toNumber(protein),
+          carb: toNumber(carb),
+          fat: toNumber(fat),
           food_id: detail.food_id,
           img: detail.img || detail.food_img
         });
@@ -111,10 +122,10 @@ export default async function handler(req, res) {
                 meal_type: meal.type || null,
                 meal_name: meal.name || null,
                 meal_time: meal.time || null,
-                calories: meal.calories || 0,
-                protein: meal.protein || 0,
-                carb: meal.carb || 0,
-                fat: meal.fat || 0,
+                calories: toNumber(meal.calories),
+                protein: toNumber(meal.protein),
+                carb: toNumber(meal.carb),
+                fat: toNumber(meal.fat),
                 food_id: meal.food_id || null,
                 img: meal.img || null
               });

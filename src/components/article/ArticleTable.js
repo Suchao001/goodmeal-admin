@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import img1 from '@/images/food1.webp';
+import img1 from '@/images/placeholder.png';
 import { Icon } from '@iconify/react';
 
 export default function ArticleTable({ articles, onDelete, onStatusUpdate }) {

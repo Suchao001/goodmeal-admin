@@ -61,6 +61,16 @@ export default async function handler(req, res) {
     try {
       const { name, calories, carbohydrates, fat, protein, image, ingredients, categories } = req.body;
 
+      // Prevent duplicate food names among active entries
+      const duplicateFood = await db('foods')
+        .where('name', name)
+        .where('is_delete', false)
+        .first();
+
+      if (duplicateFood) {
+        return res.status(409).json({ error: 'Food name already exists' });
+      }
+
       // Insert the food with is_delete = false as default
       const [foodId] = await db('foods').insert({
         name,
@@ -103,6 +113,19 @@ export default async function handler(req, res) {
 
       if (!currentFood) {
         return res.status(404).json({ error: 'Food not found or has been deleted' });
+      }
+
+      // Ensure updated name does not match another active food entry
+      if (name) {
+        const duplicateFood = await db('foods')
+          .where('name', name)
+          .where('id', '!=', id)
+          .where('is_delete', false)
+          .first();
+
+        if (duplicateFood) {
+          return res.status(409).json({ error: 'Food name already exists' });
+        }
       }
 
       // If image is being changed, delete the old image

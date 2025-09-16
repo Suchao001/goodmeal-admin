@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import ArticleEditor from './ArticleEditor';
-import img1 from '@/images/food1.webp';
+import img1 from '@/images/placeholder.png';
 
 export default function ArticleForm({ 
   initialData = null, 
