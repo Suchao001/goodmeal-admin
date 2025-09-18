@@ -22,6 +22,10 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
   const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
     if (food) {
       console.log('=== EditFoodModal useEffect ===');
       console.log('Food data received:', food);
@@ -64,7 +68,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
       setIngredients(ingredientsList.length > 0 ? ingredientsList : ['']);
       console.log('===============================');
     }
-  }, [food]);
+  }, [food, isOpen]);
 
   const addIngredient = () => {
     setIngredients([...ingredients, '']);
@@ -116,8 +120,8 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
     formData.append('image', file);
 
     try {
-      const response = await fetch('/api/upload-food-image', {
-        method: 'POST',
+      const response = await fetch('/api/upload-image', {
+        method: 'PATCH',
         body: formData,
       });
 

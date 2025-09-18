@@ -21,6 +21,7 @@ export default function MenuManagement() {
     const [foods, setFoods] = useState([]);
     const [filteredFoods, setFilteredFoods] = useState([]);
     const [selectedFood, setSelectedFood] = useState(null);
+    const [editModalKey, setEditModalKey] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
     const [calorieFilter, setCalorieFilter] = useState('');
@@ -137,8 +138,21 @@ export default function MenuManagement() {
     };
 
     const handleEditFood = (food) => {
-        setSelectedFood(food);
+        const normalizedFood = food ? {
+            ...food,
+            categories: Array.isArray(food.categories)
+                ? food.categories.map((category) => ({ ...category }))
+                : []
+        } : null;
+
+        setSelectedFood(normalizedFood);
+        setEditModalKey((prev) => prev + 1);
         setIsEditModalOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setIsEditModalOpen(false);
+        setSelectedFood(null);
     };
 
     const handleSaveFood = async (foodId, updatedFood) => {
@@ -456,8 +470,9 @@ export default function MenuManagement() {
                 />
 
                 <EditFoodModal
+                    key={editModalKey}
                     isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
+                    onClose={closeEditModal}
                     food={selectedFood}
                     onSave={handleSaveFood}
                     categories={categories}

@@ -3,7 +3,7 @@ import { handleImageUpload, config, sendResponse } from '@/lib/imageUpload';
 export { config };
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
+  if (!['POST', 'PATCH'].includes(req.method)) {
     return sendResponse(res, 405, { error: 'Method not allowed' });
   }
 
@@ -16,7 +16,15 @@ export default async function handler(req, res) {
       fit: 'cover'
     });
 
-    sendResponse(res, 200, result);
+    const responsePayload = {
+      success: result.success,
+      imageUrl: result.imageUrl,
+      imagePath: result.imageUrl, // keep compatibility with editors expecting imagePath
+      fileName: result.fileName,
+      message: result.message
+    };
+
+    sendResponse(res, 200, responsePayload);
   } catch (error) {
     console.error('Food image upload error:', error);
     sendResponse(res, error.status || 500, { error: error.error || 'Failed to upload image' });

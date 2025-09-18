@@ -128,24 +128,51 @@ export default async function handler(req, res) {
         }
       }
 
-      // If image is being changed, delete the old image
-      if (currentFood.img && image && currentFood.img !== image) {
-        deleteImageFile(currentFood.img);
+      let normalizedImage;
+      if (typeof image === 'string') {
+        const trimmed = image.trim();
+        if (!trimmed) {
+          normalizedImage = null;
+        } else {
+          if (trimmed.startsWith('/') || trimmed.startsWith('http')) {
+            normalizedImage = trimmed;
+          } else {
+            normalizedImage = `/foods/${trimmed}`;
+          }
+        }
+      } else if (typeof image === 'undefined') {
+        normalizedImage = undefined;
+      } else if (image === null) {
+        normalizedImage = null;
+      }
+
+      // If image is being changed or cleared, delete the old image file
+      if (currentFood.img) {
+        if (typeof normalizedImage === 'string' && currentFood.img !== normalizedImage) {
+          deleteImageFile(currentFood.img);
+        } else if (normalizedImage === null) {
+          deleteImageFile(currentFood.img);
+        }
+      }
+
+      const updatePayload = {
+        name,
+        cal: calories,
+        carb: carbohydrates,
+        fat,
+        protein,
+        ingredient: ingredients
+      };
+
+      if (typeof normalizedImage !== 'undefined') {
+        updatePayload.img = normalizedImage;
       }
 
       // Update the food (only if not deleted)
       const updated = await db('foods')
         .where('id', id)
         .where('is_delete', false) // ป้องกันการอัพเดทข้อมูลที่ถูกลบแล้ว
-        .update({
-          name,
-          cal: calories,
-          carb: carbohydrates,
-          fat,
-          protein,
-          img: image,
-          ingredient: ingredients
-        });
+        .update(updatePayload);
 
       if (updated === 0) {
         return res.status(404).json({ error: 'Food not found' });
