@@ -23,6 +23,7 @@ export default function BulkAddFoodModal({ isOpen, onClose, categories, onBulkAd
     "sugar": 5,
     "sodium": 800,
     "price": 120,
+    "serving": "1 จาน (350 กรัม)",
     "categories": ["อาหารจานเดียว", "อาหารทะเล"]
   },
   {
@@ -37,6 +38,7 @@ export default function BulkAddFoodModal({ isOpen, onClose, categories, onBulkAd
     "sugar": 12,
     "sodium": 200,
     "price": 80,
+    "serving": "1 ชาม (200 กรัม)",
     "categories": ["สลัด", "อาหารเพื่อสุขภาพ"]
   }
 ]`;
@@ -56,6 +58,9 @@ export default function BulkAddFoodModal({ isOpen, onClose, categories, onBulkAd
                 if (!item.name) {
                     throw new Error(`รายการที่ ${index + 1}: ต้องมี name`);
                 }
+                if (!item.serving) {
+                    throw new Error(`รายการที่ ${index + 1}: ต้องระบุ serving`);
+                }
                 return {
                     ...item,
                     calories: item.calories || 0,
@@ -66,6 +71,7 @@ export default function BulkAddFoodModal({ isOpen, onClose, categories, onBulkAd
                     sugar: item.sugar || 0,
                     sodium: item.sodium || 0,
                     price: item.price || 0,
+                    serving: item.serving,
                     categories: item.categories || []
                 };
             });
@@ -101,6 +107,7 @@ export default function BulkAddFoodModal({ isOpen, onClose, categories, onBulkAd
 
                     const dataToSend = {
                         ...foodData,
+                        serving: foodData.serving?.trim() || '',
                         categories: categoryIds
                     };
 

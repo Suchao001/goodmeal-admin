@@ -105,14 +105,7 @@ const emailTemplates = {
             </p>
           </div>
 
-          <!-- Action Button -->
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.FRONTEND_URL || 'https://goodmeal.com'}/login" 
-               style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
-              เข้าสู่ระบบ
-            </a>
-          </div>
-
+          
           <!-- Contact Info -->
           <div style="background: #f8fafc; border-radius: 12px; padding: 20px; margin: 30px 0;">
             <h3 style="color: #1f2937; margin: 0 0 15px; font-size: 18px; font-weight: 600;">ติดต่อสนับสนุน</h3>

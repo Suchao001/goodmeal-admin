@@ -90,6 +90,9 @@ export default function FoodTable({
                     {food.ingredients && (
                       <p className="text-sm text-slate-600 mt-1 line-clamp-2">{food.ingredients}</p>
                     )}
+                    {food.serving && (
+                      <p className="text-sm text-emerald-700 mt-2 font-medium">ปริมาณ/หน่วย: {food.serving}</p>
+                    )}
                   </div>
                 </td>
                 <td className="px-6 py-5">

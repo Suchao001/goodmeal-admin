@@ -79,7 +79,8 @@ export default function MenuManagement() {
         if (searchTerm) {
             filtered = filtered.filter(food =>
                 food.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                food.ingredients?.toLowerCase().includes(searchTerm.toLowerCase())
+                food.ingredients?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                food.serving?.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 

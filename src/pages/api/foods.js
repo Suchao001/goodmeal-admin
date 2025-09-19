@@ -17,6 +17,7 @@ export default async function handler(req, res) {
           'foods.protein',
           'foods.img',
           'foods.ingredient as ingredients',
+          'foods.serving',
           'food_category.id as category_id',
           'food_category.name as category_name'
         )
@@ -36,6 +37,7 @@ export default async function handler(req, res) {
             protein: parseFloat(food.protein) || 0,
             img: food.img,
             ingredients: food.ingredients,
+            serving: food.serving,
             categories: []
           };
         }
@@ -59,7 +61,7 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'POST') {
     try {
-      const { name, calories, carbohydrates, fat, protein, image, ingredients, categories } = req.body;
+      const { name, calories, carbohydrates, fat, protein, image, ingredients, serving, categories } = req.body;
 
       // Prevent duplicate food names among active entries
       const duplicateFood = await db('foods')
@@ -80,6 +82,7 @@ export default async function handler(req, res) {
         protein,
         img: image,
         ingredient: ingredients,
+        serving,
         is_delete: false 
       });
 
@@ -98,7 +101,7 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'PUT') {
     try {
-      const { id, name, calories, carbohydrates, fat, protein, image, ingredients, categories } = req.body;
+      const { id, name, calories, carbohydrates, fat, protein, image, ingredients, serving, categories } = req.body;
 
       if (!id) {
         return res.status(400).json({ error: 'Food ID is required' });
@@ -161,7 +164,8 @@ export default async function handler(req, res) {
         carb: carbohydrates,
         fat,
         protein,
-        ingredient: ingredients
+        ingredient: ingredients,
+        serving
       };
 
       if (typeof normalizedImage !== 'undefined') {

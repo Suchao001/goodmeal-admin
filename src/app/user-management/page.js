@@ -122,12 +122,7 @@ export default function UserManagement() {
       icon: 'heroicons:exclamation-triangle-20-solid',
       color: 'red'
     },
-    deactivated: { 
-      label: 'ปิดใช้งาน', 
-      class: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200 shadow-sm', 
-      icon: 'heroicons:x-circle-20-solid',
-      color: 'slate'
-    }
+
   };
 
   // Stats calculation
@@ -225,7 +220,6 @@ export default function UserManagement() {
                   <option value="">ทุกสถานะ</option>
                   <option value="active">ใช้งานปกติ</option>
                   <option value="suspended">ถูกระงับ</option>
-                  <option value="deactivated">ปิดใช้งาน</option>
                 </select>
               </div>
               
@@ -453,7 +447,6 @@ export default function UserManagement() {
                 >
                   <option value="active">✅ ใช้งานปกติ</option>
                   <option value="suspended">⛔ ถูกระงับ</option>
-                  <option value="deactivated">❌ ปิดใช้งาน</option>
                 </select>
               </div>
               

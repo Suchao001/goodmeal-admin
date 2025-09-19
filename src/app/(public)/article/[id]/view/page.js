@@ -168,12 +168,7 @@ export default function ArticlePublicView() {
               )}
 
               {/* Excerpt */}
-              {article.excerpt && (
-                <div className="bg-gray-50 rounded-lg p-6 mb-8">
-                  <h2 className="text-lg font-semibold text-gray-800 mb-2">สรุปเนื้อหา</h2>
-                  <p className="text-gray-700 leading-relaxed">{article.excerpt}</p>
-                </div>
-              )}
+             
             </header>
 
             {/* Article Content */}

@@ -10,7 +10,8 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
     calories: 0,
     carbohydrates: 0,
     protein: 0,
-    fat: 0
+    fat: 0,
+    serving: ''
   });
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
@@ -40,7 +41,8 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
         calories: food.calories || 0,
         carbohydrates: food.carbohydrates || 0,
         protein: food.protein || 0,
-        fat: food.fat || 0
+        fat: food.fat || 0,
+        serving: food.serving || ''
       });
       
       // Set current categories
@@ -173,7 +175,8 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
         calories: Number(formData.calories),
         carbohydrates: Number(formData.carbohydrates),
         protein: Number(formData.protein),
-        fat: Number(formData.fat)
+        fat: Number(formData.fat),
+        serving: formData.serving?.trim() || ''
       };
 
     
@@ -199,7 +202,8 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
       calories: 0,
       carbohydrates: 0,
       protein: 0,
-      fat: 0
+      fat: 0,
+      serving: ''
     });
     setSelectedCategories([]);
     setImageFile(null);
@@ -358,6 +362,22 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
                 <span className="font-medium">เพิ่มส่วนผสม</span>
               </button>
             </div>
+          </div>
+
+          {/* Serving */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              ปริมาณท/หน่วย
+            </label>
+            <textarea
+              name="serving"
+              value={formData.serving}
+              onChange={handleInputChange}
+              rows={3}
+              required
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+              placeholder="เช่น 1 ถ้วย (200 กรัม)"
+            />
           </div>
 
           {/* Categories */}

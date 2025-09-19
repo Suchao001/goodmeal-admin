@@ -48,7 +48,7 @@ export default function AddFoodModal({ isOpen, onClose, categories, onAddFood })
 
   const handleSubmit = async () => {
     if (isUploading) return;
-    
+
     const form = document.querySelector('#addFoodForm');
     const formData = new FormData(form);
     
@@ -89,6 +89,7 @@ export default function AddFoodModal({ isOpen, onClose, categories, onAddFood })
         .filter(ing => ing.trim())
         .map(ing => ing.trim())
         .join(', '),
+      serving: (formData.get('serving') || '').trim(),
       calories: parseFloat(formData.get('calories')) || 0,
       carbohydrates: parseFloat(formData.get('carbohydrates')) || 0,
       protein: parseFloat(formData.get('protein')) || 0,
@@ -194,6 +195,21 @@ export default function AddFoodModal({ isOpen, onClose, categories, onAddFood })
                       เพิ่มส่วนผสม
                     </button>
                   </div>
+                </div>
+
+                {/* Serving */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-3">
+                    <Icon icon="heroicons:clipboard-document-check-20-solid" className="text-emerald-600" />
+                    ปริมาณ/หน่วย
+                  </label>
+                  <textarea
+                    name="serving"
+                    required
+                    rows={3}
+                    className="w-full px-4 py-3 bg-white border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200 text-slate-800 placeholder-slate-400"
+                    placeholder="เช่น 1 จาน (250 กรัม)"
+                  />
                 </div>
 
                 {/* Categories */}

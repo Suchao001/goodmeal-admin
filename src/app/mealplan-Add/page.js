@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { useSearchParams } from 'next/navigation';
 import { theme } from '@/lib/theme';
+import { showToast } from '@/lib/sweetAlert';
 
 export default function MealPlanner() {
   const searchParams = useSearchParams();
@@ -142,7 +143,7 @@ export default function MealPlanner() {
   };
   const saveMealPlan = async () => {
     if (!planId) {
-      alert('กรุณาไปยังหน้าแผนอาหารและเลือกแผนที่ต้องการแก้ไข');
+      showToast.warning('กรุณาไปยังหน้าแผนอาหารและเลือกแผนที่ต้องการแก้ไข');
       return;
     }
 
@@ -159,14 +160,14 @@ export default function MealPlanner() {
       });
 
       if (response.ok) {
-        alert('บันทึกแผนอาหารเรียบร้อยแล้ว');
+        showToast.success('บันทึกแผนอาหารเรียบร้อยแล้ว');
       } else {
         const error = await response.json();
-        alert(error.error || 'เกิดข้อผิดพลาดในการบันทึก');
+        showToast.error(error.error || 'เกิดข้อผิดพลาดในการบันทึก');
       }
     } catch (error) {
       console.error('Error saving meal plan:', error);
-      alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+      showToast.error('เกิดข้อผิดพลาดในการเชื่อมต่อ');
     } finally {
       setIsSaving(false);
     }
