@@ -354,31 +354,6 @@ export default function MenuManagement() {
                         <h3 className="font-semibold text-emerald-800">การจัดการ</h3>
                     </div>
                     <div className="flex flex-wrap gap-4">
-                        <button
-                          onClick={toggleBulkMode}
-                          className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-medium shadow-lg transition-all duration-200 ${bulkMode ? 'bg-gradient-to-r from-slate-600 to-slate-500 text-white hover:from-slate-700 hover:to-slate-600' : 'bg-gradient-to-r from-orange-600 to-red-500 text-white hover:from-orange-700 hover:to-red-600'}`}
-                          title={bulkMode ? 'ปิดโหมดลบหลายรายการ' : 'เปิดโหมดลบหลายรายการ'}
-                        >
-                          <Icon icon={bulkMode ? 'heroicons:x-mark-20-solid' : 'heroicons:trash-20-solid'} className="text-lg" />
-                          {bulkMode ? 'ปิดโหมดลบหลายรายการ' : 'ลบหลายรายการ'}
-                          {bulkMode && selectedIds.length > 0 && (
-                            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-white/20 text-white text-xs">{selectedIds.length}</span>
-                          )}
-                        </button>
-                        {bulkMode && (
-                          <button
-                            onClick={handleBulkDelete}
-                            disabled={selectedIds.length === 0}
-                            className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-white font-medium shadow-lg transition-all duration-200 ${selectedIds.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 hover:shadow-xl hover:scale-105'}`}
-                            title="ย้ายรายการที่เลือกไปยังถังขยะ"
-                          >
-                            <Icon icon="heroicons:archive-box-20-solid" className="text-lg" />
-                            ย้ายถังขยะ (ที่เลือก)
-                            {selectedIds.length > 0 && (
-                              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-white/20 text-white text-xs">{selectedIds.length}</span>
-                            )}
-                          </button>
-                        )}
                         {/* Dev Button for Bulk Add */}
                         <button 
                         onClick={() => setIsBulkAddModalOpen(true)} 
@@ -429,7 +404,35 @@ export default function MenuManagement() {
                 </div>
                 </div>
 
-
+<div className="px-6 py-4 border-b border-emerald-100/50">
+                        <div className="flex flex-wrap items-center gap-4">
+                            <button
+                                onClick={toggleBulkMode}
+                                className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-medium shadow-lg transition-all duration-200 ${bulkMode ? 'bg-gradient-to-r from-slate-600 to-slate-500 text-white hover:from-slate-700 hover:to-slate-600' : 'bg-gradient-to-r from-orange-600 to-red-500 text-white hover:from-orange-700 hover:to-red-600'}`}
+                                title={bulkMode ? 'ปิดโหมดลบหลายรายการ' : 'เปิดโหมดลบหลายรายการ'}
+                            >
+                                <Icon icon={bulkMode ? 'heroicons:x-mark-20-solid' : 'heroicons:trash-20-solid'} className="text-lg" />
+                                {bulkMode ? 'ปิดโหมดลบหลายรายการ' : 'ลบหลายรายการ'}
+                                {bulkMode && selectedIds.length > 0 && (
+                                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-white/20 text-white text-xs">{selectedIds.length}</span>
+                                )}
+                            </button>
+                            {bulkMode && (
+                                <button
+                                    onClick={handleBulkDelete}
+                                    disabled={selectedIds.length === 0}
+                                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-white font-medium shadow-lg transition-all duration-200 ${selectedIds.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 hover:shadow-xl hover:scale-105'}`}
+                                    title="ย้ายรายการที่เลือกไปยังถังขยะ"
+                                >
+                                    <Icon icon="heroicons:archive-box-20-solid" className="text-lg" />
+                                    ย้ายถังขยะ (ที่เลือก)
+                                    {selectedIds.length > 0 && (
+                                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-white/20 text-white text-xs">{selectedIds.length}</span>
+                                    )}
+                                </button>
+                            )}
+                        </div>
+                    </div>
                 {/* Enhanced Food Table */}
                 <div className="bg-white/80 backdrop-blur-sm shadow-xl shadow-emerald-900/5 rounded-3xl border border-emerald-100/50 overflow-hidden">
                     <div className="bg-gradient-to-r from-emerald-600/10 via-teal-600/10 to-cyan-600/10 px-6 py-4 border-b border-emerald-100/50">
@@ -447,6 +450,7 @@ export default function MenuManagement() {
                         </div>
                     </div>
                     
+
                     <FoodTable
                         foods={currentPageFoods}
                         onEdit={handleEditFood}

@@ -69,8 +69,8 @@ export default function UserManagement() {
 
   const handleSave = async () => {
     // Show confirmation for potentially destructive actions
-    if (newStatus === 'suspended' || newStatus === 'inactive') {
-      const actionText = newStatus === 'suspended' ? 'ระงับบัญชี' : 'ปิดใช้งานบัญชี';
+    if (newStatus === 'suspended') {
+      const actionText = 'ระงับบัญชี';
       const confirmed = await showConfirm({
         title: `ยืนยันการ${actionText}`,
         text: `คุณแน่ใจหรือไม่ที่จะ${actionText}ของ "${selectedUser.username}"?`,

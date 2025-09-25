@@ -17,7 +17,7 @@ export default function MealPlanner() {
   const [isSaving, setIsSaving] = useState(false);
   const [days, setDays] = useState([]);
 
-  const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+const mealTypes = ['อาหารเช้า', 'อาหารกลางวัน', 'อาหารเย็น', 'ของว่าง'];
   const [editingMeal, setEditingMeal] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCustomType, setIsCustomType] = useState(false);  const [searchTerm, setSearchTerm] = useState('');

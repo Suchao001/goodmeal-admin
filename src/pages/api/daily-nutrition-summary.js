@@ -39,9 +39,9 @@ const PROTEIN_DYNAMIC = {
 };
 
 const REMAINING_ENERGY_RATIOS = {
-  'increase': { carb: 0.55, fat: 0.45 },
-  'decrease': { carb: 0.45, fat: 0.55 },
-  'healthy': { carb: 0.55, fat: 0.45 }
+  'increase': { carb: 0.60, fat: 0.45 },
+  'decrease': { carb: 0.50, fat: 0.50 },
+  'healthy': { carb: 0.65, fat: 0.35 },
 };
 
 const CALORIES_PER_GRAM = {
@@ -285,6 +285,8 @@ export default async function handler(req, res) {
         target_protein: null
       };
 
+      console.log('Initial target placeholders set to null');
+
       // Find active meal plan for this user
       const activePlan = await db('user_food_plan_using as ufpu')
         .join('user_food_plans as ufp', 'ufpu.food_plan_id', 'ufp.id')
@@ -360,11 +362,21 @@ export default async function handler(req, res) {
               };
 
               console.log('Calculated targets:', targets);
+            } else {
+              console.log('Plan day not found in parsed plan data for day:', currentDay);
             }
           } catch (parseError) {
             console.error('Error parsing meal plan:', parseError);
           }
+        } else {
+          console.log('Summary date is before plan start date, skipping plan target calculation');
         }
+      } else {
+        console.log('No active plan with start date found for user, targets remain null');
+      }
+
+      if (targets.target_cal === null) {
+        console.log('Target calories still null after plan check');
       }
 
       // 6. Check if record exists
@@ -384,6 +396,8 @@ export default async function handler(req, res) {
         ...targets,
         ...recommendedNutrition
       };
+
+      console.log('Prepared summary payload:', summaryData);
 
       let result;
       if (existingRecord) {

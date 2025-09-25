@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Icon } from '@iconify/react';
 import Image from 'next/image';
 
@@ -21,6 +21,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ingredients, setIngredients] = useState(['']);
   const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -94,6 +95,18 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
       setImageFile(file);
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    if (imagePreview && imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(null);
+    setImageFile(null);
+    setCurrentImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -213,6 +226,9 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
     setIsCategoryDropdownOpen(false);
     setIsSubmitting(false);
     setIsUploading(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     onClose();
   };
 
@@ -282,19 +298,19 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
                         <Icon icon="ph:image" className="text-4xl mb-2" />
                         <span className="text-sm">ไม่สามารถโหลดรูปภาพได้</span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImagePreview(currentImage);
-                          setImageFile(null);
-                          // Clear the file input
-                          const fileInput = document.querySelector('input[type="file"]');
-                          if (fileInput) fileInput.value = '';
-                        }}
-                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
-                      >
-                        <Icon icon="ph:x" className="text-sm" />
-                      </button>
+                      <div className="absolute top-2 right-2 group">
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                          aria-label="ลบรูปภาพ"
+                        >
+                          <Icon icon="ph:x" className="text-sm" />
+                        </button>
+                        <span className="pointer-events-none absolute right-full mr-2 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-lg bg-black/80 text-white text-xs font-medium px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                          ลบรูปภาพ
+                        </span>
+                      </div>
                     </>
                   ) : (
                     <div className="flex flex-col items-center justify-center h-full text-gray-400">
@@ -317,6 +333,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
                     accept="image/*"
                     onChange={handleImageSelect}
                     className="hidden"
+                    ref={fileInputRef}
                   />
                 </label>
               </div>

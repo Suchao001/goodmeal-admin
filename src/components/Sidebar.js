@@ -18,6 +18,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }) {
     { path: '/foodmenu', label: 'จัดการเมนูอาหาร', icon: 'fluent:food-16-filled' },
     { path: '/foodcategories', label: 'จัดการประเภทอาหาร', icon: 'material-symbols:category' },
     { path: '/mealplan', match: ['/mealplan', '/mealplan-Add'], label: 'จัดการแผนอาหาร', icon: 'material-symbols:food-bank-rounded' },
+    { path: '/trash', label: 'ถังขยะ', icon: 'heroicons:trash-20-solid' },
     { path: '/article', label: 'จัดการบทความการกิน', icon: 'material-symbols:article' }
   ]), []);
 
