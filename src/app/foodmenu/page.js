@@ -355,13 +355,13 @@ export default function MenuManagement() {
                     </div>
                     <div className="flex flex-wrap gap-4">
                         {/* Dev Button for Bulk Add */}
-                        <button 
+                        {/* <button 
                         onClick={() => setIsBulkAddModalOpen(true)} 
                         className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-lg shadow-indigo-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
                         >
                         <Icon icon="heroicons:code-bracket-20-solid" className="text-lg" />
                         Bulk Add (Dev)
-                        </button>
+                        </button> */}
                         
                         <button
                         onClick={() => router.push('/foodcategories')}
