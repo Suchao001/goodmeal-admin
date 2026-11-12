@@ -144,7 +144,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white p-6 rounded-lg shadow-sm w-1/2 max-h-[90vh] overflow-y-auto">
         <h2 className="text-lg font-bold mb-4">แก้ไขเมนูอาหาร</h2>
 
         <div className="mb-4">
@@ -186,7 +186,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
               <span className="text-gray-500">+</span>
             </button>
             {isCategoryDropdownOpen && (
-              <div className="absolute mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
+              <div className="absolute mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-sm max-h-48 overflow-y-auto z-50">
                 {categories?.map((category) => (
                   <div
                     key={category.id}

@@ -686,7 +686,7 @@ export default function TrashManagementPage() {
 
   const renderErrorState = (message) => (
     <div className="py-16 text-center">
-      <div className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-red-50 text-red-600">
+      <div className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-red-50 text-red-600">
         <Icon icon="heroicons:exclamation-triangle-20-solid" className="text-xl" />
         <span className="font-medium">{message}</span>
       </div>
@@ -726,7 +726,7 @@ export default function TrashManagementPage() {
 
     return (
       <div className="space-y-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between rounded-2xl border border-emerald-100 bg-emerald-50/50 px-4 py-3">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between rounded-xl border border-gray-200 bg-emerald-50/50 px-4 py-3">
           <div className="flex flex-wrap items-center gap-3 text-sm text-emerald-700">
             <label className="flex items-center gap-2">
               <input
@@ -746,7 +746,7 @@ export default function TrashManagementPage() {
                 value={foodSearch}
                 onChange={(e) => setFoodSearch(e.target.value)}
                 placeholder="ค้นหาชื่อเมนู"
-                className="w-full rounded-xl border border-emerald-200 bg-white/90 pl-10 pr-4 py-2.5 text-sm text-emerald-800 placeholder:text-emerald-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full rounded-xl border border-emerald-200 bg-white pl-10 pr-4 py-2.5 text-sm text-emerald-800 placeholder:text-emerald-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -757,7 +757,7 @@ export default function TrashManagementPage() {
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   !hasSelection || isBulkProcessing
                     ? 'bg-emerald-200 text-white cursor-not-allowed'
-                    : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md'
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md'
                 }`}
               >
                 <Icon icon="heroicons:arrow-uturn-left-20-solid" className="text-base" />
@@ -770,7 +770,7 @@ export default function TrashManagementPage() {
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   !hasSelection || isBulkProcessing
                     ? 'bg-red-200 text-white cursor-not-allowed'
-                    : 'bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white shadow-md'
+                    : 'bg-orange-600 hover:bg-orange-700 text-white shadow-md'
                 }`}
               >
                 <Icon icon="heroicons:trash-20-solid" className="text-base" />
@@ -822,7 +822,7 @@ export default function TrashManagementPage() {
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className="w-20 h-20 rounded-2xl overflow-hidden border border-emerald-100 bg-emerald-50/50">
+                      <div className="w-20 h-20 rounded-xl overflow-hidden border border-gray-200 bg-emerald-50/50">
                         <Image
                           src={buildFoodImageSrc(food.img) || placeholderImage}
                           alt={food.name}
@@ -860,7 +860,7 @@ export default function TrashManagementPage() {
                         <button
                           type="button"
                           onClick={() => handleRestoreFood(food)}
-                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                           disabled={isBulkProcessing}
                         >
                           <Icon icon="heroicons:arrow-uturn-left-20-solid" className="text-base" />
@@ -869,7 +869,7 @@ export default function TrashManagementPage() {
                         <button
                           type="button"
                           onClick={() => handleDeleteFood(food)}
-                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                           disabled={isBulkProcessing}
                         >
                           <Icon icon="heroicons:trash-20-solid" className="text-base" />
@@ -920,7 +920,7 @@ export default function TrashManagementPage() {
 
     return (
       <div className="space-y-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between rounded-2xl border border-emerald-100 bg-emerald-50/50 px-4 py-3">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between rounded-xl border border-gray-200 bg-emerald-50/50 px-4 py-3">
           <div className="flex flex-wrap items-center gap-3 text-sm text-emerald-700">
             <label className="flex items-center gap-2">
               <input
@@ -940,7 +940,7 @@ export default function TrashManagementPage() {
                 value={categorySearch}
                 onChange={(e) => setCategorySearch(e.target.value)}
                 placeholder="ค้นหาชื่อประเภท"
-                className="w-full rounded-xl border border-emerald-200 bg-white/90 pl-10 pr-4 py-2.5 text-sm text-emerald-800 placeholder:text-emerald-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full rounded-xl border border-emerald-200 bg-white pl-10 pr-4 py-2.5 text-sm text-emerald-800 placeholder:text-emerald-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -951,7 +951,7 @@ export default function TrashManagementPage() {
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   !hasSelection || isBulkProcessing
                     ? 'bg-emerald-200 text-white cursor-not-allowed'
-                    : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md'
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md'
                 }`}
               >
                 <Icon icon="heroicons:arrow-uturn-left-20-solid" className="text-base" />
@@ -964,7 +964,7 @@ export default function TrashManagementPage() {
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   !hasSelection || isBulkProcessing
                     ? 'bg-red-200 text-white cursor-not-allowed'
-                    : 'bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white shadow-md'
+                    : 'bg-orange-600 hover:bg-orange-700 text-white shadow-md'
                 }`}
               >
                 <Icon icon="heroicons:trash-20-solid" className="text-base" />
@@ -1007,7 +1007,7 @@ export default function TrashManagementPage() {
                     <td className="px-6 py-5 font-semibold text-emerald-600">{index + 1}</td>
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center shadow-sm">
+                        <div className="h-10 w-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-sm">
                           <Icon icon="material-symbols:category" className="text-lg" />
                         </div>
                         <div>
@@ -1033,7 +1033,7 @@ export default function TrashManagementPage() {
                         <button
                           type="button"
                           onClick={() => handleRestoreCategory(category)}
-                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                           disabled={isBulkProcessing}
                         >
                           <Icon icon="heroicons:arrow-uturn-left-20-solid" className="text-base" />
@@ -1042,7 +1042,7 @@ export default function TrashManagementPage() {
                         <button
                           type="button"
                           onClick={() => handleDeleteCategory(category)}
-                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                           disabled={isBulkProcessing}
                         >
                           <Icon icon="heroicons:trash-20-solid" className="text-base" />
@@ -1093,7 +1093,7 @@ export default function TrashManagementPage() {
 
     return (
       <div className="space-y-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between rounded-2xl border border-emerald-100 bg-emerald-50/50 px-4 py-3">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between rounded-xl border border-gray-200 bg-emerald-50/50 px-4 py-3">
           <div className="flex flex-wrap items-center gap-3 text-sm text-emerald-700">
             <label className="flex items-center gap-2">
               <input
@@ -1113,7 +1113,7 @@ export default function TrashManagementPage() {
                 value={planSearch}
                 onChange={(e) => setPlanSearch(e.target.value)}
                 placeholder="ค้นหาชื่อแผนอาหาร"
-                className="w-full rounded-xl border border-emerald-200 bg-white/90 pl-10 pr-4 py-2.5 text-sm text-emerald-800 placeholder:text-emerald-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full rounded-xl border border-emerald-200 bg-white pl-10 pr-4 py-2.5 text-sm text-emerald-800 placeholder:text-emerald-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -1124,7 +1124,7 @@ export default function TrashManagementPage() {
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   !hasSelection || isBulkProcessing
                     ? 'bg-emerald-200 text-white cursor-not-allowed'
-                    : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md'
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md'
                 }`}
               >
                 <Icon icon="heroicons:arrow-uturn-left-20-solid" className="text-base" />
@@ -1137,7 +1137,7 @@ export default function TrashManagementPage() {
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                   !hasSelection || isBulkProcessing
                     ? 'bg-red-200 text-white cursor-not-allowed'
-                    : 'bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white shadow-md'
+                    : 'bg-orange-600 hover:bg-orange-700 text-white shadow-md'
                 }`}
               >
                 <Icon icon="heroicons:trash-20-solid" className="text-base" />
@@ -1197,7 +1197,7 @@ export default function TrashManagementPage() {
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className="w-24 h-20 rounded-2xl overflow-hidden border border-emerald-100 bg-emerald-50/50">
+                      <div className="w-24 h-20 rounded-xl overflow-hidden border border-gray-200 bg-emerald-50/50">
                         {plan.image ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -1221,7 +1221,7 @@ export default function TrashManagementPage() {
                         <button
                           type="button"
                           onClick={() => handleRestorePlan(plan)}
-                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                           disabled={isBulkProcessing}
                         >
                           <Icon icon="heroicons:arrow-uturn-left-20-solid" className="text-base" />
@@ -1230,7 +1230,7 @@ export default function TrashManagementPage() {
                         <button
                           type="button"
                           onClick={() => handleDeletePlan(plan)}
-                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                           disabled={isBulkProcessing}
                         >
                           <Icon icon="heroicons:trash-20-solid" className="text-base" />
@@ -1250,10 +1250,9 @@ export default function TrashManagementPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-cyan-50/30 -m-6 p-6">
+      <div className="min-h-screen bg-gray-50 -m-6 p-6">
         <div className="mb-8 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/5 via-teal-600/5 to-cyan-600/5 rounded-3xl"></div>
-          <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl border border-emerald-100/60 shadow-xl shadow-emerald-900/5 px-8 py-10 overflow-hidden">
+          <div className="relative bg-white rounded-xl border border-gray-200 shadow-md  px-8 py-10 overflow-hidden">
             <div className="flex flex-wrap lg:flex-nowrap gap-8 items-center">
               <div className="flex-1 space-y-4">
                 <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium shadow-sm">
@@ -1271,7 +1270,7 @@ export default function TrashManagementPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full lg:w-auto">
                 {summaryCards.map((card) => (
-                  <div key={card.key} className="bg-white/80 backdrop-blur rounded-2xl border border-emerald-100/60 shadow-sm px-6 py-4">
+                  <div key={card.key} className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-4">
                     <div className="text-sm text-emerald-500 font-semibold uppercase tracking-wide">{card.title}</div>
                     <div className="mt-2 text-3xl font-bold text-emerald-700">{formatNumber(card.value)}</div>
                   </div>
@@ -1281,8 +1280,8 @@ export default function TrashManagementPage() {
           </div>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-emerald-100/60 shadow-xl shadow-emerald-900/5">
-          <div className="border-b border-emerald-100/60 px-6 pt-6">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-md ">
+          <div className="border-b border-gray-200 px-6 pt-6">
             <div className="flex flex-wrap gap-3">
               {TABS.map((tab) => {
                 const active = activeTab === tab.key;
@@ -1290,16 +1289,16 @@ export default function TrashManagementPage() {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`relative inline-flex items-center gap-2 px-5 py-3 rounded-2xl font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
+                    className={`relative inline-flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
                       active
-                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-900/20'
-                        : 'bg-white text-emerald-700 border border-emerald-100 hover:border-emerald-200 hover:bg-emerald-50/80 shadow-sm'
+                        ? 'bg-emerald-600 text-white shadow-sm '
+                        : 'bg-white text-emerald-700 border border-gray-200 hover:border-emerald-200 hover:bg-emerald-50/80 shadow-sm'
                     }`}
                   >
                     <Icon icon={tab.icon} className="text-lg" />
                     <span>{tab.label}</span>
                     {active && (
-                      <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 w-16 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500"></span>
+                      <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 w-16 rounded-full bg-emerald-500"></span>
                     )}
                   </button>
                 );

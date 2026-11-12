@@ -304,19 +304,18 @@ export default function MenuManagement() {
 
     return (
         <Layout>
-            <div className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-cyan-50/30 -m-6 p-6">
+            <div className="min-h-screen bg-gray-50 -m-6 p-6">
                 {/* Header Section */}
                 <div className="mb-8 relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/5 via-teal-600/5 to-cyan-600/5 rounded-3xl"></div>
-                    <div className="relative bg-white/70 backdrop-blur-sm rounded-3xl border border-emerald-100/50 p-8 shadow-lg shadow-emerald-900/5">
+                    <div className="relative bg-white rounded-xl border border-gray-200 p-8 shadow-sm ">
                         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                    <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
                                         <Icon icon="material-symbols:restaurant-menu" className="text-white text-2xl" />
                                     </div>
                                     <div>
-                                        <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-800 to-teal-700 bg-clip-text text-transparent">
+                                        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900">
                                             การจัดการเมนูอาหาร
                                         </h1>
                                     </div>
@@ -326,15 +325,15 @@ export default function MenuManagement() {
                             
                             {/* Quick Stats */}
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                                     <div className="text-2xl font-bold text-emerald-700">{foods.length}</div>
                                     <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">เมนูทั้งหมด</div>
                                 </div>
-                                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                                     <div className="text-2xl font-bold text-emerald-600">{categories.length}</div>
                                     <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">ประเภท</div>
                                 </div>
-                                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                                     <div className="text-2xl font-bold text-amber-600">{filteredFoods.length}</div>
                                     <div className="text-xs text-amber-600/70 font-medium uppercase tracking-wide">ผลการค้นหา</div>
                                 </div>
@@ -345,7 +344,7 @@ export default function MenuManagement() {
 
                {/* Combined Section */}
                 <div className="mb-8">
-                <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100/50 shadow-xl shadow-emerald-900/5 p-6">
+                <div className="bg-white rounded-xl border border-gray-200 shadow-md  p-6">
                     
                     {/* Header Row: Title + Action Buttons */}
                     <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
@@ -357,7 +356,7 @@ export default function MenuManagement() {
                         {/* Dev Button for Bulk Add */}
                         {/* <button 
                         onClick={() => setIsBulkAddModalOpen(true)} 
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-lg shadow-indigo-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                         >
                         <Icon icon="heroicons:code-bracket-20-solid" className="text-lg" />
                         Bulk Add (Dev)
@@ -365,21 +364,21 @@ export default function MenuManagement() {
                         
                         <button
                         onClick={() => router.push('/foodcategories')}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-medium shadow-lg shadow-purple-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-purple-600 text-white font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                         >
                         <Icon icon="material-symbols:category" className="text-lg" />
                         จัดการประเภทอาหาร
                         </button>
                         <button 
                         onClick={() => setIsCategoryModalOpen(true)} 
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-500 text-white font-medium shadow-lg shadow-amber-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-600 text-white font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                         >
                         <Icon icon="heroicons:plus-20-solid" className="text-lg" />
                         เพิ่มประเภทอาหาร
                         </button>
                         <button 
                         onClick={() => setIsAddModalOpen(true)} 
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                         >
                         <Icon icon="heroicons:plus-20-solid" className="text-lg" />
                         เพิ่มเมนูอาหารใหม่
@@ -404,11 +403,11 @@ export default function MenuManagement() {
                 </div>
                 </div>
 
-<div className="px-6 py-4 border-b border-emerald-100/50">
+<div className="px-6 py-4 border-b border-gray-200">
                         <div className="flex flex-wrap items-center gap-4">
                             <button
                                 onClick={toggleBulkMode}
-                                className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-medium shadow-lg transition-all duration-200 ${bulkMode ? 'bg-gradient-to-r from-slate-600 to-slate-500 text-white hover:from-slate-700 hover:to-slate-600' : 'bg-gradient-to-r from-orange-600 to-red-500 text-white hover:from-orange-700 hover:to-red-600'}`}
+                                className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium shadow-sm transition-all duration-200 ${bulkMode ? 'bg-slate-600 text-white hover:bg-slate-700' : 'bg-orange-600 text-white hover:bg-orange-700'}`}
                                 title={bulkMode ? 'ปิดโหมดลบหลายรายการ' : 'เปิดโหมดลบหลายรายการ'}
                             >
                                 <Icon icon={bulkMode ? 'heroicons:x-mark-20-solid' : 'heroicons:trash-20-solid'} className="text-lg" />
@@ -421,7 +420,7 @@ export default function MenuManagement() {
                                 <button
                                     onClick={handleBulkDelete}
                                     disabled={selectedIds.length === 0}
-                                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-white font-medium shadow-lg transition-all duration-200 ${selectedIds.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 hover:shadow-xl hover:scale-105'}`}
+                                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-medium shadow-sm transition-all duration-200 ${selectedIds.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-700 hover:shadow-md'}`}
                                     title="ย้ายรายการที่เลือกไปยังถังขยะ"
                                 >
                                     <Icon icon="heroicons:archive-box-20-solid" className="text-lg" />
@@ -434,8 +433,8 @@ export default function MenuManagement() {
                         </div>
                     </div>
                 {/* Enhanced Food Table */}
-                <div className="bg-white/80 backdrop-blur-sm shadow-xl shadow-emerald-900/5 rounded-3xl border border-emerald-100/50 overflow-hidden">
-                    <div className="bg-gradient-to-r from-emerald-600/10 via-teal-600/10 to-cyan-600/10 px-6 py-4 border-b border-emerald-100/50">
+                <div className="bg-white shadow-md  rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Icon icon="heroicons:table-cells-20-solid" className="text-emerald-600 text-xl" />

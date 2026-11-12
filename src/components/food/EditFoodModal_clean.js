@@ -177,10 +177,10 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl shadow-md w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 p-6 rounded-t-3xl">
+        <div className="bg-emerald-600 p-6 rounded-t-3xl">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
               <Icon icon="ph:bowl-food-fill" className="text-3xl" />
@@ -207,7 +207,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
               placeholder="กรุณาใส่ชื่ออาหาร"
               required
             />
@@ -221,7 +221,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
             <div className="space-y-4">
               {/* Image Preview */}
               <div className="flex justify-center">
-                <div className="relative w-48 h-48 border-2 border-dashed border-gray-300 rounded-2xl overflow-hidden bg-gray-50">
+                <div className="relative w-48 h-48 border-2 border-dashed border-gray-300 rounded-xl overflow-hidden bg-gray-50">
                   {imagePreview ? (
                     <>
                       <Image
@@ -252,7 +252,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
 
               {/* File Input */}
               <div className="flex justify-center">
-                <label className="cursor-pointer bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-2xl px-6 py-3 transition-colors">
+                <label className="cursor-pointer bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl px-6 py-3 transition-colors">
                   <div className="flex items-center gap-2 text-emerald-600">
                     <Icon icon="ph:upload" className="text-lg" />
                     <span className="font-medium">เลือกรูปภาพใหม่</span>
@@ -282,7 +282,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
                       value={ingredient}
                       onChange={(e) => updateIngredient(index, e.target.value)}
                       placeholder={`ส่วนผสมที่ ${index + 1}`}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                     />
                   </div>
                   {ingredients.length > 1 && (
@@ -300,7 +300,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
               <button
                 type="button"
                 onClick={addIngredient}
-                className="w-full py-3 border-2 border-dashed border-emerald-300 text-emerald-600 rounded-2xl hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 border-2 border-dashed border-emerald-300 text-emerald-600 rounded-xl hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2"
               >
                 <Icon icon="ph:plus" className="text-lg" />
                 <span className="font-medium">เพิ่มส่วนผสม</span>
@@ -317,7 +317,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
               <button
                 type="button"
                 onClick={toggleCategoryDropdown}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-left flex items-center justify-between hover:border-emerald-300 transition-colors"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white text-left flex items-center justify-between hover:border-emerald-300 transition-colors"
               >
                 <span className="text-gray-700">
                   {selectedCategories.length > 0 
@@ -332,7 +332,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
               </button>
 
               {isCategoryDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-lg z-10 max-h-60 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-sm z-10 max-h-60 overflow-y-auto">
                   {categories?.map((category) => (
                     <label
                       key={category.id}
@@ -390,7 +390,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
                 value={formData.calories}
                 onChange={handleInputChange}
                 min="0"
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="0"
               />
             </div>
@@ -406,7 +406,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
                 onChange={handleInputChange}
                 min="0"
                 step="0.1"
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="0"
               />
             </div>
@@ -422,7 +422,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
                 onChange={handleInputChange}
                 min="0"
                 step="0.1"
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="0"
               />
             </div>
@@ -438,7 +438,7 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
                 onChange={handleInputChange}
                 min="0"
                 step="0.1"
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="0"
               />
             </div>
@@ -449,14 +449,14 @@ export default function EditFoodModal({ isOpen, onClose, food, onSave, categorie
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50 transition-colors font-medium"
+              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
             >
               ยกเลิก
             </button>
             <button
               type="submit"
               disabled={isSubmitting || isUploading}
-              className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white rounded-2xl hover:from-emerald-700 hover:to-emerald-600 transition-all font-medium py-3 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-medium py-3 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {(isSubmitting || isUploading) ? (
                 <>

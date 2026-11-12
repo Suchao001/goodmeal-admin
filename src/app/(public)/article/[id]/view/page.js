@@ -116,7 +116,7 @@ export default function ArticlePublicView() {
 
       {/* Article Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
-        <article className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <article className="bg-white rounded-lg shadow-sm overflow-hidden">
           {/* Article Image */}
           {article.image && (
             <div className="w-full h-96 relative">
@@ -182,7 +182,7 @@ export default function ArticlePublicView() {
         </article>
 
         {/* Share Section */}
-        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+        <div className="mt-8 bg-white rounded-lg shadow-sm p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">แชร์บทความนี้</h3>
           <div className="flex gap-4">
             {/* <button 
@@ -274,7 +274,7 @@ export default function ArticlePublicView() {
         </div>
 
         {/* Related Articles Placeholder */}
-        {/* <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+        {/* <div className="mt-8 bg-white rounded-lg shadow-sm p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">บทความที่เกี่ยวข้อง</h3>
           <p className="text-gray-600">ฟีเจอร์นี้จะพัฒนาในอนาคต</p>
         </div> */}
