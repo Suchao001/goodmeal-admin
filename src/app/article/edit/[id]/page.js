@@ -84,7 +84,7 @@ export default function EditArticle() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+        <div className="min-h-screen bg-gray-50">
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
               <div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mx-auto mb-4"></div>
@@ -100,7 +100,7 @@ export default function EditArticle() {
   if (!initialData) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+        <div className="min-h-screen bg-gray-50">
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
               <div className="p-6 bg-red-100 rounded-full mb-4 mx-auto w-fit">
@@ -117,18 +117,18 @@ export default function EditArticle() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+      <div className="min-h-screen bg-gray-50">
         <div className="px-6 py-8">
           {/* Page Header */}
           <div className="max-w-7xl mx-auto mb-8">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 shadow-xl shadow-emerald-900/5 p-8">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-md  p-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="p-4 bg-gradient-to-br from-amber-600 to-amber-500 rounded-2xl shadow-lg">
+                  <div className="p-4 bg-amber-600 rounded-xl shadow-sm">
                     <Icon icon="heroicons:pencil-square-20-solid" className="text-3xl text-white" />
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-700 to-amber-600 bg-clip-text text-transparent">
+                    <h1 className="text-3xl font-bold text-gray-900">
                       แก้ไขบทความ
                     </h1>
                     <p className="text-lg text-slate-600 mt-1">
@@ -159,7 +159,7 @@ export default function EditArticle() {
 
           {/* Form Container */}
           <div className="max-w-7xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 shadow-xl shadow-emerald-900/5 p-8">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-md  p-8">
               <ArticleForm 
                 mode="edit" 
                 initialData={initialData}

@@ -6,7 +6,7 @@ export default function PublicHome() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+      <header className="bg-blue-600 text-white">
         <div className="max-w-6xl mx-auto px-4 py-16">
           <div className="text-center">
             <h1 className="text-5xl font-bold mb-6">Goodmeal</h1>
@@ -45,7 +45,7 @@ export default function PublicHome() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
             <div className="bg-blue-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
               <Icon icon="mdi:food" className="h-8 w-8 text-blue-600" />
             </div>
@@ -57,7 +57,7 @@ export default function PublicHome() {
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
             <div className="bg-green-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
               <Icon icon="mdi:calendar-month" className="h-8 w-8 text-green-600" />
             </div>
@@ -69,7 +69,7 @@ export default function PublicHome() {
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
             <div className="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
               <Icon icon="mdi:newspaper" className="h-8 w-8 text-purple-600" />
             </div>

@@ -141,7 +141,7 @@ export default function ArticlesPublicList() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredArticles.map((article) => (
-              <article key={article.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <article key={article.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                 <Link href={`/article/${article.id}/view`}>
                   {/* Article Image */}
                   <div className="relative h-48 bg-gray-200">
@@ -150,7 +150,7 @@ export default function ArticlesPublicList() {
                         src={article.image}
                         alt={article.title}
                         fill
-                        className="object-cover hover:scale-105 transition-transform duration-300"
+                        className="object-cover transition-transform duration-300"
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full">

@@ -92,9 +92,9 @@ export default function ArticleForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Form Header */}
-      <div className="border-b border-emerald-100 pb-6">
+      <div className="border-b border-gray-200 pb-6">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-2xl">
+          <div className="p-3 bg-gray-50 rounded-xl">
             <Icon icon="heroicons:document-text-20-solid" className="text-2xl text-emerald-600" />
           </div>
           <div>
@@ -160,7 +160,7 @@ export default function ArticleForm({
         {/* Sidebar - Right Column */}
         <div className="space-y-6">
           {/* Image Upload */}
-          <div className="bg-white border border-emerald-200 rounded-2xl p-6 space-y-4">
+          <div className="bg-white border border-emerald-200 rounded-xl p-6 space-y-4">
             <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
               <Icon icon="heroicons:photo-20-solid" className="text-emerald-600" />
               รูปภาพประกอบ
@@ -174,7 +174,7 @@ export default function ArticleForm({
                     alt="Article preview"
                     width={300}
                     height={200}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                    className="w-full h-full object-cover transition-transform duration-200"
                   />
                 </div>
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl flex items-center justify-center">
@@ -192,7 +192,7 @@ export default function ArticleForm({
                 />
                 <label
                   htmlFor="image-upload"
-                  className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 shadow-lg shadow-emerald-900/25"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl cursor-pointer transition-all duration-200 shadow-sm "
                 >
                   <Icon icon="heroicons:cloud-arrow-up-20-solid" className="text-lg" />
                   <span className="font-medium">เลือกรูปภาพ</span>
@@ -207,7 +207,7 @@ export default function ArticleForm({
           </div>
 
           {/* Meta Information */}
-          <div className="bg-white border border-emerald-200 rounded-2xl p-6 space-y-5">
+          <div className="bg-white border border-emerald-200 rounded-xl p-6 space-y-5">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700">
               <Icon icon="heroicons:cog-6-tooth-20-solid" className="text-emerald-600" />
               ข้อมูลเพิ่มเติม
@@ -282,7 +282,7 @@ export default function ArticleForm({
                     if (!exists) setTags(prev => [...prev, value]);
                     setTagInput('');
                   }}
-                  className="inline-flex items-center justify-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg shadow-emerald-900/20"
+                  className="inline-flex items-center justify-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition-all duration-200 shadow-sm "
                   aria-label="เพิ่มแท็ก"
                 >
                   <Icon icon="heroicons:plus-20-solid" className="text-lg" />
@@ -313,11 +313,11 @@ export default function ArticleForm({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-4 pt-6 border-t border-emerald-100">
+      <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
         <button
           type="button"
           onClick={() => router.push('/article')}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-all duration-200 hover:scale-105"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-all duration-200"
           disabled={isUploading}
         >
           <Icon icon="heroicons:x-mark-20-solid" className="text-lg" />
@@ -326,7 +326,7 @@ export default function ArticleForm({
         
         <button
           type="submit"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white rounded-xl font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium shadow-sm  hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           disabled={isUploading}
         >
           {isUploading ? (

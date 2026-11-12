@@ -112,7 +112,7 @@ export default function UserManagement() {
   const statusMeta = {
     active: { 
       label: 'ใช้งานปกติ', 
-      class: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 shadow-sm', 
+      class: 'bg-emerald-50 text-emerald-700 ring-1 ring-gray-200 shadow-sm', 
       icon: 'heroicons:check-circle-20-solid',
       color: 'emerald'
     },
@@ -135,19 +135,18 @@ export default function UserManagement() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-cyan-50/30 -m-6 p-6">
+      <div className="min-h-screen bg-gray-50 -m-6 p-6">
         {/* Header with improved gradient */}
         <div className="mb-8 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/5 via-teal-600/5 to-cyan-600/5 rounded-3xl"></div>
-          <div className="relative bg-white/70 backdrop-blur-sm rounded-3xl border border-emerald-100/50 p-8 shadow-lg shadow-emerald-900/5">
+          <div className="relative bg-white rounded-xl border border-gray-200 p-8 shadow-sm ">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
                     <Icon icon="heroicons:users-20-solid" className="text-white text-2xl" />
                   </div>
                   <div>
-                    <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-800 to-teal-700 bg-clip-text text-transparent">
+                    <h1 className="text-3xl lg:text-4xl font-bold text-gray-900">
                       การจัดการผู้ใช้งาน
                     </h1>
                   </div>
@@ -157,19 +156,19 @@ export default function UserManagement() {
               
               {/* Quick Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                   <div className="text-2xl font-bold text-emerald-700">{stats.total}</div>
                   <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">ทั้งหมด</div>
                 </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                   <div className="text-2xl font-bold text-emerald-600">{stats.active}</div>
                   <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">ใช้งาน</div>
                 </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-red-100/50 shadow-sm">
+                <div className="bg-white rounded-xl p-4 border border-red-100/50 shadow-sm">
                   <div className="text-2xl font-bold text-red-600">{stats.suspended}</div>
                   <div className="text-xs text-red-600/70 font-medium uppercase tracking-wide">ระงับ</div>
                 </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-slate-100/50 shadow-sm">
+                <div className="bg-white rounded-xl p-4 border border-slate-100/50 shadow-sm">
                   <div className="text-2xl font-bold text-slate-600">{stats.deactivated}</div>
                   <div className="text-xs text-slate-600/70 font-medium uppercase tracking-wide">ปิด</div>
                 </div>
@@ -180,7 +179,7 @@ export default function UserManagement() {
 
         {/* Enhanced Filters Card */}
         <div className="mb-8">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100/50 shadow-xl shadow-emerald-900/5 p-6">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-md  p-6">
             <div className="flex items-center gap-2 mb-4">
               <Icon icon="heroicons:funnel-20-solid" className="text-emerald-600 text-xl" />
               <h3 className="font-semibold text-emerald-800">ตัวกรองข้อมูล</h3>
@@ -196,7 +195,7 @@ export default function UserManagement() {
                     value={searchQuery} 
                     onChange={handleSearch} 
                     placeholder="พิมพ์ชื่อผู้ใช้ อีเมล หรือ ID" 
-                    className="w-full pl-12 pr-4 py-3 rounded-2xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 text-sm font-medium placeholder-emerald-400 transition-all duration-200" 
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 text-sm font-medium placeholder-emerald-400 transition-all duration-200" 
                   />
                   {searchQuery && (
                     <button 
@@ -215,7 +214,7 @@ export default function UserManagement() {
                 <select 
                   value={statusFilter} 
                   onChange={handleStatusFilter} 
-                  className="w-full px-4 py-3 rounded-2xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white text-sm font-medium focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all duration-200"
+                  className="w-full px-4 py-3 rounded-xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white text-sm font-medium focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all duration-200"
                 >
                   <option value="">ทุกสถานะ</option>
                   <option value="active">ใช้งานปกติ</option>
@@ -227,14 +226,14 @@ export default function UserManagement() {
               <div className="flex gap-3">
                 <button 
                   onClick={fetchUsers} 
-                  className="flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                  className="flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                 >
                   <Icon icon="heroicons:arrow-path-20-solid" className="text-lg" />
                   รีเฟรช
                 </button>
                 <button 
                   onClick={() => { setSearchQuery(''); setStatusFilter(''); }} 
-                  className="flex-1 lg:flex-none px-6 py-3 rounded-2xl bg-white border border-emerald-200/50 text-emerald-700 font-medium hover:bg-emerald-50 hover:border-emerald-300 transition-all duration-200"
+                  className="flex-1 lg:flex-none px-6 py-3 rounded-xl bg-white border border-emerald-200/50 text-emerald-700 font-medium hover:bg-emerald-50 hover:border-emerald-300 transition-all duration-200"
                 >
                   ล้างตัวกรอง
                 </button>
@@ -244,9 +243,9 @@ export default function UserManagement() {
         </div>
 
         {/* Enhanced Table */}
-        <div className="bg-white/80 backdrop-blur-sm shadow-xl shadow-emerald-900/5 rounded-3xl border border-emerald-100/50 overflow-hidden">
+        <div className="bg-white shadow-md  rounded-xl border border-gray-200 overflow-hidden">
           {/* Table Header */}
-          <div className="bg-gradient-to-r from-emerald-600/10 via-teal-600/10 to-cyan-600/10 px-6 py-4 border-b border-emerald-100/50">
+          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Icon icon="heroicons:table-cells-20-solid" className="text-emerald-600 text-xl" />
@@ -303,7 +302,7 @@ export default function UserManagement() {
                     <tr key={user.id} className="hover:bg-emerald-50/30 transition-colors duration-150">
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                          <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                             {user.username.charAt(0).toUpperCase()}
                           </div>
                           <div>
@@ -337,7 +336,7 @@ export default function UserManagement() {
                       <td className="px-6 py-5 text-center">
                         <button 
                           onClick={() => openModal(user)} 
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                         >
                           <Icon icon="heroicons:cog-6-tooth-20-solid" className="text-base" />
                           จัดการ
@@ -373,7 +372,7 @@ export default function UserManagement() {
                 <Icon icon="heroicons:chevron-left-20-solid" />
               </button>
               
-              <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg">
+              <div className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold shadow-sm">
                 {currentPage} / {totalPages}
               </div>
               
@@ -398,10 +397,10 @@ export default function UserManagement() {
 
       {/* Enhanced Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-emerald-100/50 overflow-hidden animate-[fadeInScale_.3s_ease-out]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 ">
+          <div className="w-full max-w-lg bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden animate-[fadeInScale_.3s_ease-out]">
             {/* Modal Header */}
-            <div className="px-6 py-5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+            <div className="px-6 py-5 bg-emerald-600 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
@@ -424,9 +423,9 @@ export default function UserManagement() {
             {/* Modal Body */}
             <div className="p-6 space-y-6">
               {/* User Info */}
-              <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/50">
+              <div className="p-4 bg-emerald-50/50 rounded-xl border border-gray-200">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                  <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
                     {selectedUser?.username?.charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -443,7 +442,7 @@ export default function UserManagement() {
                 <select 
                   value={newStatus} 
                   onChange={e => setNewStatus(e.target.value)} 
-                  className="w-full px-4 py-3 rounded-2xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 text-sm font-medium transition-all duration-200"
+                  className="w-full px-4 py-3 rounded-xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 text-sm font-medium transition-all duration-200"
                 >
                   <option value="active">✅ ใช้งานปกติ</option>
                   <option value="suspended">⛔ ถูกระงับ</option>
@@ -460,7 +459,7 @@ export default function UserManagement() {
                       onChange={e => setReason(e.target.value)} 
                       rows={4} 
                       placeholder="กรุณาระบุเหตุผลในการระงับบัญชีผู้ใช้งานอย่างชัดเจน..." 
-                      className="w-full px-4 py-3 rounded-2xl border border-red-200/50 bg-red-50/30 focus:bg-white focus:ring-2 focus:ring-red-500/30 focus:border-red-500/50 text-sm resize-none transition-all duration-200 placeholder-red-400"
+                      className="w-full px-4 py-3 rounded-xl border border-red-200/50 bg-red-50/30 focus:bg-white focus:ring-2 focus:ring-red-500/30 focus:border-red-500/50 text-sm resize-none transition-all duration-200 placeholder-red-400"
                     />
                     <div className="absolute bottom-3 right-3 text-xs text-red-400">
                       {reason.length}/500
@@ -476,17 +475,17 @@ export default function UserManagement() {
               )}
               
               {/* Action Buttons */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-emerald-100/50">
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
                 <button 
                   onClick={closeModal} 
-                  className="px-6 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors"
+                  className="px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors"
                 >
                   ยกเลิก
                 </button>
                 <button 
                   onClick={handleSave} 
                   disabled={saving || (newStatus === 'suspended' && !reason.trim())}
-                  className="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
+                  className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
                 >
                   {saving ? (
                     <>

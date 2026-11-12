@@ -288,8 +288,8 @@ export default function DailyUpdate() {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
-          <div className="sticky top-0 bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4 flex justify-between items-center">
+        <div className="bg-white rounded-xl shadow-md max-w-6xl w-full max-h-[90vh] overflow-hidden">
+          <div className="sticky top-0 bg-emerald-600 px-6 py-4 flex justify-between items-center">
             <div>
               <h2 className="text-xl font-bold text-white">
                 Plan Details (ID: {selectedPlan.id})
@@ -344,7 +344,7 @@ export default function DailyUpdate() {
 
               {/* Today's Meal Plan */}
               {selectedPlan.todaysPlan && (
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border-2 border-blue-200 shadow-md">
+                <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200 shadow-md">
                   <h4 className="font-semibold text-blue-700 mb-4 flex items-center gap-2 text-lg">
                     <Icon icon="mdi:calendar-today" className="w-6 h-6" />
                     🍽️ แผนอาหารวันนี้ ({new Date().toLocaleDateString('th-TH')})
@@ -423,11 +423,11 @@ export default function DailyUpdate() {
               )}
 
               {/* Daily Nutrition Summary */}
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6 border-2 border-purple-200 shadow-md">
+              <div className="bg-purple-50 rounded-lg p-6 border-2 border-purple-200 shadow-md">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-semibold text-purple-700 flex items-center gap-2 text-lg">
                     <Icon icon="mdi:chart-bar" className="w-6 h-6" />
-                    📈 สรุปโภชนาการรายวัน ({new Date(selectedDate).toLocaleDateString('th-TH')})
+                    สรุปโภชนาการรายวัน ({new Date(selectedDate).toLocaleDateString('th-TH')})
                   </h4>
                 </div>
 
@@ -577,7 +577,7 @@ export default function DailyUpdate() {
               </div>
 
               {/* Eating Records for Selected Date */}
-              <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-lg p-6 border-2 border-orange-200 shadow-md">
+              <div className="bg-orange-50 rounded-lg p-6 border-2 border-orange-200 shadow-md">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-semibold text-orange-700 flex items-center gap-2 text-lg">
                     <Icon icon="mdi:food-apple" className="w-6 h-6" />
@@ -758,7 +758,7 @@ export default function DailyUpdate() {
 
               {/* Daily Meal Plan Breakdown */}
               {selectedPlan.parsedPlan && (
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-6 border border-emerald-200">
+                <div className="bg-gray-50 rounded-lg p-6 border border-emerald-200">
                   <h4 className="font-semibold text-emerald-700 mb-4 flex items-center gap-2 text-lg">
                     <Icon icon="mdi:calendar-today" className="w-6 h-6" />
                     Daily Meal Plan Breakdown
@@ -784,7 +784,7 @@ export default function DailyUpdate() {
                       });
 
                       return (
-                        <div key={day} className="bg-white rounded-lg border border-emerald-100 p-4 shadow-sm">
+                        <div key={day} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
                           <div className="flex items-center justify-between mb-3">
                             <h5 className="font-bold text-emerald-800 text-lg">วันที่ {day}</h5>
                             <div className="flex items-center gap-4 text-sm">
@@ -904,11 +904,11 @@ export default function DailyUpdate() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
+            <div className="p-3 bg-emerald-500 rounded-xl shadow-sm">
               <Icon icon="mdi:calendar-check" className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-gray-900">
                 Daily Update - Meal Plan Testing
               </h1>
               <p className="text-gray-600">
@@ -919,10 +919,10 @@ export default function DailyUpdate() {
         </div>
 
         {/* Cron Job Control */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+              <div className="p-3 bg-blue-500 rounded-xl shadow-sm">
                 <Icon icon="mdi:clock-outline" className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -936,8 +936,8 @@ export default function DailyUpdate() {
               className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 ${
                 cronLoading
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:scale-105'
-              } text-white shadow-lg`}
+                  : 'bg-blue-600 hover:bg-blue-700'
+              } text-white shadow-sm`}
             >
               {cronLoading ? (
                 <>
@@ -1015,7 +1015,7 @@ export default function DailyUpdate() {
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Icon icon="mdi:magnify" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -1040,7 +1040,7 @@ export default function DailyUpdate() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-6 border border-emerald-200">
+          <div className="bg-gray-50 rounded-xl p-6 border border-emerald-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-emerald-600 font-medium">Total Plan Usages</p>
@@ -1052,7 +1052,7 @@ export default function DailyUpdate() {
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200">
+          <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-600 font-medium">Filtered Results</p>
@@ -1064,7 +1064,7 @@ export default function DailyUpdate() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 border border-amber-200">
+          <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-amber-600 font-medium">Current Page</p>
@@ -1078,7 +1078,7 @@ export default function DailyUpdate() {
         </div>
 
         {/* Plan Usage Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100">
             <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
               <Icon icon="mdi:table" className="w-5 h-5" />
@@ -1124,7 +1124,7 @@ export default function DailyUpdate() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold text-xs">
+                          <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-semibold text-xs">
                             {usage.username ? usage.username.charAt(0).toUpperCase() : 'U'}
                           </div>
                           <div>

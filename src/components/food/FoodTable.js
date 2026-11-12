@@ -70,7 +70,7 @@ export default function FoodTable({
                   </td>
                 )}
                 <td className="px-6 py-5">
-                  <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                     {startIndex + index + 1}
                   </div>
                 </td>
@@ -96,18 +96,18 @@ export default function FoodTable({
                   </div>
                 </td>
                 <td className="px-6 py-5">
-                  <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-sm border border-emerald-100">
+                  <div className="w-20 h-20 rounded-xl overflow-hidden shadow-sm border border-gray-200">
                     {food.img ? (
                       <img 
                         src={food.img} 
                         alt={food.name} 
-                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-200" 
+                        className="w-full h-full object-cover transition-transform duration-200" 
                       />
                     ) : (
                       <Image 
                         src={imageUrl} 
                         alt={food.name} 
-                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-200" 
+                        className="w-full h-full object-cover transition-transform duration-200" 
                       />
                     )}
                   </div>
@@ -122,14 +122,14 @@ export default function FoodTable({
                   <div className="flex items-center justify-center gap-2">
                     <button
                       onClick={() => onEdit(food)}
-                      className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                      className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                     >
                       <Icon icon="heroicons:pencil-20-solid" className="text-base" />
                       แก้ไข
                     </button>
                     <button
                       onClick={() => onDelete(food)}
-                      className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                      className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                       title="ย้ายไปถังขยะ (สามารถกู้คืนได้)"
                     >
                       <Icon icon="heroicons:archive-box-20-solid" className="text-base" />
@@ -145,7 +145,7 @@ export default function FoodTable({
       
       {/* Enhanced Pagination */}
       {totalPages > 1 && onPageChange && (
-        <div className="px-6 py-6 border-t border-emerald-100/50 bg-emerald-50/20">
+        <div className="px-6 py-6 border-t border-gray-200 bg-emerald-50/20">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-sm text-emerald-700 font-medium">
               แสดง {Math.min(startIndex + 1, totalItems)}-{Math.min(startIndex + foods.length, totalItems)} จาก {totalItems} รายการ
@@ -166,7 +166,7 @@ export default function FoodTable({
                 <Icon icon="heroicons:chevron-left-20-solid" />
               </button>
               
-              <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg">
+              <div className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold shadow-sm">
                 {currentPage} / {totalPages}
               </div>
               

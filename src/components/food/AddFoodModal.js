@@ -118,10 +118,10 @@ export default function AddFoodModal({ isOpen, onClose, categories, onAddFood })
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-4xl rounded-xl shadow-md border border-gray-200 overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
-        <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-6">
+        <div className="bg-emerald-600 px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Icon icon="heroicons:plus-circle-20-solid" className="text-2xl text-white" />
@@ -247,7 +247,7 @@ export default function AddFoodModal({ isOpen, onClose, categories, onAddFood })
                     )}
                     
                     {isCategoryDropdownOpen && (
-                      <div className="absolute mt-2 w-full bg-white border border-emerald-200 rounded-xl shadow-lg max-h-48 overflow-y-auto z-50">
+                      <div className="absolute mt-2 w-full bg-white border border-emerald-200 rounded-xl shadow-sm max-h-48 overflow-y-auto z-50">
                         {categories.map((category) => (
                           <button
                             key={category.id}
@@ -292,7 +292,7 @@ export default function AddFoodModal({ isOpen, onClose, categories, onAddFood })
                             alt="Preview"
                             width={300}
                             height={200}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                            className="w-full h-full object-cover transition-transform duration-200"
                           />
                         </div>
                         <button
@@ -323,7 +323,7 @@ export default function AddFoodModal({ isOpen, onClose, categories, onAddFood })
                       />
                       <label
                         htmlFor="image-upload"
-                        className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 shadow-lg shadow-emerald-900/25 font-medium"
+                        className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl cursor-pointer transition-all duration-200 shadow-sm  font-medium"
                       >
                         <Icon icon="heroicons:cloud-arrow-up-20-solid" className="text-lg" />
                         <span>{imagePreview ? 'เปลี่ยนรูปภาพ' : 'เลือกรูปภาพ'}</span>
@@ -386,12 +386,12 @@ export default function AddFoodModal({ isOpen, onClose, categories, onAddFood })
         </div>
 
         {/* Modal Footer */}
-        <div className="px-8 py-6 bg-slate-50 border-t border-emerald-100">
+        <div className="px-8 py-6 bg-slate-50 border-t border-gray-200">
           <div className="flex items-center justify-end gap-4">
             <button
               onClick={handleClose}
               disabled={isUploading}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-all duration-200 hover:scale-105 disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-all duration-200 disabled:opacity-50"
             >
               <Icon icon="heroicons:x-mark-20-solid" className="text-lg" />
               ยกเลิก
@@ -399,7 +399,7 @@ export default function AddFoodModal({ isOpen, onClose, categories, onAddFood })
             <button
               onClick={handleSubmit}
               disabled={isUploading}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white rounded-xl font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium shadow-sm  hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isUploading ? (
                 <>

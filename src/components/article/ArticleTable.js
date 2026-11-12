@@ -28,7 +28,7 @@ export default function ArticleTable({ articles, onDelete, onStatusUpdate }) {
       case 'published':
         return { 
           label: 'เผยแพร่', 
-          class: 'text-emerald-600 bg-emerald-50 ring-1 ring-emerald-200',
+          class: 'text-emerald-600 bg-emerald-50 ring-1 ring-gray-200',
           icon: 'heroicons:check-circle-20-solid'
         };
       case 'pending':
@@ -101,13 +101,13 @@ export default function ArticleTable({ articles, onDelete, onStatusUpdate }) {
                   </div>
                 </td>
                 <td className="px-6 py-5">
-                  <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-sm border border-emerald-100">
+                  <div className="w-20 h-20 rounded-xl overflow-hidden shadow-sm border border-gray-200">
                     <Image 
                       src={article.image && article.image.startsWith('/blog/') ? article.image : img1} 
                       width={80} 
                       height={80} 
                       alt={article.title}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-200"
+                      className="w-full h-full object-cover transition-transform duration-200"
                     />
                   </div>
                 </td>
@@ -158,20 +158,20 @@ export default function ArticleTable({ articles, onDelete, onStatusUpdate }) {
                 <td className="px-6 py-5">
                   <div className="flex items-center justify-center gap-2">
                     <Link href={`/article/${article.id}/view`} target="_blank">
-                      <button className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white text-sm font-medium shadow-lg shadow-purple-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200">
+                      <button className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200">
                         <Icon icon="heroicons:eye-20-solid" className="text-base" />
                         ดู
                       </button>
                     </Link>
                     <Link href={`/article/edit/${article.id}`}>
-                      <button className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white text-sm font-medium shadow-lg shadow-amber-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200">
+                      <button className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200">
                         <Icon icon="heroicons:pencil-20-solid" className="text-base" />
                         แก้ไข
                       </button>
                     </Link>
                     <button
                       onClick={() => onDelete(article.id, article.title)}
-                      className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white text-sm font-medium shadow-lg shadow-red-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                      className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                     >
                       <Icon icon="heroicons:trash-20-solid" className="text-base" />
                       ลบ

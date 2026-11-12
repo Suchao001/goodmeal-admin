@@ -292,26 +292,26 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
   };
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+      <div className="min-h-screen bg-gray-50">
         <div className="px-6 py-8">
           {/* Page Header */}
           <div className="max-w-7xl mx-auto mb-8">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 shadow-xl shadow-emerald-900/5 p-8">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-md  p-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-6">
                   <Link href="/mealplan" className="group">
-                    <div className="flex items-center gap-3 px-4 py-3 bg-emerald-100 hover:bg-emerald-200 rounded-2xl transition-all duration-200 group-hover:scale-105">
+                    <div className="flex items-center gap-3 px-4 py-3 bg-emerald-100 hover:bg-emerald-200 rounded-xl transition-all duration-200">
                       <Icon icon="heroicons:arrow-left-20-solid" className="text-xl text-emerald-700" />
                       <span className="font-medium text-emerald-700">กลับไปแผนอาหาร</span>
                     </div>
                   </Link>
                   
                   <div className="flex items-center gap-4">
-                    <div className="p-4 bg-gradient-to-br from-emerald-600 to-emerald-500 rounded-2xl shadow-lg">
+                    <div className="p-4 bg-emerald-600 rounded-xl shadow-sm">
                       <Icon icon="heroicons:calendar-days-20-solid" className="text-3xl text-white" />
                     </div>
                     <div>
-                      <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-emerald-600 bg-clip-text text-transparent">
+                      <h1 className="text-3xl font-bold text-gray-900">
                         จัดการแผนอาหาร
                       </h1>
                       <p className="text-lg text-slate-600 mt-1">
@@ -332,7 +332,7 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                   <button 
                     onClick={saveMealPlan}
                     disabled={isSaving || !planId}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white rounded-xl font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium shadow-sm  hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
                     {isSaving ? (
                       <>
@@ -350,7 +350,7 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
               </div>
               
               {!planId && (
-                <div className="mt-6 p-4 bg-amber-50/50 border border-amber-200 rounded-2xl">
+                <div className="mt-6 p-4 bg-amber-50/50 border border-amber-200 rounded-xl">
                   <div className="flex items-start gap-3">
                     <Icon icon="heroicons:information-circle-20-solid" className="text-xl text-amber-600 mt-0.5" />
                     <div>
@@ -383,7 +383,7 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                   .slice((currentDayPage - 1) * daysPerPage, currentDayPage * daysPerPage)
                   .map((day) => (
                   <div key={day.id} className="group">
-                    <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 shadow-lg shadow-emerald-900/5 hover:shadow-xl hover:shadow-emerald-900/10 transition-all duration-300 p-6 relative">
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm  hover:shadow-md hover:shadow-emerald-900/10 transition-all duration-300 p-6 relative">
                       {/* Delete Day Button */}
                       <button
                         onClick={() => deleteDay(day.id)}
@@ -395,7 +395,7 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                       {/* Day Header */}
                       <div className="mb-6">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="p-2 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl">
+                          <div className="p-2 bg-gray-50 rounded-xl">
                             <Icon icon="heroicons:calendar-20-solid" className="text-lg text-emerald-600" />
                           </div>
                           <h3 className="text-xl font-bold text-slate-800">วันที่ {day.id}</h3>
@@ -417,7 +417,7 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                             <div
                               key={index}
                               onClick={() => openEditModal(day.id, index)}
-                              className="group/meal p-4 bg-emerald-50/50 hover:bg-emerald-100/50 border border-emerald-100 rounded-2xl cursor-pointer transition-all duration-200 hover:scale-105"
+                              className="group/meal p-4 bg-emerald-50/50 hover:bg-emerald-100/50 border border-gray-200 rounded-xl cursor-pointer transition-all duration-200"
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -458,7 +458,7 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                       {/* Add Meal Button */}
                       <button
                         onClick={() => addMeal(day.id)}
-                        className="w-full py-3 border-2 border-dashed border-emerald-300 hover:border-emerald-400 text-emerald-600 hover:text-emerald-700 rounded-2xl transition-all duration-200 hover:bg-emerald-50/50 flex items-center justify-center gap-2 font-medium"
+                        className="w-full py-3 border-2 border-dashed border-emerald-300 hover:border-emerald-400 text-emerald-600 hover:text-emerald-700 rounded-xl transition-all duration-200 hover:bg-emerald-50/50 flex items-center justify-center gap-2 font-medium"
                       >
                         <Icon icon="heroicons:plus-20-solid" className="text-lg" />
                         เพิ่มมื้ออาหาร
@@ -471,9 +471,9 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                 <div className="flex items-center justify-center">
                   <button
                     onClick={addDay}
-                    className="w-full h-full min-h-96 border-2 border-dashed border-emerald-300 hover:border-emerald-400 text-emerald-600 hover:text-emerald-700 rounded-3xl transition-all duration-200 hover:bg-emerald-50/50 flex flex-col items-center justify-center gap-3 font-medium hover:scale-105"
+                    className="w-full h-full min-h-96 border-2 border-dashed border-emerald-300 hover:border-emerald-400 text-emerald-600 hover:text-emerald-700 rounded-xl transition-all duration-200 hover:bg-emerald-50/50 flex flex-col items-center justify-center gap-3 font-medium"
                   >
-                    <div className="p-4 bg-emerald-100 rounded-2xl">
+                    <div className="p-4 bg-emerald-100 rounded-xl">
                       <Icon icon="heroicons:plus-20-solid" className="text-3xl text-emerald-600" />
                     </div>
                     <span className="text-lg">เพิ่มวัน</span>
@@ -484,7 +484,7 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
               {/* Day Pagination */}
               {days.length > daysPerPage && (
                 <div className="flex justify-center">
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-emerald-100 shadow-lg shadow-emerald-900/5 p-4">
+                  <div className="bg-white rounded-xl border border-gray-200 shadow-sm  p-4">
                     <Pagination
                       currentPage={currentDayPage}
                       totalPages={Math.ceil(days.length / daysPerPage)}
@@ -499,10 +499,10 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
 
           {/* Modal */}
           {isModalOpen && (
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden">
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white w-full max-w-2xl rounded-xl shadow-md border border-gray-200 overflow-hidden">
                 {/* Modal Header */}
-                <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-6">
+                <div className="bg-emerald-600 px-8 py-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Icon icon="heroicons:pencil-square-20-solid" className="text-2xl text-white" />
@@ -534,7 +534,7 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                             onClick={() => handleMealTypeSelect(type)}
                             className={`px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
                               editingMeal.type === type
-                                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/25'
+                                ? 'bg-emerald-600 text-white shadow-sm '
                                 : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
                             }`}
                           >
@@ -574,7 +574,7 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                       </div>
 
                       {searchTerm && filteredFoods.length > 0 && (
-                        <div className="border border-emerald-200 rounded-xl bg-white shadow-lg overflow-hidden">
+                        <div className="border border-emerald-200 rounded-xl bg-white shadow-sm overflow-hidden">
                           <div className="max-h-60 overflow-y-auto">
                             {filteredFoods
                               .slice((currentFoodPage - 1) * foodsPerPage, currentFoodPage * foodsPerPage)
@@ -582,14 +582,14 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                               <button
                                 key={food.id}
                                 onClick={() => handleFoodSelect(food)}
-                                className="w-full text-left px-6 py-4 hover:bg-emerald-50 focus:bg-emerald-50 focus:outline-none border-b border-emerald-100 last:border-b-0 transition-colors duration-150"
+                                className="w-full text-left px-6 py-4 hover:bg-emerald-50 focus:bg-emerald-50 focus:outline-none border-b border-gray-200 last:border-b-0 transition-colors duration-150"
                               >
                                 <div className="flex items-center gap-4">
                                   {food.img && (
                                     <img
                                       src={food.img}
                                       alt={food.name}
-                                      className="w-16 h-16 object-cover rounded-xl border border-emerald-100"
+                                      className="w-16 h-16 object-cover rounded-xl border border-gray-200"
                                     />
                                   )}
                                   <div className="flex-1">
@@ -610,7 +610,7 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                           </div>
                           
                           {Math.ceil(filteredFoods.length / foodsPerPage) > 1 && (
-                            <div className="px-6 py-4 border-t border-emerald-100 bg-emerald-50/30">
+                            <div className="px-6 py-4 border-t border-gray-200 bg-emerald-50/30">
                               <Pagination
                                 currentPage={currentFoodPage}
                                 totalPages={Math.ceil(filteredFoods.length / foodsPerPage)}
@@ -720,18 +720,18 @@ const mealTypes = ['อาหารเช้า', 'อาหารกลาง�
                 </div>
 
                 {/* Modal Footer */}
-                <div className="px-8 py-6 bg-slate-50 border-t border-emerald-100">
+                <div className="px-8 py-6 bg-slate-50 border-t border-gray-200">
                   <div className="flex items-center justify-end gap-4">
                     <button
                       onClick={onClose}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-all duration-200 hover:scale-105"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-all duration-200"
                     >
                       <Icon icon="heroicons:x-mark-20-solid" className="text-lg" />
                       ยกเลิก
                     </button>
                     <button
                       onClick={() => onSave(editingMeal)}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white rounded-xl font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium shadow-sm  hover:shadow-md transition-all duration-200"
                     >
                       <Icon icon="heroicons:check-20-solid" className="text-lg" />
                       บันทึก

@@ -52,14 +52,16 @@ export default function Topbar({ toggleSidebar, isSidebarOpen }) {
     };
 
     return (
-        <header className="bg-white/80 backdrop-blur border-b border-emerald-100 shadow-sm p-4 sticky top-0 z-10">
-            <div className="flex justify-between items-center">
+        <header className="bg-white border-b border-gray-200 px-4 h-16 flex items-center sm:px-6 sticky top-0 z-10">
+            <div className="flex w-full justify-between items-center">
                 {/* Left Section: Toggle Button and Title */}
                 <div className="flex items-center space-x-4">
                     {/* Toggle Button */}
                     <button
                         onClick={toggleSidebar}
-                        className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-colors duration-200"
+                        aria-label={isSidebarOpen ? 'ย่อเมนู' : 'ขยายเมนู'}
+                        aria-expanded={isSidebarOpen}
+                        className="p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 transition-colors duration-200"
                     >
                         {isSidebarOpen ? (
                             <Icon icon="mdi:menu-open" className="text-2xl" />
@@ -73,16 +75,21 @@ export default function Topbar({ toggleSidebar, isSidebarOpen }) {
                 <div className="flex items-center space-x-4">
                     
                     {/* User Info */}
-                    <div className="text-right">
-                        <p className="text-emerald-800 font-bold">suchao</p>
-                        <p className="text-sm text-emerald-500">Admin</p>
+                    <div className="text-right hidden sm:block leading-tight">
+                        <p className="text-gray-900 font-semibold">suchao</p>
+                        <p className="text-xs text-brand-600 font-medium">Admin</p>
                     </div>
 
                     {/* Profile Picture with Dropdown */}
                     <div className="relative" ref={dropdownRef}>
-                        <div 
-                            className="w-12 h-12 rounded-full overflow-hidden cursor-pointer ring-2 ring-emerald-200 hover:ring-emerald-400 transition-all duration-200"
+                        <button
+                            type="button"
+                            aria-label="เมนูผู้ใช้"
+                            aria-haspopup="menu"
+                            aria-expanded={isDropdownOpen}
+                            className="block w-9 h-9 rounded-full overflow-hidden cursor-pointer ring-1 ring-gray-200 hover:ring-gray-300 transition-all duration-200"
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            onKeyDown={(e) => e.key === 'Escape' && setIsDropdownOpen(false)}
                         >
                             <Image
                                 src={SampleUserIcon}
@@ -91,11 +98,11 @@ export default function Topbar({ toggleSidebar, isSidebarOpen }) {
                                 height={48}
                                 className="object-cover"
                             />
-                        </div>
+                        </button>
 
                         {/* Dropdown Menu */}
                         {isDropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-emerald-100 py-2 z-50 animate-in slide-in-from-top-5 duration-200">
+                            <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50">
                                 {/* User Info in Dropdown */}
                                 <div className="px-4 py-3 border-b border-gray-100">
                                     <div className="flex items-center gap-3">
@@ -119,7 +126,7 @@ export default function Topbar({ toggleSidebar, isSidebarOpen }) {
                                 <div className="py-2">
                                     <button
                                         onClick={handleProfileClick}
-                                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
+                                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                                     >
                                         <Icon icon="mdi:account-edit" className="w-5 h-5" />
                                         <span>จัดการโปรไฟล์</span>

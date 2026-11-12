@@ -113,7 +113,7 @@ export default function ArticleAdminPreview() {
         </div>
 
         {/* Article Preview */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {/* Article Image */}
           {article.image && (
             <div className="w-full h-96 relative">

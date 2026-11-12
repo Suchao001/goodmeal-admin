@@ -43,7 +43,7 @@ export default function FoodFilters({ categories, onSearch, onCategoryFilter, on
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="พิมพ์ชื่อเมนู ส่วนผสม หรือคำอธิบาย" 
-            className="w-full pl-12 pr-4 py-3 rounded-2xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 text-sm font-medium placeholder-emerald-400 transition-all duration-200" 
+            className="w-full pl-12 pr-4 py-3 rounded-xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 text-sm font-medium placeholder-emerald-400 transition-all duration-200" 
           />
           {searchTerm && (
             <button 
@@ -62,7 +62,7 @@ export default function FoodFilters({ categories, onSearch, onCategoryFilter, on
         <select 
           value={categoryFilter}
           onChange={(e) => handleCategoryChange(e.target.value)}
-          className="w-full px-4 py-3 rounded-2xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white text-sm font-medium focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all duration-200"
+          className="w-full px-4 py-3 rounded-xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white text-sm font-medium focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all duration-200"
         >
           <option value="">ทุกประเภท</option>
           {categories.map((category) => (
@@ -79,7 +79,7 @@ export default function FoodFilters({ categories, onSearch, onCategoryFilter, on
         <select 
           value={calorieFilter}
           onChange={(e) => handleCalorieChange(e.target.value)}
-          className="w-full px-4 py-3 rounded-2xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white text-sm font-medium focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all duration-200"
+          className="w-full px-4 py-3 rounded-xl border border-emerald-200/50 bg-emerald-50/30 focus:bg-white text-sm font-medium focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all duration-200"
         >
           <option value="">ทุกช่วง</option>
           <option value="low">💚 น้อยกว่า 300 kcal</option>
@@ -93,7 +93,7 @@ export default function FoodFilters({ categories, onSearch, onCategoryFilter, on
         <div className="flex justify-end">
           <button 
             onClick={handleClearFilters}
-            className="px-6 py-3 rounded-2xl bg-white border border-emerald-200/50 text-emerald-700 font-medium hover:bg-emerald-50 hover:border-emerald-300 transition-all duration-200"
+            className="px-6 py-3 rounded-xl bg-white border border-emerald-200/50 text-emerald-700 font-medium hover:bg-emerald-50 hover:border-emerald-300 transition-all duration-200"
           >
             ล้างตัวกรอง
           </button>

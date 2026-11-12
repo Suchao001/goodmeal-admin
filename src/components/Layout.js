@@ -37,7 +37,7 @@ export default function Layout({ children }) {
 
   return (
     <SidebarContext.Provider value={{ isSidebarOpen }}>
-       <div className="min-h-screen flex bg-gradient-to-br from-emerald-50 via-white to-emerald-50/60">
+       <div className="min-h-screen flex bg-gray-50">
         {/* Sidebar */}
         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
@@ -51,8 +51,8 @@ export default function Layout({ children }) {
           <Topbar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
           {/* Rest of the content */}
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className={`max-w-full ${!isSidebarOpen ? 'dashboard-collapsed' : ''}`}>
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div className={`mx-auto max-w-[1600px] ${!isSidebarOpen ? 'dashboard-collapsed' : ''}`}>
               {children}
             </div>
           </div>

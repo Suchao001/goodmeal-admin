@@ -163,16 +163,16 @@ export default function AdminProfile() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50/50 to-teal-50/50 p-6">
+      <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg">
+              <div className="p-3 bg-emerald-500 rounded-xl shadow-sm">
                 <Icon icon="mdi:account-edit" className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold text-gray-900">
                   จัดการโปรไฟล์ผู้ดูแลระบบ
                 </h1>
                 <p className="text-gray-600 mt-1">จัดการข้อมูลส่วนตัวและการตั้งค่าบัญชีของคุณ</p>
@@ -185,14 +185,14 @@ export default function AdminProfile() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-emerald-100">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
               {/* Profile Header */}
-              <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-12 relative overflow-hidden">
+              <div className="bg-emerald-600 px-8 py-12 relative overflow-hidden">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
                   {/* Profile Image */}
                   <div className="relative">
-                    <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-white/30 shadow-2xl bg-white flex items-center justify-center">
+                    <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-white/30 shadow-md bg-white flex items-center justify-center">
                       <Icon icon="mdi:account-circle" className="w-24 h-24 text-emerald-600" />
                     </div>
                   </div>
@@ -327,7 +327,7 @@ export default function AdminProfile() {
                         <button
                           type="submit"
                           disabled={saving}
-                          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                         >
                           {saving ? (
                             <>
@@ -429,7 +429,7 @@ export default function AdminProfile() {
                         <button
                           type="submit"
                           disabled={saving}
-                          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                         >
                           {saving ? (
                             <>

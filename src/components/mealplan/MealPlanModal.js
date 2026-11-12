@@ -83,13 +83,13 @@ export default function MealPlanModal({ isOpen, onClose, editingPlan, onSubmit }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={isUploading ? undefined : onClose} />
+      <div className="absolute inset-0 bg-black/40 " onClick={isUploading ? undefined : onClose} />
       <div className="relative w-full max-w-3xl">
-        <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-r from-emerald-400/40 via-teal-400/30 to-cyan-400/40 blur-2xl" aria-hidden />
-        <div className="relative bg-white/95 backdrop-blur-xl border border-emerald-100/60 rounded-[28px] shadow-2xl shadow-emerald-900/15">
-          <div className="flex items-start justify-between px-8 pt-8 pb-6 border-b border-emerald-100/60">
+        <div className="absolute -inset-1 rounded-[32px] bg-gray-50 blur-2xl" aria-hidden />
+        <div className="relative bg-white border border-gray-200 rounded-[28px] shadow-md ">
+          <div className="flex items-start justify-between px-8 pt-8 pb-6 border-b border-gray-200">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-900/25">
+              <div className="p-3 rounded-xl bg-emerald-500 text-white shadow-sm ">
                 <Icon icon="heroicons:calendar-days-20-solid" className="text-2xl" />
               </div>
               <div>
@@ -105,7 +105,7 @@ export default function MealPlanModal({ isOpen, onClose, editingPlan, onSubmit }
               type="button"
               onClick={onClose}
               disabled={isUploading}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent bg-slate-100/70 text-slate-500 hover:bg-slate-200/90 hover:text-slate-700 transition-all duration-200 disabled:opacity-50"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-transparent bg-slate-100/70 text-slate-500 hover:bg-slate-200/90 hover:text-slate-700 transition-all duration-200 disabled:opacity-50"
               aria-label="ปิดหน้าต่าง"
             >
               <Icon icon="heroicons:x-mark-20-solid" className="text-xl" />
@@ -124,7 +124,7 @@ export default function MealPlanModal({ isOpen, onClose, editingPlan, onSubmit }
                     type="text"
                     name="plan_name"
                     defaultValue={editingPlan?.plan_name || ''}
-                    className="w-full px-4 py-3 rounded-2xl border border-emerald-200 bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 outline-none text-slate-800 placeholder-slate-400 transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-xl border border-emerald-200 bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 outline-none text-slate-800 placeholder-slate-400 transition-all duration-200"
                     placeholder="เช่น แผนอาหารเพื่อสุขภาพ 7 วัน"
                     required
                   />
@@ -138,7 +138,7 @@ export default function MealPlanModal({ isOpen, onClose, editingPlan, onSubmit }
                   <textarea
                     name="description"
                     defaultValue={editingPlan?.description || ''}
-                    className="w-full px-4 py-3 rounded-2xl border border-emerald-200 bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 outline-none text-slate-800 placeholder-slate-400 transition-all duration-200 resize-none"
+                    className="w-full px-4 py-3 rounded-xl border border-emerald-200 bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 outline-none text-slate-800 placeholder-slate-400 transition-all duration-200 resize-none"
                     rows="4"
                     placeholder="เล่าแนวทาง อาหารหลัก หรือโฟกัสของแผนอาหารนี้"
                   />
@@ -153,7 +153,7 @@ export default function MealPlanModal({ isOpen, onClose, editingPlan, onSubmit }
                     type="number"
                     name="duration"
                     defaultValue={editingPlan?.duration || ''}
-                    className="w-full px-4 py-3 rounded-2xl border border-emerald-200 bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 outline-none text-slate-800 placeholder-slate-400 transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-xl border border-emerald-200 bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 outline-none text-slate-800 placeholder-slate-400 transition-all duration-200"
                     min="1"
                     placeholder="ตัวอย่าง 7, 14 หรือ 30"
                   />
@@ -166,8 +166,8 @@ export default function MealPlanModal({ isOpen, onClose, editingPlan, onSubmit }
                   รูปภาพแผนอาหาร
                 </label>
 
-                <div className="group relative rounded-3xl border-2 border-dashed border-emerald-200 bg-emerald-50/50 hover:border-emerald-300 transition-all duration-200 overflow-hidden">
-                  <div className="h-56 w-full bg-gradient-to-br from-emerald-100 via-white to-cyan-100 flex items-center justify-center">
+                <div className="group relative rounded-xl border-2 border-dashed border-emerald-200 bg-emerald-50/50 hover:border-emerald-300 transition-all duration-200 overflow-hidden">
+                  <div className="h-56 w-full bg-gray-50 flex items-center justify-center">
                     {imagePreview ? (
                       <img
                         src={imagePreview}
@@ -183,7 +183,7 @@ export default function MealPlanModal({ isOpen, onClose, editingPlan, onSubmit }
                     )}
                   </div>
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/90 text-emerald-600 font-semibold">
+                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-emerald-600 font-semibold">
                       <Icon icon="heroicons:arrow-up-tray-20-solid" />
                       เลือกไฟล์ใหม่
                     </span>
@@ -208,7 +208,7 @@ export default function MealPlanModal({ isOpen, onClose, editingPlan, onSubmit }
                 type="button"
                 onClick={onClose}
                 disabled={isUploading}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-slate-200 bg-white text-slate-600 font-semibold hover:border-slate-300 hover:text-slate-800 transition-all duration-200 disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-slate-200 bg-white text-slate-600 font-semibold hover:border-slate-300 hover:text-slate-800 transition-all duration-200 disabled:opacity-50"
               >
                 <Icon icon="heroicons:arrow-uturn-left-20-solid" className="text-lg" />
                 ยกเลิก
@@ -216,7 +216,7 @@ export default function MealPlanModal({ isOpen, onClose, editingPlan, onSubmit }
               <button
                 type="submit"
                 disabled={isUploading}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold shadow-sm  hover:shadow-md hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
               >
                 <Icon icon={isUploading ? 'heroicons:arrow-path-20-solid' : editingPlan ? 'heroicons:check-circle-20-solid' : 'heroicons:plus-20-solid'} className={isUploading ? 'animate-spin text-lg' : 'text-lg'} />
                 {isUploading ? 'กำลังอัพโหลด...' : editingPlan ? 'บันทึกการเปลี่ยนแปลง' : 'เพิ่มแผนอาหาร'}

@@ -42,18 +42,18 @@ export default function AddArticle() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+      <div className="min-h-screen bg-gray-50">
         <div className="px-6 py-8">
           {/* Page Header */}
           <div className="max-w-7xl mx-auto mb-8">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 shadow-xl shadow-emerald-900/5 p-8">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-md  p-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="p-4 bg-gradient-to-br from-emerald-600 to-emerald-500 rounded-2xl shadow-lg">
+                  <div className="p-4 bg-emerald-600 rounded-xl shadow-sm">
                     <Icon icon="heroicons:document-plus-20-solid" className="text-3xl text-white" />
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-emerald-600 bg-clip-text text-transparent">
+                    <h1 className="text-3xl font-bold text-gray-900">
                       เพิ่มบทความใหม่
                     </h1>
                     <p className="text-lg text-slate-600 mt-1">
@@ -78,7 +78,7 @@ export default function AddArticle() {
 
           {/* Form Container */}
           <div className="max-w-7xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100 shadow-xl shadow-emerald-900/5 p-8">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-md  p-8">
               <ArticleForm mode="add" onSubmit={handleSubmit} />
             </div>
           </div>

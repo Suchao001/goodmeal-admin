@@ -151,7 +151,7 @@ export default function EatingArticles() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-cyan-50/30 -m-6 p-6">
+        <div className="min-h-screen bg-gray-50 -m-6 p-6">
           <div className="flex justify-center items-center h-64">
             <div className="flex flex-col items-center gap-4">
               <Icon icon="heroicons:arrow-path-20-solid" className="text-4xl text-emerald-400 animate-spin" />
@@ -165,19 +165,18 @@ export default function EatingArticles() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-cyan-50/30 -m-6 p-6">
+      <div className="min-h-screen bg-gray-50 -m-6 p-6">
         {/* Header Section */}
         <div className="mb-8 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/5 via-teal-600/5 to-cyan-600/5 rounded-3xl"></div>
-          <div className="relative bg-white/70 backdrop-blur-sm rounded-3xl border border-emerald-100/50 p-8 shadow-lg shadow-emerald-900/5">
+          <div className="relative bg-white rounded-xl border border-gray-200 p-8 shadow-sm ">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
                     <Icon icon="material-symbols:article" className="text-white text-2xl" />
                   </div>
                   <div>
-                    <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-800 to-teal-700 bg-clip-text text-transparent">
+                    <h1 className="text-3xl lg:text-4xl font-bold text-gray-900">
                       จัดการบทความ
                     </h1>
                   </div>
@@ -187,17 +186,17 @@ export default function EatingArticles() {
               
               {/* Quick Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                   <div className="text-2xl font-bold text-emerald-700">{articles.length}</div>
                   <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">บทความทั้งหมด</div>
                 </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50 shadow-sm">
+                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                   <div className="text-2xl font-bold text-emerald-600">
                     {articles.filter(a => a.status === 'published' || a.status === 'release').length}
                   </div>
                   <div className="text-xs text-emerald-600/70 font-medium uppercase tracking-wide">เผยแพร่แล้ว</div>
                 </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-amber-100/50 shadow-sm">
+                <div className="bg-white rounded-xl p-4 border border-amber-100/50 shadow-sm">
                   <div className="text-2xl font-bold text-amber-600">
                     {articles.filter(a => a.status === 'draft' || a.status === 'pending').length}
                   </div>
@@ -217,13 +216,13 @@ export default function EatingArticles() {
             
             <div className="flex flex-wrap gap-4">
               <Link href="/articles" target="_blank">
-                <button className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-medium shadow-lg shadow-purple-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200">
+                <button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-purple-600 text-white font-medium shadow-sm  hover:shadow-md transition-all duration-200">
                   <Icon icon="heroicons:eye-20-solid" className="text-lg" />
                   ดูหน้าสาธารณะ
                 </button>
               </Link>
               <Link href="/article/add">
-                <button className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200">
+                <button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white font-medium shadow-sm  hover:shadow-md transition-all duration-200">
                   <Icon icon="heroicons:plus-20-solid" className="text-lg" />
                   เพิ่มบทความใหม่
                 </button>
@@ -233,8 +232,8 @@ export default function EatingArticles() {
         </div>
 
         {/* Enhanced Article Table */}
-        <div className="bg-white/80 backdrop-blur-sm shadow-xl shadow-emerald-900/5 rounded-3xl border border-emerald-100/50 overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-600/10 via-teal-600/10 to-cyan-600/10 px-6 py-4 border-b border-emerald-100/50">
+        <div className="bg-white shadow-md  rounded-xl border border-gray-200 overflow-hidden">
+          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Icon icon="heroicons:table-cells-20-solid" className="text-emerald-600 text-xl" />
@@ -250,7 +249,7 @@ export default function EatingArticles() {
           </div>
 
           {/* Filters */}
-          <div className="px-6 py-4 border-b border-emerald-100/50 bg-white/60">
+          <div className="px-6 py-4 border-b border-gray-200 bg-white">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">ค้นหาตามชื่อ</label>
@@ -322,7 +321,7 @@ export default function EatingArticles() {
                 <Icon icon="heroicons:chevron-left-20-solid" />
               </button>
               
-              <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg">
+              <div className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold shadow-sm">
                 {currentPage} / {totalPages}
               </div>
               
@@ -346,13 +345,13 @@ export default function EatingArticles() {
         
         {/* Status Summary */}
         {!isLoading && articles.length === 0 && (
-          <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-100/50 shadow-xl shadow-emerald-900/5 p-8 text-center">
+          <div className="mt-8 bg-white rounded-xl border border-gray-200 shadow-md  p-8 text-center">
             <div className="flex flex-col items-center gap-4">
               <Icon icon="heroicons:document-text-20-solid" className="text-4xl text-slate-400" />
               <span className="text-slate-500 font-medium">ไม่มีบทความในระบบ</span>
               <span className="text-sm text-slate-400">เริ่มต้นด้วยการเพิ่มบทความใหม่</span>
               <Link href="/article/add">
-                <button className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-lg shadow-emerald-900/25 hover:shadow-xl hover:scale-105 transition-all duration-200">
+                <button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white font-medium shadow-sm  hover:shadow-md transition-all duration-200">
                   <Icon icon="heroicons:plus-20-solid" className="text-lg" />
                   เพิ่มบทความแรก
                 </button>
